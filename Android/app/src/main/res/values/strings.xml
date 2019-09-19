@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">mdp_group13</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">MDP Group 13</string>
+    <string name="map">MAZE &amp; CONTROLLER</string>
+    <string name="bluetooth">BLUETOOTH</string>
+    <string name="comm">STRING PROCESSING</string>
+    <string name="img">IMAGE CHECK</string>
 </resources>

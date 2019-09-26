@@ -9,11 +9,12 @@ if platform.node() == 'raspberrypi': # can't display images on rpi
 
 # define the list of boundaries
 boundaries_HSV = [
-    ([90, 140, 140], [110, 255, 255], "B"), # blue, tested
+    # ([90, 140, 140], [110, 255, 255], "B"), # blue, tested
     # ([17, 15, 100], [50, 56, 200], "R"), # red
     # ([25, 146, 190], [62, 174, 250], "Y"), # yellow
     # ([103, 86, 65], [145, 133, 128], "W"), # white, dummy
-    ([55, 127, 127], [75, 255, 255], "B"), # green, dummy
+    # ([55, 35, 50], [75, 255, 255], "G"), # green, dummy
+    ([0, 0, 0], [120, 60, 100], "B"), # black, dummy
     ]
 
 def sortAscending(list): 

@@ -1,8 +1,12 @@
 import cv2
 import numpy as np
 import os
+import platform
 
-imshow = True
+imshowDebug = True # mostly going to be used for cv2.imshow debugging perposes
+if platform.node() == 'raspberrypi': # can't display images on rpi
+    imshowDebug = False
+
 # define the list of boundaries
 boundaries_HSV = [
     ([90, 140, 140], [110, 255, 255], "B"), # blue, tested
@@ -90,9 +94,7 @@ def matchShapes(colour_segmenting_results, reference_img_filepath):
 
 def main(query_image_filepath):
     colour_segmenting_results = detectColourAndMask(query_image_filepath)
-    if imshow:
-        cv2.imshow('{} masked'.format(colour_segmenting_results['colour']), colour_segmenting_results['image'])
-        cv2.waitKey(0)
+
     matchShapes(colour_segmenting_results, query_image_filepath)
     return
 

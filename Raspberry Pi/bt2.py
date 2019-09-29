@@ -24,7 +24,7 @@ def setup():
 
     #established connection with android via bluetooth
     client_sock, client_address = server_sock.accept()
-    client_sock.setblocking(0)
+    #client_sock.setblocking(0)
     print("Accepted connection from ", client_address)
     return client_sock, server_sock
 

@@ -10,13 +10,30 @@ if platform.node() == 'raspberrypi': # can't display images on rpi
 # define the list of boundaries
 boundaries_HSV = [
     ([85, 140, 140], [120, 255, 255], "B"), # blue, tested
-    # ([0, 140, 140], [10, 255, 255], "R"), # red
-    # ([20, 200, 25], [35, 255, 255], "Y"), # yellow
-    # ([103, 86, 65], [145, 133, 128], "W"), # white, dummy
-    ([55, 40, 40], [75, 255, 255], "G"), # green, dummy
+    ([0, 140, 140], [10, 255, 255], "R"), # red
+    ([20, 140, 140], [35, 255, 255], "Y"), # yellow
+    # ([0, 0, 0], [0, 0, 255], "W"), # white, dummy
+    ([55, 50, 50], [75, 255, 255], "G"), # green, dummy
     ]
 black_boundaries_HSV = [np.array([0, 0, 0], dtype = "uint8"), np.array([120, 127, 100], dtype = "uint8")]
 
+result_dict = {
+    'W Arrow': '1',
+    'R Arrow': '2',
+    'G Arrow': '3',
+    'B Arrow': '4',
+    'Y Circle': '5',
+    'B 1': '6',
+    'G 2': '7',
+    'R 3': '8',
+    'W 4': '9',
+    'Y 5': '10',
+    'R A': '11',
+    'G B': '12',
+    'W C': '13',
+    'B D': '14',
+    'Y E': '15',
+}
 
 def sortAscending(list): 
     l = len(list) 
@@ -45,7 +62,9 @@ def detectColourAndMask(query_image_filepath):
     colour_segmenting_results = {
         'colour': 0,
         'nonZeroCount': 0,
-        'image': 0
+        'img_BGR': 0,
+        'masked_image': 0,
+        'bounding': 0
     }
     try:
         filename = query_image_filepath.split('/')[-1]
@@ -61,6 +80,7 @@ def detectColourAndMask(query_image_filepath):
 
         # get countours of playing field
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
         if len(contours) > 0:
             largestContour = contours[0]
             for countour in contours:
@@ -88,19 +108,7 @@ def detectColourAndMask(query_image_filepath):
             # get mask from specified boundaries
             mask = cv2.inRange(playing_field_HSV, lower, upper)
             
-            cv2.imshow(
-                '{} mask ({})'.format(filename, colour), 
-                np.concatenate(
-                    (query_img_BGR,
-                    playing_field_BGR,
-                    cv2.cvtColor(
-                        mask,
-                        cv2.COLOR_GRAY2BGR)
-                    ),
-                    axis=1
-                )
-            )
-            cv2.waitKey(0)
+            
 
             # count nonzero pixels in mask
             nonZeroCount = cv2.countNonZero(mask)
@@ -113,8 +121,36 @@ def detectColourAndMask(query_image_filepath):
                 colour_segmenting_results = {
                     'colour': colour,
                     'nonZeroCount': nonZeroCount,
-                    'image': output
+                    'img_BGR': query_img_BGR,
+                    'masked_image': output,
+                    'mask': mask
                 }
+
+        # create bounding rect
+        contours, hierarchy = cv2.findContours(colour_segmenting_results['mask'], cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        cont_sorted = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
+        bounding_contour = cont_sorted[0]
+
+        # x,y,w,h = cv2.boundingRect(cont_sorted[0])
+        # bounding_box_img = cv2.rectangle(query_img_BGR,(x,y),(x+w,y+h),(0,0,255),2)
+        colour_segmenting_results['bounding'] = bounding_contour
+
+        if imshowDebug:
+            cv2.imshow(
+                '{} mask ({})'.format(filename, colour), 
+                np.concatenate(
+                    (query_img_BGR,
+                    playing_field_BGR,
+                    cv2.cvtColor(
+                        mask,
+                        cv2.COLOR_GRAY2BGR),
+                    ),
+                    axis=1
+                )
+            )
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
 
         print('{} nonZero count: {}'.format(colour_segmenting_results['colour'], colour_segmenting_results['nonZeroCount']))
         if imshowDebug:
@@ -132,7 +168,7 @@ def matchShapes(colour_segmenting_results, reference_img_directory_path):
         #     'nonZeroCount': int, counts number of detected pixels of colour
         #     'image': img object returned from cv2.imread()
         # }
-        query_BGR = colour_segmenting_results['image']
+        query_BGR = colour_segmenting_results['masked_image']
         query_gray = cv2.cvtColor(query_BGR,cv2.COLOR_BGR2GRAY)
         _,query_gray_binary = cv2.threshold(query_gray, 1, 255, cv2.THRESH_BINARY) # to check if this is accurate binarisation
         results = []
@@ -146,16 +182,34 @@ def matchShapes(colour_segmenting_results, reference_img_directory_path):
                 results.append([reference_entry.name.replace('.jpg', ''), cv2.matchShapes(query_gray_binary,reference_gray_binary,cv2.CONTOURS_MATCH_I2,0)])
         results = sortAscending(results)
 
+        x,y,w,h = cv2.boundingRect(colour_segmenting_results['bounding'])
+        bounding_box_img = cv2.rectangle(colour_segmenting_results['img_BGR'],(x,y),(x+w,y+h),(0,0,255),2)
+        bounding_box_img = cv2.putText(bounding_box_img, result_dict[results[0][0]], (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (100,255,100), 2)
+        if (imshowDebug):
+            cv2.imshow('results ({})'.format(colour_segmenting_results['colour']), bounding_box_img)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+
+        
+
+
         for result in results:
             print(result)
+        return result, bounding_box_img
     except cv2.error as e:
         print('cv2 error: {}'.format(e))
 
 def main(query_image_filepath, reference_img_directory_path):
+    name = query_image_filepath.split('/')[-1].split('.')[0]
     colour_segmenting_results = detectColourAndMask(query_image_filepath)
 
-    matchShapes(colour_segmenting_results, reference_img_directory_path)
-    return
+    result, bounding_box_img = matchShapes(colour_segmenting_results, reference_img_directory_path)
+    print(result)
+    result_name = result[0]
+    result_id = result_dict[result_name]
+    result_distance = result[1]
+    cv2.imwrite('Raspberry Pi/Image Recognition/Output/{}.jpeg'.format(name), bounding_box_img)    
 
 
 reference_img_directory_path = 'Raspberry Pi/Image Recognition/Training'
@@ -174,4 +228,3 @@ for root, dirs, files in os.walk('Raspberry Pi/Image Recognition/Query'):
             print(os.path.join(root, name))
             temp = main(os.path.join(root, name), reference_img_directory_path)
             print('\n')
-

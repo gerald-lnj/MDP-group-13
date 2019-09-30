@@ -158,14 +158,20 @@ def main(query_image_filepath, reference_img_directory_path):
     return
 
 
-reference_img_directory_path = '/Users/gerald/Documents/MDP/MDP-group-13/Raspberry Pi/Image Recognition/Training'
+reference_img_directory_path = 'Raspberry Pi/Image Recognition/Training'
 
-# main('/Users/gerald/Documents/MDP/MDP-group-13/Raspberry Pi/Image Recognition/Query/Blue/b arrow a.jpeg', reference_img_directory_path)
+# main('/Users/gerald/Documents/MDP/MDP-group-13/Raspberry Pi/Image Recognition/Query/Blue/b 1b.jpeg', reference_img_directory_path)
 # temp = detectColourAndMask('Query/Green/green 2.jpeg')
 
-for root, dirs, files in os.walk('/Users/gerald/Documents/MDP/MDP-group-13/Raspberry Pi/Image Recognition/Query/Green'):
-    for name in files:
-        print(os.path.join(root, name))
-        temp = detectColourAndMask(os.path.join(root, name))
+# for root, dirs, files in os.walk('/Users/gerald/Documents/MDP/MDP-group-13/Raspberry Pi/Image Recognition/Query/Green'):
+#     for name in files:
+#         print(os.path.join(root, name))
+#         temp = detectColourAndMask(os.path.join(root, name))
 
+for root, dirs, files in os.walk('Raspberry Pi/Image Recognition/Query'):
+    for name in files:
+        if name != '.DS_Store':
+            print(os.path.join(root, name))
+            temp = main(os.path.join(root, name), reference_img_directory_path)
+            print('\n')
 

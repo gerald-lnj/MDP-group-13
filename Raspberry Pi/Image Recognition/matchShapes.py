@@ -13,9 +13,9 @@ boundaries_HSV = [
     # ([0, 140, 140], [10, 255, 255], "R"), # red
     # ([20, 200, 25], [35, 255, 255], "Y"), # yellow
     # ([103, 86, 65], [145, 133, 128], "W"), # white, dummy
-    # ([55, 40, 40], [75, 255, 255], "G"), # green, dummy
+    ([55, 40, 40], [75, 255, 255], "G"), # green, dummy
     ]
-black_boundaries_HSV = [np.array([0, 0, 0], dtype = "uint8"), np.array([120, 100, 100], dtype = "uint8")]
+black_boundaries_HSV = [np.array([0, 0, 0], dtype = "uint8"), np.array([120, 127, 100], dtype = "uint8")]
 
 
 def sortAscending(list): 
@@ -132,18 +132,18 @@ def matchShapes(colour_segmenting_results, reference_img_directory_path):
         #     'nonZeroCount': int, counts number of detected pixels of colour
         #     'image': img object returned from cv2.imread()
         # }
-        im1 = colour_segmenting_results['image']
-        im1_gray = cv2.cvtColor(im1,cv2.COLOR_BGR2GRAY)
-        _,im1_binary = cv2.threshold(im1_gray, 1, 255, cv2.THRESH_BINARY) # to check if this is accurate binarisation
+        query_BGR = colour_segmenting_results['image']
+        query_gray = cv2.cvtColor(query_BGR,cv2.COLOR_BGR2GRAY)
+        _,query_gray_binary = cv2.threshold(query_gray, 1, 255, cv2.THRESH_BINARY) # to check if this is accurate binarisation
         results = []
 
-        for entry in os.scandir(reference_img_directory_path):
-            if ((entry.name.split('.')[-1] == 'jpg') # ignore .DS_Store for macs
-            and (entry.name[0] == colour_segmenting_results['colour'])): # filter by colour. eg if the colour is blue, only pick those starting with 'B'
-                im2 = cv2.imread(entry.path)
-                im2_gray = cv2.cvtColor(im2,cv2.COLOR_BGR2GRAY)
-                _,im2_binary = cv2.threshold(im2_gray, 128, 255, cv2.THRESH_BINARY)
-                results.append([entry.name.replace('.jpg', ''), cv2.matchShapes(im1_binary,im2_binary,cv2.CONTOURS_MATCH_I2,0)])
+        for reference_entry in os.scandir(reference_img_directory_path):
+            if ((reference_entry.name.split('.')[-1] == 'jpg') # ignore .DS_Store for macs
+            and (reference_entry.name[0] == colour_segmenting_results['colour'])): # filter by colour. eg if the colour is blue, only pick those starting with 'B'
+                reference_BGR = cv2.imread(reference_entry.path)
+                reference_gray = cv2.cvtColor(reference_BGR,cv2.COLOR_BGR2GRAY)
+                _,reference_gray_binary = cv2.threshold(reference_gray, 128, 255, cv2.THRESH_BINARY)
+                results.append([reference_entry.name.replace('.jpg', ''), cv2.matchShapes(query_gray_binary,reference_gray_binary,cv2.CONTOURS_MATCH_I2,0)])
         results = sortAscending(results)
 
         for result in results:
@@ -163,7 +163,7 @@ reference_img_directory_path = '/Users/gerald/Documents/MDP/MDP-group-13/Raspber
 # main('/Users/gerald/Documents/MDP/MDP-group-13/Raspberry Pi/Image Recognition/Query/Blue/b arrow a.jpeg', reference_img_directory_path)
 # temp = detectColourAndMask('Query/Green/green 2.jpeg')
 
-for root, dirs, files in os.walk('/Users/gerald/Documents/MDP/MDP-group-13/Raspberry Pi/Image Recognition/Query/Blue'):
+for root, dirs, files in os.walk('/Users/gerald/Documents/MDP/MDP-group-13/Raspberry Pi/Image Recognition/Query/Green'):
     for name in files:
         print(os.path.join(root, name))
         temp = detectColourAndMask(os.path.join(root, name))

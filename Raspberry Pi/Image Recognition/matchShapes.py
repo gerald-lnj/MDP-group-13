@@ -3,7 +3,7 @@ import numpy as np
 import os
 import platform
 
-imshowDebug = False # mostly going to be used for cv2.imshow debugging perposes
+imshowDebug = True # mostly going to be used for cv2.imshow debugging perposes
 if platform.node() == 'raspberrypi': # can't display images on rpi
     imshowDebug = False
 
@@ -137,7 +137,7 @@ def detectColourAndMask(query_image_filepath):
 
         if imshowDebug:
             cv2.imshow(
-                '{} mask ({})'.format(filename, colour), 
+                '{}: Original BGR, Playing area Mask, {} mask'.format(filename, colour), 
                 np.concatenate(
                     (query_img_BGR,
                     playing_field_BGR,
@@ -153,9 +153,6 @@ def detectColourAndMask(query_image_filepath):
 
 
         print('{} nonZero count: {}'.format(colour_segmenting_results['colour'], colour_segmenting_results['nonZeroCount']))
-        if imshowDebug:
-            cv2.imshow('{} masked'.format(colour_segmenting_results['colour']), colour_segmenting_results['image'])
-            cv2.waitKey(0)
         return colour_segmenting_results
     except cv2.error as e:
         print('cv2 error in detectColourAndMask(): \n{}'.format(e))

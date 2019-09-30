@@ -24,7 +24,6 @@ def setup():
 
     #established connection with android via bluetooth
     client_sock, client_address = server_sock.accept()
-    #client_sock.setblocking(0)
     print("Accepted connection from ", client_address)
     return client_sock, server_sock
 
@@ -74,5 +73,6 @@ def test():
                 bt_send_msg(data, client_sock)
     except KeyboardInterrupt:
         BT_disconnect(client_sock, server_sock)
-    
+
 test()
+

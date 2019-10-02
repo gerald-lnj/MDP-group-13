@@ -1,9 +1,9 @@
 #!/user/bin/env python
 import serial
 
-class ard_ser_con:
+class ard_connection:
     def __init__(self):
-        self.port = port = "/dev/ttyACM0"
+        self.port = "/dev/ttyACM0"
         self.baud_rate = 115200
         self.s1 = None
 
@@ -13,7 +13,6 @@ class ard_ser_con:
             self.s1 = serial.Serial(self.port, self.baud_rate)
             self.s1.flushInput()
             print("Established connection to Arduino serial port")
-            #return s1
         except IOError:
             print("Fail to establish connection with Arduino: {}".format(IOError))
             self.s1.close

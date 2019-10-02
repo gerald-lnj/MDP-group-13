@@ -10,8 +10,8 @@ class Main(threading.Thread):
         threading.Thread.__init__(self)
 
         #self.algo_thread = algo()
-        self.bt_thread = btconnection()
-        self.sr_thread = ard_ser_con()
+        self.bt_thread = bt_connection()
+        self.sr_thread = ard_connection()
         
         #initialise connections
         self.bt_thread.setup()
@@ -21,32 +21,50 @@ class Main(threading.Thread):
     #process to read from bluetooth
     def read_from_bluetooth(self):
         while True:
+
+            #check if android is connected via bt
+            if self.bt_thread.bt_checkStatus() == False:
+                self.bt_thread.setup()
+
+            #Get message from bluetooth
             read_bt_msg = self.bt_thread.bt_listen_msg()
 
+            #Check header and send to arduino
+            if(read_bt_msg[0:2].lower() == 'ar:'):
+                print("Message Received from BT: {}".format(read_bt_msg))
+                print("Sending message to Arduino...")
+                self.write_to_arduino(read_bt_msg[3:])
+
             # Check header and send data to algo
-			# if(read_bt_msg[0:2].lower() == 'al:'):	# send to algo
+			# elif(read_bt_msg[0:2].lower() == 'al:'):	# send to algo
 			# 	self.writePC(read_bt_msg[3:])	# strip the header
 			# 	print "Value received from Bluetooth: %s" % read_bt_msg[1:]
-
-			#if(read_bt_msg[0:2].lower() == 'ar:'):	# send to SR
-			#self.write_to_arduino(read_bt_msg[3:])		# strip the header
-			print ("Message received from BT: {}".format(read_bt_msg[0]))
-            print("Sending message to Arduino...")
-            self.write_to_arduino(read_bt_msg[0])
         
-			# else:
-			# 	print ("incorrect header received from BT: {}".format(read_bt_msg[0])) 
-			# #	time.sleep(1)
+			else:
+			    print ("Incorrect header received from BT: {}".format(read_bt_msg[0:2])) 
+			    time.sleep(1)
 
     #process to write to bluetooth
     def write_to_bluetooth(self, msg_to_bt):
+
+        #check if android is connected via bt
+            if self.bt_thread.bt_checkStatus() == False:
+                self.bt_thread.setup()
+
         self.bt_thread.bt_send_msg(msg_to_bt)
 
     #process to read from arduino
     def read_from_arduino(self):
         while True:
+
+            #Get message from arduino
             read_ard_msg = self.sr_thread.ard_listen_msg()
-            print("Message received from Arduino: {}".format(read_ard_msg))
+
+            #Check header and send to android
+            if(read_ard_msg[0:2].lower() == 'an:'):
+                print("Message Received from Arduino: {}".format(read_ard_msg))
+                print("Sending message to Android...")
+                self.write_to_bluetooth(read_ard_msg[3:])
 
     #process to write to arduino
     def write_to_arduino(self, msg_to_ard):
@@ -89,10 +107,6 @@ class Main(threading.Thread):
 		print ("End threads")
 
 	def keep_main_alive(self):
-		#function = Sleep for 500 ms and wake up.
-		#Keep Repeating function 
-		#until Ctrl+C is used to kill
-		#the main thread.
 
 		while True:
 			#suspend the thread  

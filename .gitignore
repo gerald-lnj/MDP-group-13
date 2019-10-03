@@ -4,3 +4,11 @@
 .vscode/
 
 Raspberry Pi/Image Recognition/Output/
+
+Raspberry Pi/Image Recognition/rpi_best.weights
+
+Raspberry Pi/Image Recognition/rpi.cfg
+
+Raspberry Pi/Image Recognition/rpi.data
+
+Raspberry Pi/Image Recognition/rpi.names

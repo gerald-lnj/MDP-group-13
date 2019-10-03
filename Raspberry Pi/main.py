@@ -32,13 +32,13 @@ class Main(threading.Thread):
             read_bt_msg = self.bt_thread.bt_listen_msg()
 
             #Check header and send to arduino
-            if(read_bt_msg[0:2].lower() == 'ar:'):
+            if(read_bt_msg[0:3].lower() == 'ar:'):
                 print("Message Received from BT: {}".format(read_bt_msg))
                 print("Sending message to Arduino...")
                 self.write_to_arduino(read_bt_msg[3:])
 
             # Check header and send to pc
-			elif(read_bt_msg[0:2].lower() == 'al:'):
+			elif(read_bt_msg[0:3].lower() == 'al:'):
                 print("Message Received from BT: {}".format(read_bt_msg))
                 print("Sending message to PC...")
                 self.write_to_pc(read_bt_msg[3:])
@@ -64,13 +64,13 @@ class Main(threading.Thread):
             read_ard_msg = self.sr_thread.ard_listen_msg()
 
             #Check header and send to android
-            if(read_ard_msg[0:2].lower() == 'an:'):
+            if(read_ard_msg[0:3].lower() == 'an:'):
                 print("Message Received from Arduino: {}".format(read_ard_msg))
                 print("Sending message to Android...")
                 self.write_to_bluetooth(read_ard_msg[3:])
 
             #Check header and send to pc
-            elif(read_bt_msg[0:2].lower() == 'al:'):
+            elif(read_ard_msg[0:3].lower() == 'al:'):
                 print("Message Received from Arduino: {}".format(read_ard_msg))
                 print("Sending message to PC...")
                 self.write_to_pc(read_ard_msg[3:])
@@ -87,13 +87,13 @@ class Main(threading.Thread):
             read_pc_msg = self.pc_thread.pc_listen_msg()
 
             #Check header and send to android
-            if(read_pc_msg[0:2].lower() == 'an:'):
+            if(read_pc_msg[0:3].lower() == 'an:'):
                 print("Message Received from PC: {}".format(read_pc_msg))
                 print("Sending message to Android...")
                 self.write_to_bluetooth(read_pc_msg[3:])
 
             #Check header and send to arduino
-            elif(read_pc_msg[0:2].lower() == 'ar:'):
+            elif(read_pc_msg[0:3].lower() == 'ar:'):
                 print("Message Received from PC: {}".format(read_pc_msg))
                 print("Sending message to Arduino...")
                 self.write_to_arduino(read_pc_msg[3:])
@@ -155,9 +155,9 @@ class Main(threading.Thread):
 			time.sleep(0.5)
 
 if __name__ == "__main__":
-    try:
+    #try:
 	    mainThread = Main()
 	    mainThread.initialize_threads()
 	    mainThread.keep_main_alive()
-    except KeyboardInterrupt:
+    #except KeyboardInterrupt:
 	    mainThread.close_all_sockets()

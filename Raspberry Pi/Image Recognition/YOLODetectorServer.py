@@ -34,7 +34,7 @@ imshowDebug = False # mostly going to be used for cv2.imshow debugging perposes
 if platform.node() == 'raspberrypi': # can't display images on rpi
     imshowDebug = False
 
-boundingBoxDemo = True
+boundingBoxDemo = False
 
 # initialize the ImageHub object
 imageHub = imagezmq.ImageHub()
@@ -63,108 +63,124 @@ ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
 # loop over frames from the video file stream
 def detectImage():
-	(rpiName, input_img) = imageHub.recv_image()
-	# resize the frame to have a maximum width of 400 pixels, then
-	# grab the frame dimensions and construct a blob
-	input_img = imutils.resize(input_img, width=640)
-	(H, W) = input_img.shape[:2]
-	# construct a blob from the input frame and then perform a forward
-	# pass of the YOLO object detector, giving us our bounding boxes
-	# and associated probabilities
-	blob = cv2.dnn.blobFromImage(input_img, 1 / 255.0, (480, 480),
-		swapRB=True, crop=False)
-	net.setInput(blob)
-	layerOutputs = net.forward(ln)
+	try:
+		(rpiName, input_img) = imageHub.recv_image()
+		# resize the frame to have a maximum width of 400 pixels, then
+		# grab the frame dimensions and construct a blob
+		input_img = imutils.resize(input_img, width=640)
+		(H, W) = input_img.shape[:2]
+		# construct a blob from the input frame and then perform a forward
+		# pass of the YOLO object detector, giving us our bounding boxes
+		# and associated probabilities
+		blob = cv2.dnn.blobFromImage(input_img, 1 / 255.0, (480, 480),
+			swapRB=True, crop=False)
+		net.setInput(blob)
+		layerOutputs = net.forward(ln)
 
-	# initialize our lists of detected bounding boxes, confidences,
-	# and class IDs, respectively
-	boxes = []
-	confidences = []
-	classIDs = []
+		# initialize our lists of detected bounding boxes, confidences,
+		# and class IDs, respectively
+		boxes = []
+		confidences = []
+		classIDs = []
 
-	# loop over each of the layer outputs
-	for output in layerOutputs:
-		# loop over each of the detections
-		for detection in output:
-			# extract the class ID and confidence (i.e., probability)
-			# of the current object detection
-			scores = detection[5:]
-			classID = np.argmax(scores)
-			confidence = scores[classID]
+		# loop over each of the layer outputs
+		for output in layerOutputs:
+			# loop over each of the detections
+			for detection in output:
+				# extract the class ID and confidence (i.e., probability)
+				# of the current object detection
+				scores = detection[5:]
+				classID = np.argmax(scores)
+				confidence = scores[classID]
 
-			# filter out weak predictions by ensuring the detected
-			# probability is greater than the minimum probability
-			if confidence > 0.5:
-				# scale the bounding box coordinates back relative to
-				# the size of the image, keeping in mind that YOLO
-				# actually returns the center (x, y)-coordinates of
-				# the bounding box followed by the boxes' width and
-				# height
-				box = detection[0:4] * np.array([W, H, W, H])
-				(centerX, centerY, width, height) = box.astype("int")
+				# filter out weak predictions by ensuring the detected
+				# probability is greater than the minimum probability
+				if confidence > 0.7:
+					# scale the bounding box coordinates back relative to
+					# the size of the image, keeping in mind that YOLO
+					# actually returns the center (x, y)-coordinates of
+					# the bounding box followed by the boxes' width and
+					# height
+					box = detection[0:4] * np.array([W, H, W, H])
+					(centerX, centerY, width, height) = box.astype("int")
 
-				# use the center (x, y)-coordinates to derive the top
-				# and and left corner of the bounding box
-				x = int(centerX - (width / 2))
-				y = int(centerY - (height / 2))
+					# use the center (x, y)-coordinates to derive the top
+					# and and left corner of the bounding box
+					x = int(centerX - (width / 2))
+					y = int(centerY - (height / 2))
 
-				# update our list of bounding box coordinates,
-				# confidences, and class IDs
-				boxes.append([x, y, int(width), int(height)])
-				confidences.append(float(confidence))
-				classIDs.append(classID)
+					# update our list of bounding box coordinates,
+					# confidences, and class IDs
+					boxes.append([x, y, int(width), int(height)])
+					confidences.append(float(confidence))
+					classIDs.append(classID)
 
-	# apply non-maxima suppression to suppress weak, overlapping
-	# bounding boxes
-	idxs = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.3)
+		# apply non-maxima suppression to suppress weak, overlapping
+		# bounding boxes
+		idxs = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.3)
 
-	# ensure at least one detection exists
-	if len(idxs) > 0:
-		# loop over the indexes we are keeping
-		for i in idxs.flatten():
-			# extract the bounding box coordinates
-			(x, y) = (boxes[i][0], boxes[i][1])
-			(w, h) = (boxes[i][2], boxes[i][3])
+		# ensure at least one detection exists
+		if len(idxs) > 0:
+			# keep track of the image closest to midpoint
+			[input_img_h, input_img_w, _] = input_img.shape
+			boxMidEuclid = []
 
-			if boundingBoxDemo:
+			# loop over the indexes we are keeping
+			for i in idxs.flatten():
+				# extract the bounding box coordinates
+				(x, y) = (boxes[i][0], boxes[i][1])
+				(w, h) = (boxes[i][2], boxes[i][3])
+
 				# draw a bounding box rectangle and label on the frame
 				color = [int(c) for c in COLORS[classIDs[i]]]
 				cv2.rectangle(input_img, (x, y), (x + w, y + h), color, 2)
 				text = "{}: {:.4f}".format(LABELS[classIDs[i]],
 					confidences[i])
+
+				box_centre_x = boxes[i][0] + boxes[i][2]/2
+				box_centre_y = boxes[i][1] + boxes[i][3]/2
+				euclid = (box_centre_x-input_img_w)**2 + (box_centre_y-input_img_h)**2
+				boxMidEuclid.append([euclid, i])
+
 				cv2.putText(input_img, text, (x, y - 5),
 					cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 		
 
-		# in case multiple imgs are detected,
-		# get the index of img with largest bounding box area
-		# i.e. closest img
-		largest_image_index = np.argmax(i[2] * i[3] for i in boxes)
-		detected_id = int(LABELS[classIDs[largest_image_index]])
-		confidence = confidences[largest_image_index]
-		if boundingBoxDemo:
-			filename = '{}:{}.jpg'.format(detected_id, 'sample_coords')
-			output_filepath = '{}/Output/{}'.format(folderPath, filename)
-			cv2.imwrite(output_filepath, input_img)
+			# in case multiple imgs are detected,
+			# get the index of closest img to centre
+			closestImg = np.argmin(i[0] for i in boxMidEuclid)
+			centered_image_index = boxMidEuclid[closestImg][1]
+			detected_id = int(LABELS[classIDs[centered_image_index]])
+			confidence = confidences[centered_image_index]
+			if boundingBoxDemo:
+				filename = '{}-{}.jpg'.format(detected_id, 'sample_coords')
+				output_filepath = '{}\Output\{}'.format(folderPath, filename)
+				cv2.imwrite(output_filepath, input_img)
+			
+			
+			result_str = "detected: {} (ID {}), confidence {:.4f}".format(result_list[detected_id], detected_id, confidence)
 		
-		
-		result_str = "detected: {} (ID {}), confidence {:.4f}".format(result_list[detected_id], detected_id, confidence)
-	
-		cv2.putText(input_img, result_str, (10, H - 20),
-			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255,0), 2)
-		if imshowDebug:
-			cv2.imshow('result', input_img);cv2.waitKey(0);cv2.destroyAllWindows()
-		imageHub.send_reply(b'OK')
-		return detected_id, confidence, result_str
-	else:
-		imageHub.send_reply(b'OK')
-		return None
+			cv2.putText(input_img, result_str, (10, H - 20),
+				cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255,0), 2)
+			if imshowDebug:
+				cv2.imshow('result', input_img);cv2.waitKey(0);cv2.destroyAllWindows()
+			reply = '{}:{}'.format(detected_id, 'sample_coords')
+
+			# imageHub.send_reply(reply)
+			imageHub.send_reply(b'ok')
+
+			return detected_id, confidence, result_str
+		else:
+			imageHub.send_reply(b'OK')
+			return None
+	except KeyboardInterrupt:
+		return KeyboardInterrupt
 
 while True:
 	try:
 		detected_id, confidence, result_str = detectImage()
 		print(result_str)
-	except TypeError:
+	except TypeError: # return None
 		print('Nothing detected')
 	except KeyboardInterrupt:
 		print('exiting...')

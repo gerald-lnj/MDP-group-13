@@ -1,6 +1,6 @@
 from bluetooth import *
 
-class btconnection():
+class bt_connection():
     def __init__(self):
         self.server_sock = None
         self.client_sock = None

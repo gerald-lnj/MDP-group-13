@@ -47,7 +47,7 @@ class bt_connection():
 
     def bt_send_msg(self, data):
         try:
-            client_sock.send(data)
+            self.client_sock.send(data)
         except IOError:
             print("Failed to send message to Android: {}".format(IOError))
 

@@ -12,3 +12,5 @@ Raspberry Pi/Image Recognition/rpi.cfg
 Raspberry Pi/Image Recognition/rpi.data
 
 Raspberry Pi/Image Recognition/rpi.names
+
+Raspberry Pi/Image Recognition/__pycache__/

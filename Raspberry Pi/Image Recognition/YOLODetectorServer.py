@@ -9,6 +9,7 @@ import imutils
 import cv2
 import os
 import platform
+import imagezmq
 
 result_list = [
 	'', # since official IDs start from 1, not 0
@@ -35,6 +36,9 @@ if platform.node() == 'raspberrypi': # can't display images on rpi
 
 boundingBoxDemo = True
 
+# initialize the ImageHub object
+imageHub = imagezmq.ImageHub()
+
 folderPath = os.path.dirname(os.path.abspath(__file__))
 
 # load the COCO class labels our YOLO model was trained on
@@ -58,14 +62,10 @@ ln = net.getLayerNames()
 ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
 # loop over frames from the video file stream
-def detectImage(image_filepath):
-	if platform.node() == 'raspberrypi':
-		filename = image_filepath.split('/')[-1]
-	else:
-		filename = image_filepath.split('\\')[-1]
+def detectImage():
+	(rpiName, input_img) = imageHub.recv_image()
 	# resize the frame to have a maximum width of 400 pixels, then
 	# grab the frame dimensions and construct a blob
-	input_img = cv2.imread(image_filepath)
 	input_img = imutils.resize(input_img, width=640)
 	(H, W) = input_img.shape[:2]
 	# construct a blob from the input frame and then perform a forward
@@ -134,11 +134,7 @@ def detectImage(image_filepath):
 					confidences[i])
 				cv2.putText(input_img, text, (x, y - 5),
 					cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-				if platform.node() == 'raspberrypi':
-					output_filepath = '{}\Output\{}'.format(folderPath, filename)
-				else:
-					output_filepath = '{}/Output/{}'.format(folderPath, filename)
-				cv2.imwrite(output_filepath, input_img)
+		
 
 		# in case multiple imgs are detected,
 		# get the index of img with largest bounding box area
@@ -146,6 +142,11 @@ def detectImage(image_filepath):
 		largest_image_index = np.argmax(i[2] * i[3] for i in boxes)
 		detected_id = int(LABELS[classIDs[largest_image_index]])
 		confidence = confidences[largest_image_index]
+		if boundingBoxDemo:
+			filename = '{}:{}.jpg'.format(detected_id, 'sample_coords')
+			output_filepath = '{}/Output/{}'.format(folderPath, filename)
+			cv2.imwrite(output_filepath, input_img)
+		
 		
 		result_str = "detected: {} (ID {}), confidence {:.4f}".format(result_list[detected_id], detected_id, confidence)
 	
@@ -153,17 +154,18 @@ def detectImage(image_filepath):
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255,0), 2)
 		if imshowDebug:
 			cv2.imshow('result', input_img);cv2.waitKey(0);cv2.destroyAllWindows()
+		imageHub.send_reply(b'OK')
 		return detected_id, confidence, result_str
 	else:
+		imageHub.send_reply(b'OK')
 		return None
-	
 
-
-for entry in os.scandir(folderPath + '/Query'):
-	# print(entry.path)
-
+while True:
 	try:
-		detected_id, confidence, result_str = detectImage(entry.path)
+		detected_id, confidence, result_str = detectImage()
 		print(result_str)
 	except TypeError:
 		print('Nothing detected')
+	except KeyboardInterrupt:
+		print('exiting...')
+		break

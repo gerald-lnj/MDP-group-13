@@ -1,23 +1,31 @@
 import sys
+
+sys.path.insert(0, './Raspberry Pi/Image Recognition')
+
 import threading
 import Queue
 import time
 from btclass import *
 from arclass import *
 from tcpclass import *
+from YOLODetectorClient import *
 
 class Main(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
 
+        # just an instanceof the class, the threaded funcs are below
         self.bt_thread = bt_connection()
         self.sr_thread = ard_connection()
         self.pc_thread = tcp_connection()
+        # ip address of com running YOLODetectionSevrer
+        self.img_client_thread = YOLODetectorClient('192.168.13.6') #ted's com
         
         #initialise connections
         self.bt_thread.setup()
         self.sr_thread.setup()
         self.pc_thread.setup()
+        self.img_client_thread.setup()
         time.sleep(1)	# wait for 1 secs before starting
 
     #process to read from bluetooth
@@ -88,6 +96,19 @@ class Main(threading.Thread):
 
             #Check header and send to android
             if(read_pc_msg[0:3].lower() == 'an:'):
+                ### TODO: verify what the keyword for orientation/coordinates are
+                if read_pc_msg.split(':')[1] == 'COORDS':
+                    ### GET COORDINATES, ORIENTATION FROM MESSAGE
+                    # updated when receiving msg from algo,
+                    coordinates_x = 0
+                    coordinates_y = 0
+                    orientation
+                    response = self.YOLODetectorClient.main(coordinates_x, coordinates_y, orientation)
+                    if response:
+                        msg = 'IMAGE:{}-{}-{}-{}'.format(response, coordinates_x, coordinates_y, orientation)
+                        self.write_to_bluetooth(msg)
+
+
                 print("Message Received from PC: {}".format(read_pc_msg))
                 print("Sending message to Android...")
                 self.write_to_bluetooth(read_pc_msg[3:])

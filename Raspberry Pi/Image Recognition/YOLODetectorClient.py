@@ -1,42 +1,45 @@
 # USAGE
-# python client.py --server-ip SERVER_IP
-import sys
-# import the necessary packages
-from imutils.video import VideoStream
+# python client.py
+
 import imagezmq
-import argparse
 import socket
-import time
 import os
 import cv2
 
-os.system('sudo modprobe bcm2835-v4l2') 
+class YOLODetectorClient():
+	def __init__(self):
+		self.folderPath = os.path.dirname(os.path.abspath(__file__))
 
-folderPath = os.path.dirname(os.path.abspath(__file__))
+		# initialize the ImageSender object
+		# with the socket address of the server (5555)
+		self.sender = imagezmq.ImageSender(connect_to="tcp://127.0.0.1:5555")
 
-# construct the argument parser and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-s", "--server-ip", required=True,
-	help="ip address of the server to which the client will connect")
-args = vars(ap.parse_args())
+	def send_image(self, filename, image):
+		try:
+			return self.sender.send_image(filename, image)
+		except KeyboardInterrupt:
+			pass
 
-# initialize the ImageSender object
-# with the socket address of the server (5555)
-sender = imagezmq.ImageSender(connect_to="tcp://{}:5555".format(
-	args["server_ip"]))
+	def read_image(self, filepath):
+		image = cv2.imread(filepath)
+		filename = (entry.name).replace('.jpg', '')
 
-# get the host name, initialize the video stream,
-# and allow the camera sensor to warmup
-rpiName = socket.gethostname()
-vs = VideoStream(src=-1,usePiCamera=False).start()
-#vs = VideoStream(src=0).start()
-time.sleep(2.0)
- 
+		# filename should contain coordinates, orientation
+		# eg filename = '0-2-N'
+		if ('-' in filename):
+			[coordinates_x, coordinates_y, orientation] = filename.split('-')
+		return filename, image, coordinates_x, coordinates_y, orientation
 
-def send_image(image):
-	sender.send_image(rpiName, image)
+if __name__ == "__main__":
+	client = YOLODetectorClient()
+	for entry in os.scandir(client.folderPath+'\\Query'):
+		filename, image, x, y, orientation = client.read_image(entry.path)
 
-for entry in os.scandir('{}/Query'.format(folderPath)):
-	# read image from query folder
-	image = cv2.imread(entry.path)
-	print(send_image(image))
+		# returns bytes (utf-8)
+		response = client.send_image(filename, image)
+
+		# decode to string
+		response = response.decode('utf-8') 
+		if len(response):
+			print('detected {} at {}, orientation {}'.format(response, [x, y], orientation))
+		os.remove(entry.path)

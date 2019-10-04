@@ -64,7 +64,8 @@ ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 # loop over frames from the video file stream
 def detectImage():
 	try:
-		(rpiName, input_img) = imageHub.recv_image()
+		(filename, input_img) = imageHub.recv_image()
+
 		# resize the frame to have a maximum width of 400 pixels, then
 		# grab the frame dimensions and construct a blob
 		input_img = imutils.resize(input_img, width=640)
@@ -95,7 +96,7 @@ def detectImage():
 
 				# filter out weak predictions by ensuring the detected
 				# probability is greater than the minimum probability
-				if confidence > 0.7:
+				if confidence > 0.8:
 					# scale the bounding box coordinates back relative to
 					# the size of the image, keeping in mind that YOLO
 					# actually returns the center (x, y)-coordinates of
@@ -153,10 +154,9 @@ def detectImage():
 			detected_id = int(LABELS[classIDs[centered_image_index]])
 			confidence = confidences[centered_image_index]
 			if boundingBoxDemo:
-				filename = '{}-{}.jpg'.format(detected_id, 'sample_coords')
+				filename = '{}-{}.jpg'.format(detected_id, 'sample:coords')
 				output_filepath = '{}\Output\{}'.format(folderPath, filename)
 				cv2.imwrite(output_filepath, input_img)
-			
 			
 			result_str = "detected: {} (ID {}), confidence {:.4f}".format(result_list[detected_id], detected_id, confidence)
 		
@@ -164,14 +164,15 @@ def detectImage():
 				cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255,0), 2)
 			if imshowDebug:
 				cv2.imshow('result', input_img);cv2.waitKey(0);cv2.destroyAllWindows()
-			reply = '{}:{}'.format(detected_id, 'sample_coords')
+			reply = bytes('{}'.format(detected_id), 'utf-8')
 
 			# imageHub.send_reply(reply)
-			imageHub.send_reply(b'ok')
+			imageHub.send_reply(reply)
 
 			return detected_id, confidence, result_str
 		else:
-			imageHub.send_reply(b'OK')
+			reply = bytes('', 'utf-8')
+			imageHub.send_reply(reply)
 			return None
 	except KeyboardInterrupt:
 		return KeyboardInterrupt

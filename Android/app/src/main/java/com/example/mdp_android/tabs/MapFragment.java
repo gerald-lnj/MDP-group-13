@@ -108,6 +108,12 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
         TextView expltime = getView().findViewById(R.id.explTime);
         expltime.setText("0 mins 0 s");
 
+        TextView mdf1view = getView().findViewById(R.id.MDF1String);
+        mdf1view.setText("000000000000000000000000000000000000000000000000000000000000000000000000000");
+
+        TextView mdf2view = getView().findViewById(R.id.MDF2String);
+        mdf2view.setText("000000000000000000000000000000000000000000000000000000000000000000000000000");
+
         BluetoothManager.getInstance().sendMessage("SET_STATUS", "Ready!");
     }
 
@@ -134,11 +140,11 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
             @Override
             public void onClick(View v)
             {
-                if (maze.getState() == Constants.idleMode && maze.coordinatesSet())
+                if (maze.getState() == Constants.idleMode /*&& maze.coordinatesSet()*/)
                 {
                     Toast.makeText(getActivity(), "Starting Exploration Now!", Toast.LENGTH_SHORT).show();
-                    getView().findViewById(R.id.coordBtn).setEnabled(false);
                     BluetoothManager.getInstance().sendMessage("al", "EXPLORE");
+                    getView().findViewById(R.id.coordBtn).setEnabled(false);
                     maze.setState(Constants.exploreMode);
 
                     TextView sv = getView().findViewById(R.id.statusText);
@@ -246,14 +252,14 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
         });
 
         //Get robot status (Acutally not needed for this button cause status will change automatically)
-        getView().findViewById(R.id.statusBtn).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
+//        getView().findViewById(R.id.statusBtn).setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View v)
+//            {
 //                BluetoothManager.getInstance().sendMessage("GET_STATUS", "statusss");
-            }
-        });
+//            }
+//        });
 
         //Manual Update Button
         getView().findViewById(R.id.updateBtn).setOnClickListener(new View.OnClickListener()
@@ -277,7 +283,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
             }
         });
 
-        //Auto Update switch - on as default
+        //Auto Update switch - turned on as default
         updateswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
             @Override
@@ -299,7 +305,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                         {
                             public void run()
                             {
-                                BluetoothManager.getInstance().sendMessage("GET_DATA", "");
+                                //BluetoothManager.getInstance().sendMessage("GET_DATA", "");
 
                                 if (_autoRefresh)
                                 {
@@ -322,7 +328,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
         });
     }
 
-//        //CALIBRATE BUTTON
+//        //CALIBRATE BUTTON - Not needed for Android
 //        getView().findViewById(R.id.calibrateBtn).setOnClickListener(new View.OnClickListener()
 //        {
 //            @Override
@@ -359,20 +365,43 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                 break;
 
             case Constants.MESSAGE_READ:
-                //RECEIVE MESSAGE
+
+                //Received Messages
                 if(key.equals("MDF1")) //Explored Data
                 {
                     MDF1 = msg;
+                    Log.d("MDF1 - ", MDF1);
+
+                    TextView mdf1view = getView().findViewById(R.id.MDF1String);
+                    mdf1view.setText(MDF1);
+
                     maze.handleExplore(msg);
                 }
 
-//                else if(key.equals("MDF2")) //Obstacle Data
+                else if(key.equals("MDF2")) //Obstacle Data
+                {
+                    //For AMD Tool only
+                    _storekey = key;
+                    MDF2 = msg;
+                    Log.d("MDF2 - ", MDF2);
+
+                    TextView mdf2view = getView().findViewById(R.id.MDF2String);
+                    mdf2view.setText(msg);
+
+                    if (_autoRefresh)
+                    {
+                        maze.handleAMDGrid(msg);
+                    }
+
+                    Log.d("data",msg);
+                }
+
+//                else if(key.equals("MDF2")) //Obstacle Data //testing only
 //                {
 //                    MDF2 = msg;
 //                    maze.handleObstacle(msg);
 //                }
 
-                //Added for myself (felice)
                 else if(key.equals("STOP"))
                 {
                     if (maze.getState() == Constants.exploreMode) //Exploration Done
@@ -476,34 +505,18 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 //                    */
 //                }
 
-                else if(key.equals("MDF2")) //testing string
-                {
-                    //For AMD Tool only
-                    _storekey = key;
-                    _testmsg = msg;
-
-                    if (_autoRefresh)
-                    {
-                        maze.handleAMDGrid(msg);
-                    }
-
-                    Log.d("data",msg);
-                }
-
                 else if(key.equals("IMAGE"))
                 {
                     String[] tmp = msg.split("-");
-                    Log.d("KNNid", tmp[0]);
-                    Log.d("CBx", tmp[1]);
-                    Log.d("FUCKy", tmp[2]);
-//                    Log.d("KNSo", tmp[3]);
+                    Log.d("Image ID", tmp[0]);
+                    Log.d("X-Axis", tmp[1]);
+                    Log.d("Y-Axis", tmp[2]);
+                    Log.d("Orientation", tmp[3]);
 
                     int img_xpos = Integer.parseInt(tmp[1]);
                     int img_ypos = Integer.parseInt(tmp[2]);
 
                     img_coord = img_xpos + (15 * img_ypos);
-
-                    Log.d("the fucking coordinate", Integer.toString(img_coord));
 
                     int[] intArray;
 
@@ -529,16 +542,14 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                         stringBuilder.append(intArray[i]);
                     }
 
-                    Log.d("asdasd", stringBuilder.toString());
-
                     maze.handleImageBlock(stringBuilder.toString(), Integer.parseInt(tmp[0]));
-                    Log.d("data",msg);
+                    Log.d("data", msg);
                 }
 
                 else if (key.equals("COORD")) ///robot position
                 {
+                    Log.d("Robot Position", msg);
                     maze.updateBotPosDir(msg);
-                    Log.d("XXXROBOTXXX",msg);
                 }
 
                 else if(key.equals("MOVE"))
@@ -559,7 +570,8 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                 break;
 
             case Constants.ACCELERATE:
-            //RECEIVED MESSAGE
+
+            //Received Messages
             if(maze.getState() != Constants.manualMode)
             {
                 return;

@@ -378,14 +378,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         }
 
                         //Added for obstacle in AMD
-//                        if (readMessage.length() > 20)
-//                        {
-//                            if (readMessage.substring(2, 6).equals("grid"))
-//                            {
-//                                String gridobstacles = readMessage.substring(11, readMessage.length() - 2);
-//                                notifyFragments(Constants.MESSAGE_READ, "GRID", gridobstacles);
-//                            }
-//                        }
+                        if (readMessage.length() > 20)
+                        {
+                            if (readMessage.substring(2, 6).equals("grid"))
+                            {
+                                String gridobstacles = readMessage.substring(11, readMessage.length() - 2);
+                                notifyFragments(Constants.MESSAGE_READ, "GRID", gridobstacles);
+                            }
+                        }
 
                         //Added for arrowblocks in AMD
                         if (readMessage.length() > 6)
@@ -415,19 +415,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         }
 
                         //Added for MDF1
-                        if (readMessage.length()> 4)
+                        if (readMessage.length()> 9)
                         {
-                            if (readMessage.substring(0, 4).equals("MDF1")) { // added
-                                String mdf1string = readMessage.substring(5, readMessage.length());
+                            if (readMessage.substring(0, 8).equals("MOVEMENT"))
+                            {
+                                String mdf1string = readMessage.substring(9, 84);
                                 notifyFragments(Constants.MESSAGE_READ, "MDF1", mdf1string);
                             }
                         }
 
                         //Added for MDF2
-                        if (readMessage.length()> 4)
+                        if (readMessage.length()> 9)
                         {
-                            if (readMessage.substring(0, 4).equals("MDF2")) { // added
-                                String mdf2string = readMessage.substring(5, readMessage.length());
+                            if (readMessage.substring(0, 8).equals("MOVEMENT"))
+                            {
+                                String mdf2string = readMessage.substring(85, 159);
                                 notifyFragments(Constants.MESSAGE_READ, "MDF2", mdf2string);
                             }
                         }

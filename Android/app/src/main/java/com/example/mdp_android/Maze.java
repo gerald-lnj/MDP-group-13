@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.example.mdp_android.bluetooth.BluetoothManager;
 import com.example.mdp_android.tabs.MapFragment;
+import com.example.mdp_android.MainActivity;
 
 import org.json.JSONObject;
 
@@ -148,6 +149,7 @@ public class Maze extends ViewGroup
     {
         //Obstacle Data is mapped to explored tiles in _Exploreddata
         String tmp = parseHexCharToBinary(binaryData);
+
         int count = 0;
         int mazeSize = _exploreData.length;
         int[] result = _emptyArray.clone();
@@ -155,11 +157,13 @@ public class Maze extends ViewGroup
         for (int j = 0; j < tmp.length(); j++)
         {
             int myChar = Character.getNumericValue(tmp.charAt(j));
+
             while (count < mazeSize && _exploreData[count] == Constants.UNEXPLORED) count++;
             if (count >= mazeSize) break;
             result[count] = myChar;
             count++;
         }
+
         _obstacleData = result;
 
         //Clear true arrowblock if phantom used to be here
@@ -309,7 +313,8 @@ public class Maze extends ViewGroup
     // amd tool only
     public void handleAMDGrid(String binaryData)
     {
-        _exploreData = convertStrToIntArray(parseHexCharToBinary("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
+        Log.d("Explored Data", Arrays.toString(_exploreData));
+        //_exploreData = convertStrToIntArray(parseHexCharToBinary("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
         _obstacleData = convertStrToIntArray(parseHexCharToBinary(binaryData));
         renderMaze();
     }
@@ -320,7 +325,7 @@ public class Maze extends ViewGroup
         _exploreData = convertStrToIntArray(parseHexCharToBinary("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
         _imageData = convertStrToIntArray(binaryData);
         _imageID = imgID;
-        Log.d("KNN", binaryData);
+//        Log.d("String", binaryData);
         renderMaze();
     }
 
@@ -328,16 +333,31 @@ public class Maze extends ViewGroup
     {
         try
         {
-            String tmp[] = data.split(", ");
+            String tmp[] = data.split(",");
+            Log.d("X-coord", tmp[0]);
+            Log.d("Y-coord", tmp[1]);
 
             if (tmp.length == 3)
             {
                 int xPos = Integer.parseInt(tmp[0]);
                 int yPos = Integer.parseInt(tmp[1]);
                 String dir = tmp[2];
-                _botCoord[0] = xPos + 1;
-                _botCoord[1] = yPos - 1;
+                _botCoord[0] = xPos;
+                _botCoord[1] = yPos;
+//                _botCoord[0] = xPos + 1;
+//                _botCoord[1] = yPos - 1;
                 _direction = convertDirStrToNum(dir);
+
+                Log.d("Bot Coord X", Integer.toString(-_botCoord[0]));
+                Log.d("Bot Coord Y", Integer.toString(-_botCoord[1]));
+                Log.d("Bot Direction", Integer.toString(_direction));
+
+//                int xPos = Integer.parseInt(tmp[0]);
+//                int yPos = Integer.parseInt(tmp[1]);
+//                String dir = tmp[2];
+//                _botCoord[0] = xPos + 1;
+//                _botCoord[1] = yPos - 1;
+//                _direction = convertDirStrToNum(dir);
 
                 renderMaze();
             }
@@ -449,8 +469,6 @@ public class Maze extends ViewGroup
     {
         clearIfPhantom();
 
-        Log.d("IMHEREBITITCHHHH",data);
-
         if (coordinatesSet() /*&& _inputState == Constants.exploreMode*/)
         {
 
@@ -460,10 +478,6 @@ public class Maze extends ViewGroup
             }
 
             String[] tmp = data.split(","); //original - split by ","
-
-            Log.d("TEMPPPP0", tmp[0]);
-            Log.d("TEMPPPP1", tmp[1]);
-            Log.d("TEMPPPP2", tmp[2]);
 
             if (tmp.length != 3)
             {
@@ -491,8 +505,8 @@ public class Maze extends ViewGroup
             Integer[] banCoord = new Integer[3];
             banCoord[2] = blockCoord[2]; //direction
 
-            Log.d("BLOCKCOORD1", Integer.toString(blockCoord[0]));
-            Log.d("BLOCKCOORD2", Integer.toString(blockCoord[1]));
+            Log.d("BLOCKCOORD 1", Integer.toString(blockCoord[0]));
+            Log.d("BLOCKCOORD 2", Integer.toString(blockCoord[1]));
             Log.d("DIRECTION", Integer.toString(blockCoord[2]));
 
             if (_direction == Constants.NORTH)
@@ -501,9 +515,6 @@ public class Maze extends ViewGroup
                 blockCoord[1] += blockDistV ; // originally + 2
                 banCoord[0] = blockCoord[0];
                 banCoord[1] = blockCoord[1]+1;
-
-                Log.d("IM HERE BITCH", Integer.toString(blockCoord[0]));
-                Log.d("IM fucking HERE BITCH", Integer.toString(blockCoord[1]));
             }
             else if (_direction == Constants.SOUTH)
             {
@@ -637,7 +648,7 @@ public class Maze extends ViewGroup
         _wpCoord = waypointCoord;
         _wpSet = true;
         renderMaze();
-        BluetoothManager.getInstance().sendMessage("WP", _wpCoord[0] + "," + _wpCoord[1]);
+        BluetoothManager.getInstance().sendMessage("al", "WAYPOINT:" + _wpCoord[1] + ":" + _wpCoord[0]);
 
         //CLEAN UP
         setState(Constants.idleMode);
@@ -833,7 +844,9 @@ public class Maze extends ViewGroup
     // CALLED AFTER EVERY UPDATE TO MAZE DATA
     public void renderMaze()
     {
-        Log.d(null, "I HAVE ENTERED RENDERMAZE");
+        Log.d(null, "This is RenderMaze");
+        Log.d("Coord Count", Integer.toString(_coordCount));
+
         // for testing
         // handleExplore("ff007e00fc01f803f007e00fe01fc03f807f00f8004000000000000000000000000000000003");
         // handleObstacle("041041041060c1e3f3");
@@ -876,14 +889,14 @@ public class Maze extends ViewGroup
             setTile(targetTiles, Constants.WAYPOINT);
         }
 
-        // obstacles
+        //OBSTACLES
         for (int i = 0; i < _obstacleData.length; i++)
         {
 
             if (_obstacleData[i] == 1 && _obstacleData[i] != _imageData[i])
             {
-                Log.d("XXXBI " , Integer.toString(i));
-                Log.d("XXXBU" , Integer.toString(_obstacleData.length));
+//                Log.d("XXXBI " , Integer.toString(i));
+//                Log.d("XXXBU" , Integer.toString(_obstacleData.length));
                 _tileList.get(i).setState(Constants.OBSTACLE);
             }
         }
@@ -893,20 +906,7 @@ public class Maze extends ViewGroup
             _tileList.get(MapFragment.getImageCoord()).setState(_imageID + 20);
         }
 
-        // img arrow blocks
-        /*for (int i = 0; i < _imageData.length; i++)
-        {
-            Log.d("im hereeeeeeee", "im here");
-
-            if (_imageData[i] == 1)
-            {
-               Log.d("KNN", "KNN");
-                _tileList.get(i).setState(_imageID + 20);
-            }
-        }*/
-
-
-        // arrow blocks
+        //ARROW BLOCKS
         if (_trueArrowBlockList.size() > 0)
         {
             for (Integer[] a : _trueArrowBlockList)

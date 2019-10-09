@@ -23,7 +23,7 @@ import com.example.mdp_android.bluetooth.BluetoothChatService;
  */
 public interface Constants
 {
-    // MESSAGE TYPES SENT FROM BLUETOOTHCHATSERVICE HANDLER
+    //Message types sent from BluetoothChatService Handler
     int MESSAGE_STATE_CHANGE = 1;
     int MESSAGE_READ = 2;
     int MESSAGE_WRITE = 3;
@@ -32,29 +32,30 @@ public interface Constants
     int MESSAGE_TOAST = 6;
     int ACCELERATE = 7;
 
-    //KEY NAMES RECEIVED FROM THE BLUETOOTHCHATSERVICE HANDLER
+    //Key names received form the BluetoothChatService Handler
     String DEVICE_NAME = "device_name";
     String DEVICE_ADDRESS = "device_address";
     String TOAST = "toast";
 
-    //MAZETILE STATES
+    //Mazetile states
     int UNEXPLORED = 0;
     int EXPLORED = 1;
     int START = 2;
     int GOAL = 3;
     int WAYPOINT = 4;
 
+    //Maze Robot
     int ROBOT_HEAD = 5;
     int ROBOT_BODY = 6;
 
-    //USED FOR DIRECTIONS AS WELL
+    //Used for directions as well
     int OBSTACLE = 7;
     int NORTH = 8;
     int EAST = 9;
     int SOUTH = 10;
     int WEST = 11;
 
-    //MAP FRAGMENT INPUT STATES
+    //Map Fragment Input States
     int idleMode = -1;
     int coordinateMode = 0;
     int waypointMode = 1;
@@ -62,12 +63,12 @@ public interface Constants
     int fastestPathMode = 3;
     int manualMode = 4;
 
-    //FOR ACCELEROMETER
+    //For Accelerometer
     int up = 0;
     int down = 1;
     int right = 2;
     int left = 3;
 
-    //FOR MAZE TILE
+    //For maze tile
     int tilePadding = 1;
 }

@@ -24,10 +24,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
@@ -35,6 +38,7 @@ import com.example.mdp_android.bluetooth.BluetoothChatService;
 import com.example.mdp_android.bluetooth.BluetoothManager;
 import com.example.mdp_android.tabs.BluetoothFragment;
 import com.example.mdp_android.tabs.CommFragment;
+import com.example.mdp_android.tabs.MapFragment;
 import com.example.mdp_android.tabs.SectionPageAdapter;
 
 import java.util.ArrayList;
@@ -48,13 +52,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private PagerAdapter pagerAdapter;
     private boolean _accelReady = false;
     final Handler handler = new Handler();
+    private Maze maze; //added on
 
-    //CREATE NEW ARRAYLIST FOR FRAGMENTS
+    //Create new arraylist for fragments
     private static ArrayList<CallbackFragment> callbackFragList = new ArrayList<CallbackFragment>();
 
-    // RPI SENDS COMPLETE BUFFERS OF STRINGS, SO SPLIT BY ';', AND STORE ANY LEFTOVER MESSAGES
-    // FOR THE NEXT MESSAGE
+    //RPI sends complete buffers of strings, so split by ";", and store any leftover message
+    //For the next message
     private String _storedMessage = "";
+
+    private static final String TAG = "MainActivity";
+
+    //Accelerometer Controls
+    Switch controlswitch;
+    private SensorManager mSensorManager;
+    private Sensor mSensor;
+    private float xAccel = 0.0f;
+    private float yAccel = 0.0f;
+    private float zAccel = 0.0f;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -63,24 +78,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //ONLY ASK FOR THESE PERMISSIONS ON RUNTIME WHEN RUNNING ON ANDROID 6.0 OR HIGHER
+        controlswitch = findViewById(R.id.acceSwitch);
+
+        //Only ask for these permissions on runtime when running on android 6.0 or higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
         }
 
-        //TABLAYOUT TAB ITEMS
+        //Tab layout tab items
         Toolbar toolbar = findViewById(R.id.toolbar);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         TabItem tabMap = findViewById(R.id.map);
         TabItem tabComm = findViewById(R.id.comm);
         TabItem tabBluetooth = findViewById(R.id.bluetooth);
         TabItem tabImage = findViewById(R.id.imagecheck);
+
         final ViewPager mViewPager = findViewById(R.id.container);
         SectionPageAdapter pageAdapter = new SectionPageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-
         mViewPager.setAdapter(pageAdapter);
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
         {
             @Override
@@ -107,37 +125,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         mViewPager.setCurrentItem(1);
 
-        //BLUETOOTH
+        //Bluetooth
         mBluetoothMgr = new BluetoothManager(this, mHandler);
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(mReceiver, filter);
 
-        //REQUEST BLUETOOTH TO BE SWITCHED ON
+        //Request Bluetooth to be switched on
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(enableBtIntent, BluetoothManager.BT_REQUEST_CODE);
 
-        SensorManager sensorManager=(SensorManager) getSystemService(SENSOR_SERVICE);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-
-//        //TOP MENU BAR
-//        Toolbar top_menu_bar = (Toolbar)findViewById(R.id.toolbar);
-//        setSupportActionBar(top_menu_bar);
-//        if(getSupportActionBar() != null)
-//        {
-//            getSupportActionBar().setTitle("MDP Group 13");
-//        }
-//
-//        toolbar.inflateMenu(menu_items);
+        //Sensors initialization for Accelerometer
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensorManager.registerListener(MainActivity.this, mSensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
-
-//    //OVERRIDE TO DISPLAY MENU FOR TOP MENU BAR
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu)
-//    {
-//        getMenuInflater().inflate(menu_items, menu);
-//        return true;
-//    }
 
     @Override
     public void onAccuracyChanged(Sensor arg0, int arg1)
@@ -148,35 +150,57 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event)
     {
-        if (event.sensor.getType()==Sensor.TYPE_ACCELEROMETER)
-        {
-            if(_accelReady)
-            {
-                float ax=event.values[0];
-                float ay=event.values[1];
-                float az=event.values[2];
-                String str = String.valueOf(ax)+' '+String.valueOf(ay)+' '+String.valueOf(az);
+        int accel_dir  = 0;
+        controlswitch = (Switch)findViewById(R.id.acceSwitch);
 
-                int accel_dir = -1;
-                if(ax <= 0 && ay <= -4 && az >= 5) accel_dir = Constants.up;
-                else if(ax <= 2 && ay >= 4 && az >= 4) accel_dir = Constants.down;
-                else if(ax >= 5 && ay >= -1 && az >= 5) accel_dir = Constants.left;
-                else if(ax <= -5 && ay >= -1 && az >= 5) accel_dir = Constants.right;
+        if(controlswitch!=null) {
+            if (controlswitch.isChecked()) {
+                if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                    xAccel = event.values[0];
+                    Log.d("X", Float.toString(xAccel));
 
-                Message msg = mHandler.obtainMessage(Constants.ACCELERATE);
-                Bundle bundle = new Bundle();
-                bundle.putString("ACCEL_EVENT", String.valueOf(accel_dir));
-                msg.setData(bundle);
+                    yAccel = event.values[1];
+                    Log.d("Y", Float.toString(yAccel));
 
-                mHandler.handleMessage(msg);
-                _accelReady = false;
-                handler.postDelayed(new Runnable()
-                {
-                    public void run()
-                    {
-                        _accelReady = true;
+                    zAccel = event.values[2];
+                    Log.d("Z", Float.toString(zAccel));
+
+
+                    if (xAccel <= 0 && yAccel <= -0.3 && zAccel >= 1.1) {
+                        accel_dir = Constants.up;
+                        Log.d(TAG, "tilting up");
+                        MapFragment.getMaze().attemptMoveBot(Constants.NORTH, true);
+                    } else if (xAccel <= 0 && yAccel >= 0.3 && zAccel >= 1.1) {
+                        accel_dir = Constants.down;
+                        Log.d(TAG, "tilting down");
+                        MapFragment.getMaze().attemptMoveBot(Constants.SOUTH, true);
+                    } else if (xAccel >= 0.4 && yAccel >= 0 && zAccel >= 1.1) {
+                        accel_dir = Constants.left;
+                        Log.d(TAG, "tilting left");
+                        MapFragment.getMaze().attemptMoveBot(Constants.WEST, true);
+                    } else if (xAccel <= -0.4 && yAccel >= 0 && zAccel >= 1.1) {
+                        accel_dir = Constants.right;
+                        Log.d(TAG, "tilting right");
+                        MapFragment.getMaze().attemptMoveBot(Constants.EAST, true);
                     }
-                }, 1000);
+
+//                Message msg = mHandler.obtainMessage(Constants.ACCELERATE);
+//                Bundle bundle = new Bundle();
+//                bundle.putString("ACCEL_EVENT", String.valueOf(accel_dir));
+//                msg.setData(bundle);
+//
+//                mHandler.handleMessage(msg);
+//                //_accelReady = false;
+//                handler.postDelayed(new Runnable()
+//                {
+//                    public void run()
+//                    {
+//                      _accelReady = true;
+//                      controlswitch.setChecked(true);
+//                    }
+//                }, 1000);
+//                }
+                }
             }
         }
     }
@@ -192,13 +216,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     /**
-     * RECEIVER FOR BROADCAST EVENTS FROM THE SYSTEM (MOSTLY BLUETOOTH RELATED)
+     * Receiver for broadcast events from the system (Mostly bluetooth related)
      */
     private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
+
             if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED))
             {
                 final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
@@ -210,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         break;
 
                     case BluetoothAdapter.STATE_TURNING_OFF:
-                        //DO NOTHING
+                        //Do nothing
                         break;
 
                     case BluetoothAdapter.STATE_ON:
@@ -223,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         break;
 
                     case BluetoothAdapter.STATE_TURNING_ON:
-                        //DO NOTHING
+                        //Do nothing
                         break;
                 }
             }
@@ -231,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     };
 
     /**
-     * THE HANDLER THAT GETS INFO BACK FROM THE BLUETOOTHCHATSERVICE AND UPDATES MAINACTIVITY/BLUETOOTH FRAGMENT
+     * The handler that gets ifo back from the bluetoothchatservice and updates main activity/bluetooth fragment
      */
     private final Handler mHandler = new Handler()
     {
@@ -266,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     break;
 
                 case Constants.MESSAGE_WRITE:
-                    //DON'T DO ANYTHING
+                    //Don't do anything
                     break;
 
                 case Constants.MESSAGE_READ:
@@ -314,13 +339,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                                 if(tmp.length == 1)
                                 {
-                                    //ANDROID WILL NOT RECEIVE NO MESSAGE W/O TYPE IN OUR SYSTEM
+                                    //Android will not receive no message w/o type in our system
                                     type = tmp[0] != "" ? tmp[0] : "";
                                     value = "";
                                 }
                                 else if(tmp.length == 2)
                                 {
-                                    //MESSAGE CONTAIN BOTH KEY AND VALUE
+                                    //Message contain both key and value
                                     // issue: sometimes message becomes: "F    BOT"|3,3,S;
                                     if (tmp[0].contains("BOT"))
                                     {
@@ -341,6 +366,71 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     else
                     {
                         _storedMessage += readMessage;
+                        notifyFragments(Constants.MESSAGE_READ, "REC", readMessage);
+
+                        //Added for robot status display on AMD Tool
+                        if (readMessage.length() > 13) {
+                            if (readMessage.substring(2, 8).equals("status"))
+                            {
+                                String robotstatus = readMessage.substring(11, readMessage.length() - 2);
+                                notifyFragments(Constants.MESSAGE_READ, "STATUS", robotstatus);
+                            }
+                        }
+
+                        //Added for obstacle in AMD
+//                        if (readMessage.length() > 20)
+//                        {
+//                            if (readMessage.substring(2, 6).equals("grid"))
+//                            {
+//                                String gridobstacles = readMessage.substring(11, readMessage.length() - 2);
+//                                notifyFragments(Constants.MESSAGE_READ, "GRID", gridobstacles);
+//                            }
+//                        }
+
+                        //Added for arrowblocks in AMD
+                        if (readMessage.length() > 6)
+                        {
+                            if (readMessage.substring(0, 5).equals("IMAGE"))
+                            {
+                                String imageblock = readMessage.substring(6, readMessage.length());
+                                notifyFragments(Constants.MESSAGE_READ, "IMAGE", imageblock);
+                            }
+                        }
+
+                        //Added for robot position in AMD
+                        if(readMessage.length() > 5)
+                        {
+                            if (readMessage.substring(0,5).equals("COORD"))
+                            {
+                                String robotpos = readMessage.substring(7, readMessage.length()-1);
+                                notifyFragments(Constants.MESSAGE_READ,"COORD",robotpos);
+                            }
+                        }
+
+                        //Added for STOP for EXP and FSP
+                        if (readMessage.equals("STOP"))
+                        {
+                            String stopmsg = readMessage.substring(0,4);
+                            notifyFragments(Constants.MESSAGE_READ,"STOP", stopmsg);
+                        }
+
+                        //Added for MDF1
+                        if (readMessage.length()> 4)
+                        {
+                            if (readMessage.substring(0, 4).equals("MDF1")) { // added
+                                String mdf1string = readMessage.substring(5, readMessage.length());
+                                notifyFragments(Constants.MESSAGE_READ, "MDF1", mdf1string);
+                            }
+                        }
+
+                        //Added for MDF2
+                        if (readMessage.length()> 4)
+                        {
+                            if (readMessage.substring(0, 4).equals("MDF2")) { // added
+                                String mdf2string = readMessage.substring(5, readMessage.length());
+                                notifyFragments(Constants.MESSAGE_READ, "MDF2", mdf2string);
+                            }
+                        }
                     }
                     break;
 
@@ -355,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     };
 
-    //CLEANUP METHODS
+    //Cleanup Methods
     @Override
     protected void onDestroy()
     {
@@ -364,14 +454,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mBluetoothMgr.stop();
     }
 
-    //FOR HANDLING CALLBACKS FROM BLUETOOTHCHATSERVICE TO THE TAB FRAGMENTS
+    //For handling callbacks from bluetoothchatservice to the tab fragments
     public interface CallbackFragment
     {
         public void update(int type, String key, String msg);
     }
 
     /**
-     * FOR PASSING MESSAGES/EVENTS FROM BLUETOOTHMANAGER
+     * For passing messages/events from bluetoothmanager
      * */
     public void notifyFragments(int type, String key, String msg)
     {
@@ -381,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    //LEADERBOARD REQUIREMENT
+    //Leaderboard requirement
     private static ArrayList<String> msgHistory = new ArrayList<String>();
 
     public static void updateMsgHistory(String text)
@@ -398,31 +488,4 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     {
         msgHistory = new ArrayList<String>();
     }
-
-//    //TOP MENU BAR - NAVIGATION (NOT USED)
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item)
-//    {
-//        switch(item.getItemId()) {
-//            case R.id.controller:
-//                Intent controllerIntent = new Intent(MainActivity.this, MainActivity.class);
-//                startActivity(controllerIntent);
-//                return false;
-//
-//            case R.id.stringprocessing:
-//                Intent stringIntent = new Intent(MainActivity.this, CommFragment.class);
-//                startActivity(stringIntent);
-//                return false;
-//
-//            case R.id.bluetooth:
-//                Intent bluetoothIntent = new Intent(MainActivity.this, BluetoothFragment.class);
-//                startActivity(bluetoothIntent);
-//                return false;
-//
-//            default:
-//                break;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
 }

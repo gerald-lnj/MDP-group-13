@@ -32,24 +32,25 @@ import com.example.mdp_android.bluetooth.DeviceDetails;
 
 import java.util.ArrayList;
 
-public class BluetoothFragment extends Fragment implements MainActivity.CallbackFragment {
+public class BluetoothFragment extends Fragment implements MainActivity.CallbackFragment
+{
     private static final String TAG = "BluetoothFragment";
-
     private final BluetoothManager mMgr = BluetoothManager.getInstance();
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothArrayAdapter<DeviceDetails> mAdapter;
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
         return inflater.inflate(R.layout.activity_bluetooth, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState){
-
-        // bluetooth config
+    public void onViewCreated(View view, Bundle savedInstanceState)
+    {
+        //Bluetooth Configuration
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        // Register for broadcasts when a device is discovered.
+        //Register for broadcasts when a device is discovered.
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
@@ -57,6 +58,7 @@ public class BluetoothFragment extends Fragment implements MainActivity.Callback
         getActivity().registerReceiver(nReceiver, filter);
 
         Button button = view.findViewById(R.id.btn_discover);
+
         button.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -68,60 +70,79 @@ public class BluetoothFragment extends Fragment implements MainActivity.Callback
 
         mAdapter = new BluetoothArrayAdapter<DeviceDetails>(getActivity(), new ArrayList<DeviceDetails>());
         ListView lv = getView().findViewById(R.id.listView);
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
                 cancelDiscovery();
                 DeviceDetails mDevice = (DeviceDetails) mAdapter.getItem(position);
-                if(mDevice.getConnected()){
+
+                if(mDevice.getConnected())
+                {
                     disconnectDevice();
-                } else {
+                }
+                else
+                {
                     connectDevice(mDevice.getAddress(), true);
                 }
             }
         });
+
         lv.setAdapter(mAdapter);
     }
 
-    public void update(int type, String key, String msg){
-        switch(type) {
+    public void update(int type, String key, String msg)
+    {
+        switch(type)
+        {
             case Constants.MESSAGE_STATE_CHANGE:
-                if(getView() != null){
+                if(getView() != null)
+                {
                     TextView textView = getView().findViewById(R.id.bt_status_text_frag);
                     if(textView != null) textView.setText(msg);
                     break;
                 }
         }
 
-        if(!BluetoothManager.getInstance().bluetoothAvailable() && mAdapter != null){
+        if(!BluetoothManager.getInstance().bluetoothAvailable() && mAdapter != null)
+        {
             mAdapter.clear();
         }
-        if(mAdapter != null && mAdapter.getCount() == 0){
+
+        if(mAdapter != null && mAdapter.getCount() == 0)
+        {
             displayConnectedDevice();
         }
+
         refreshList();
     }
 
-    // bluetooth functions
-    public void connectDevice(String address, Boolean secure){
+    //Bluetooth functions
+    public void connectDevice(String address, Boolean secure)
+    {
         mMgr.connectDevice(address, secure);
         refreshList();
     }
 
-    public void disconnectDevice(){
+    public void disconnectDevice()
+    {
         mMgr.stop();
     }
 
-    public void listBluetoothDevices(){
+    public void listBluetoothDevices()
+    {
         mMgr.listBluetoothDevices();
     }
-
 
     /**
      * Shows the current connected device as first item in the list.
      */
-    private void displayConnectedDevice(){
-        if(BluetoothManager.getInstance().isConnected()){
+    private void displayConnectedDevice()
+    {
+        if(BluetoothManager.getInstance().isConnected())
+        {
             DeviceDetails mConnected = new DeviceDetails(BluetoothManager.getInstance().getDeviceName(), BluetoothManager.getInstance().getDeviceAddress(), true);
             mAdapter.clear();
             mAdapter.add(mConnected);
@@ -130,39 +151,48 @@ public class BluetoothFragment extends Fragment implements MainActivity.Callback
         }
     }
 
-    private void refreshList(){
-        if (getView() != null) {
+    private void refreshList()
+    {
+        if (getView() != null)
+        {
             ListView lv = getView().findViewById(R.id.listView);
-            if(lv != null){
+
+            if(lv != null)
+            {
                 lv.setAdapter(null);
                 lv.setAdapter(mAdapter);
             }
         }
     }
 
-
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         refreshList();
         displayConnectedDevice();
     }
-
 
     /**
      * Receiver for broadcast events from the system, mostly bluetooth related
      * Creates list of Bluetooth Devices detected
      */
     private ArrayList<BluetoothDevice> deviceList = new ArrayList<BluetoothDevice>();
-    private final BroadcastReceiver nReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
+
+    private final BroadcastReceiver nReceiver = new BroadcastReceiver()
+    {
+        public void onReceive(Context context, Intent intent)
+        {
             String action = intent.getAction();
-            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                Toast.makeText(getActivity(), "Discovery started", Toast.LENGTH_SHORT).show();
+
+            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action))
+            {
+                Toast.makeText(getActivity(), "Searching for Devices", Toast.LENGTH_SHORT).show();
                 mAdapter.clear();
                 deviceList.clear();
             }
-            else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+            else if (BluetoothDevice.ACTION_FOUND.equals(action))
+            {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 DeviceDetails newDevice = new DeviceDetails(device.getName(), device.getAddress(), false);
                 if(device.getName() == null /* || (!device.getName().contains("rasp")  && !device.getName().contains("DESKTOP"))*/ ) return;
@@ -173,20 +203,27 @@ public class BluetoothFragment extends Fragment implements MainActivity.Callback
         }
     };
 
-    // clean up methods
-    private void cancelDiscovery(){
-        if (mMgr.bluetoothAvailable() && mBluetoothAdapter.isDiscovering()){
+    //Clean up methods
+    private void cancelDiscovery()
+    {
+        if (mMgr.bluetoothAvailable() && mBluetoothAdapter.isDiscovering())
+        {
             mBluetoothAdapter.cancelDiscovery();
         }
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         super.onDestroy();
         cancelDiscovery();
-        try {
+
+        try
+        {
             getActivity().unregisterReceiver(nReceiver);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             Log.e("Error", e.getMessage());
         }
     }

@@ -17,11 +17,13 @@ import com.example.mdp_android.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BluetoothArrayAdapter<T> extends ArrayAdapter {
+public class BluetoothArrayAdapter<T> extends ArrayAdapter
+{
     private Context mContext;
     private List<DeviceDetails> itemList = new ArrayList<DeviceDetails>();
 
-    public BluetoothArrayAdapter(@NonNull Context context, ArrayList<DeviceDetails> list) {
+    public BluetoothArrayAdapter(@NonNull Context context, ArrayList<DeviceDetails> list)
+    {
         super(context, 0 , list);
         mContext = context;
         itemList = list;
@@ -29,10 +31,10 @@ public class BluetoothArrayAdapter<T> extends ArrayAdapter {
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
+    {
         View listItem = convertView;
-
-            listItem = LayoutInflater.from(mContext).inflate(R.layout.bluetooth_list_item,parent,false);
+        listItem = LayoutInflater.from(mContext).inflate(R.layout.bluetooth_list_item,parent,false);
 
         DeviceDetails currentDevice = itemList.get(position);
         String name = currentDevice.getDeviceName();
@@ -46,12 +48,16 @@ public class BluetoothArrayAdapter<T> extends ArrayAdapter {
 
         TextView statusText = (TextView) listItem.findViewById(R.id.item_device_status);
         Boolean status = name.equals(BluetoothManager.getInstance().getDeviceName()) && address.equals(BluetoothManager.getInstance().getDeviceAddress());
-        if(status && BluetoothManager.getInstance().isConnected()) {
+
+        if(status && BluetoothManager.getInstance().isConnected())
+        {
             currentDevice.setConnected(true);
-            statusText.setText("Connected");
+            statusText.setText("Connected!");
             int color = mContext.getResources().getColor(R.color.colorPrimaryDark);
             statusText.setTextColor(color);
-        } else {
+        }
+        else
+        {
             currentDevice.setConnected(false);
             statusText.setText("\u25CB");
             statusText.setTextColor(0xBB000000);

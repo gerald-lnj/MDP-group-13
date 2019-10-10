@@ -120,7 +120,7 @@ class Main(threading.Thread):
                     self.write_to_arduino(i)
                 
                 print("Sending message to Android: {}".format(android_msg))
-                self.write_to_bluetooth(read_pc_msg)
+                self.write_to_bluetooth(android_msg)
                 if(msg[-3].lower() == 'stop'):
                     print("Sending message to Arduino: Z")
                     stop_msg = str.encode("Z")

@@ -1,6 +1,7 @@
 import sys
 import threading
 import Queue
+import subprocess as sp
 import time
 from btclass import *
 from arclass import *
@@ -9,6 +10,8 @@ from tcpclass import *
 class Main(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
+        # make rpi discoverable
+        sp.run(['sudo', 'hciconfig', 'hci0' ,'piscan'])
 
         self.bt_thread = bt_connection()
         self.sr_thread = ard_connection()
@@ -116,7 +119,7 @@ class Main(threading.Thread):
                
                 #send all movement char to arduino
                 for i in arduino_msg:
-                    print("Sending message to Arduino: {}".format(i)
+                    print("Sending message to Arduino: {}".format(i))
                     self.write_to_arduino(i)
                 
                 print("Sending message to Android: {}".format(android_msg))

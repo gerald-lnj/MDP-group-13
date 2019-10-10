@@ -1,11 +1,15 @@
 from bluetooth import *
 import subprocess as sp
+import sys
+import os
 
 class bt_connection():
     def __init__(self):
         self.server_sock = None
         self.client_sock = None
         self.bt_is_connected = False
+        self.is_py2 = sys.version[0] == '2'
+
         
     def setup(self):
         btport = 3
@@ -55,11 +59,18 @@ class bt_connection():
 
     def bt_checkStatus(self):
         nexus_MAC_addr = '68:B3:5E:58:96:CB'
-        stdoutdata = sp.check_output(["hcitool","con"])
-        if nexus_MAC_addr in stdoutdata.split():
-            return True
+        if self.is_py2:
+            stdoutdata = os.popen('hcitool con').read()
+            if nexus_MAC_addr in stdoutdata:
+                return True
+            else:
+                return False
         else:
-            return False
+            stdoutdata = sp.check_output(["hcitool","con"])
+            if bytes(nexus_MAC_addr, 'utf-8') in stdoutdata.split():
+                return True
+            else:
+                return False
 
     def bt_disconnect(self):
         #disconnect

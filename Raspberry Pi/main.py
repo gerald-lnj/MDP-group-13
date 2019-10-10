@@ -1,5 +1,6 @@
 import sys
 import threading
+import os
 import subprocess as sp
 import time
 from btclass import *
@@ -10,8 +11,11 @@ class Main(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         # make rpi discoverable
-        sp.run(['sudo', 'hciconfig', 'hci0' ,'piscan'])
-
+        self.is_py2 = sys.version[0] == '2'
+        if self.is_py2:
+            os.system('sudo hciconfig hci0 piscan')
+        else:
+            sp.run(['sudo', 'hciconfig', 'hci0' ,'piscan'])            
         self.bt_thread = bt_connection()
         self.sr_thread = ard_connection()
         self.pc_thread = tcp_connection()

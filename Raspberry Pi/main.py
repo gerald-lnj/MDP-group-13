@@ -108,15 +108,26 @@ class Main(threading.Thread):
                 # read_pc_msg = MOVEMENT|MDF1|MDF2|(any combi of w, c, a, d, b, 1-9)|S|[5 6]|orientation
                 msg = read_pc_msg.split("|")
                 android_msg = '|'.join([msg[0], msg[1], msg[2], msg[-2], msg[-1]])
-                arduino_msg = msg[3:-2]
+                if (msg[-3].lower() == 'stop'):
+                    arduino_msg = msg[3:-3]
+                else:
+                    arduino_msg = msg[3:-2]
 
+                android_msg =  '|'.join([msg[0], msg[1], msg[2], msg[-2], msg[-1]])
+               
                 #send all movement char to arduino
                 for i in arduino_msg:
-                    print("Sending message to Arduino: {}".format(msg[i]))
+                    print("Sending message to Arduino: {}".format(i))
                     self.write_to_arduino(i)
                 
                 print("Sending message to Android: {}".format(android_msg))
-                self.write_to_bluetooth(read_pc_msg)
+                self.write_to_bluetooth(android_msg)
+                if(msg[-3].lower() == 'stop'):
+                    print("Sending message to Arduino: Z")
+                    stop_msg = str.encode("Z")
+                    self.write_to_arduino(stop_msg)
+                    print("Sending message to Android: {}".format(msg[-3]))
+                    self.write_to_bluetooth(msg[-3])
 
             else:
                 print ("Incorrect header received from PC: {}".format(read_pc_msg[0:2])) 
@@ -176,8 +187,8 @@ class Main(threading.Thread):
 
 if __name__ == "__main__":
     try:	
-	mainThread = Main()
-	mainThread.initialize_threads()
-	mainThread.keep_main_alive()
+        mainThread = Main()
+        mainThread.initialize_threads()
+        mainThread.keep_main_alive()
     except KeyboardInterrupt:	
-	mainThread.close_all_sockets()
+	    mainThread.close_all_sockets()

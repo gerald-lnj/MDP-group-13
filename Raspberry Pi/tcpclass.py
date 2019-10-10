@@ -48,6 +48,15 @@ class tcp_connection():
         self.client.close()
         print("Connection to PC closed")
 
+    #Hard code explore - for testing
+    def test_send(self):
+	msg = str.encode("EXPLORE")
+	self.client.sendto(msg, self.addr)
+    #Hard code sensor data - for testing
+    def send_data(self):
+	msg = str.encode("COMPUTE:9-9-9-1-1-9")
+	self.client.sendto(msg, self.addr)
+
  ###Test wifi (Host) -- To test client use pc_test_socket.py
 
 # if __name__ == "__main__":

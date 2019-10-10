@@ -1,6 +1,5 @@
 import sys
 import threading
-import Queue
 import subprocess as sp
 import time
 from btclass import *

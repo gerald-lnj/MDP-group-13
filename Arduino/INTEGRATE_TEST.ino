@@ -18,14 +18,14 @@ SharpIR sr0(SharpIR::LRmodel, A5); //Left LR
 
 const int LEFT_PULSE = 11; // LEFT M1 Pulse
 const int RIGHT_PULSE = 3; // RIGHT M2 Pulse
-const int MOVE_FAST_SPEED = 375;
+const int MOVE_FAST_SPEED = 350;
 const int MOVE_MAX_SPEED = 300;
 const int MOVE_MIN_SPEED = 250;
 const int TURN_MAX_SPEED = 250;
 const int ROTATE_MAX_SPEED = 150;
-const int TURN_TICKS_R = 790;
-const int TURN_TICKS_L = 785;
-const int TICKS[9] = {0, 570, 1165, 1780, 2380, 2985, 3600, 4195, 4785};
+const int TURN_TICKS_R = 785;
+const int TURN_TICKS_L = 786;
+const int TICKS[9] = {0, 567, 1165, 1780, 2380, 2985, 3600, 4195, 4785};
 const double DIST_WALL_CENTER_BOX = 1.58;
 const double kp = 7.25, ki = 1.25, kd = 0; // 7.35, 1.25, 0
 
@@ -50,28 +50,23 @@ void setup() {
   Serial.begin(115200);
   setupMotorEncoder();
   setupPID();
-  delay(20);
+  delay(500);
+    
   /*for(int i=0; i<12; i++){
-    //turnLeft();
-    turnRight();
+    turnLeft();
+    //turnRight();
     delay(1000);
   }*/
-  /*for(int i=0; i<2; i++){
-    moveForwardByGrid(4
-    );
+  
+  /*for(int i=0; i<10; i++){
+    moveForwardByGrid(1);
     delay(500);
   }*/
-  //moveForwardByGrid(8);
-  //moveForward(80);
-  //moveForward(120);
-  //delay(1000);
-  //kcaliFront();
-  
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  /*char cc;
+  char cc;
   if (printFlag == true)
   {
     printSensors();
@@ -80,12 +75,13 @@ void loop() {
   {
     cc = char(Serial.read());
     readRobotCommands(cc);
-  }*/
+  }
 }
 
-//-------------------------Communication Codes-------------------------
+//-------------------------Run Codes-------------------------
+
 void printSensors(){
-  String sendData = "0"+getBlock(1)+"-1"+getBlock(2)+"-2"+getBlock(3)+"-3"+getBlock(4)+"-4"+getBlock(5)+"-5"+getBlock(0);
+  String sendData = "al:COMPUTE:"+getBlock(1)+"-"+getBlock(2)+"-"+getBlock(3)+"-"+getBlock(4)+"-"+getBlock(5)+"-"+getBlock(0);
   while(printFlag == true){
     Serial.println(sendData);
     printFlag = false;
@@ -94,61 +90,87 @@ void printSensors(){
 
 void readRobotCommands(char command){
   switch(command){
-    case '1': //Move forward by 1 grid
-      moveForwardByGrid(1);
+    case 'S': //Return sensor readings
       printFlag = true;
+      break;
+      
+    case 'W': //Move forward by 1 grid
+      moveForwardByGrid(1);
+      //printFlag = true;
       break;
 
     case '2': //Move forward by 2 grids
       moveForwardByGrid(2);
-      printFlag = true;
+      //printFlag = true;
       break;
 
     case '3': //Move forward by 3 grids
       moveForwardByGrid(3);
-      printFlag = true;
+      //printFlag = true;
       break;
 
     case '4': //Move forward by 4 grids
       moveForwardByGrid(4);
-      printFlag = true;
+      //printFlag = true;
       break;
 
     case '5': //Move forward by 5 grids
       moveForwardByGrid(5);
-      printFlag = true;
+      //printFlag = true;
       break;
 
     case '6': //Move forward by 6 grids
       moveForwardByGrid(6);
-      printFlag = true;
+      //printFlag = true;
       break;
 
     case '7': //Move forward by 7 grids
       moveForwardByGrid(7);
-      printFlag = true;
+      //printFlag = true;
       break;
       
-    case 'L': //Turn left
+    case 'A': //Turn left
       turnLeft();
-      printFlag = true;
+      //printFlag = true;
       break;
       
-    case 'R': //Turn right
+    case 'D': //Turn right
       turnRight();
-      printFlag = true;
+      //printFlag = true;
+      break;
+
+    case 'B': //Turn right
+      turnRight();
+      delay(500);
+      turnRight();
+      //printFlag = true;
       break;
 
     case 'C': //Calibrate front
       caliFront();
-      caliFront();
-      delay(200);
+      //caliFront();
       break;
 
-    case 'c': //Calibrate right
+    case 'R': //Calibrate right
       caliRight();
+      //caliRight();
+      break;
+
+    case 'L': //Calibrate front & right
       caliRight();
-      delay(200);
+      delay(1000);
+      caliFront();
+      break;
+
+    case 'I': //Initial set-up 
+      caliFront();
+      delay(500);
+      turnLeft();
+      delay(500);
+      caliFront();
+      delay(500);
+      turnLeft();
+      printFlag = true;
       break;
 
     default:
@@ -299,7 +321,7 @@ void initializeMotor_Start() {
 void initializeMotor_End() {
   md.setSpeeds(0, 0);
   md.setBrakes(400, 400);
-  delay(5);
+  delay(1000);
 }
 
 void initializeRightTurnEnd() {
@@ -320,13 +342,13 @@ void calibrate() {
   int SPEEDR = 100;
   int count = 0;
   
-  while(count != 50)
+  while(count != 100)
   {
-    if((getAverageDistance(1) >= 10.85 && getAverageDistance(1) < 11.15)||(getAverageDistance(3) >= 10.85 && getAverageDistance(3) < 11.15)){
+    if((getAverageDistance(1) >= 10.9 && getAverageDistance(1) < 11.1)||(getAverageDistance(3) >= 10.9 && getAverageDistance(3) < 11.1)){
       md.setBrakes(100, 100);
       break;
     }
-    else if(getAverageDistance(1) <= 10.8 || getAverageDistance(3) <= 10.8)
+    else if(getAverageDistance(1) <= 10.9 || getAverageDistance(3) <= 10.9)
     {
       md.setSpeeds(-SPEEDR, SPEEDL);
       count++;
@@ -336,7 +358,7 @@ void calibrate() {
       count++;
     }
   }
-  md.setBrakes(100, 100);
+  md.setBrakes(150, 150);
 }
 
 void stepBack(){
@@ -351,6 +373,7 @@ void stepBack(){
 void caliFront()
 {
   stepBack();
+  delay(200);
   //Serial.println("caliFront() called");
   double targetDist = 11.0;
   int SPEEDL = 100;
@@ -360,25 +383,25 @@ void caliFront()
   while (abs(distDiff)>0.1)
   {
     double distDiff = getAverageDistance(1) - getAverageDistance(3);
-    Serial.print("distDiff: ");
-    Serial.println(distDiff);
+    //Serial.print("distDiff: ");
+    //Serial.println(distDiff);
     
     if(abs(distDiff)>=0.1){
       if ((distDiff >= 0.1) && (getAverageDistance(1) >= targetDist)) {
         md.setSpeeds(0, -SPEEDL); //left forward
-        Serial.println("left forward executed");
+        //Serial.println("left forward executed");
       }
       else if ((distDiff <= -0.1) && (getAverageDistance(1) < targetDist)) {
         md.setSpeeds(0, SPEEDL); //left backward
-        Serial.println("left backward executed");
+        //Serial.println("left backward executed");
       }
       else if ((distDiff >= 0.1) && (getAverageDistance(1) < targetDist)) {
         md.setSpeeds(-SPEEDR, 0); //right backward
-        Serial.println("right backward executed");
+        //Serial.println("right backward executed");
       }
       else if ((distDiff <= -0.1) && (getAverageDistance(1) >= targetDist)) {
         md.setSpeeds(SPEEDR, 0); //right forward
-        Serial.println("right forward executed");
+        //Serial.println("right forward executed");
       }
     }
     else{
@@ -386,37 +409,18 @@ void caliFront()
     }
   }
   
-  md.setBrakes(100, 100);
+  md.setBrakes(150, 150);
   caliFrontFlag = false;
-  calibrate(); 
+  delay(500);
+  calibrate();
+  delay(500); 
 }
 
 void caliRight(){
   //Serial.println("caliRight() called");
-  double targetDist = 9.0;
-  int SPEEDL = 70;
-  int SPEEDR = 70;
-  int count = 0;
-  double diff = getAverageDistance(4) - getAverageDistance(5);
-  while((abs(diff)>0.2) && (getBlock(4) == getBlock(5)) && count < 10){
-    count++;
-    if(diff > 0.2){
-      rotateRightLess90(abs(diff)*5);
-      diff = getAverageDistance(4) - getAverageDistance(5);
-      if(getBlock(4)!=getBlock(5)){
-        rotateLeftLess90(abs(diff)*4);
-      }
-    }
-    else{
-      rotateLeftLess90(abs(diff)*5);
-      diff = getAverageDistance(4) - getAverageDistance(5);
-      if(getBlock(4)!=getBlock(5)){
-        rotateRightLess90(abs(diff)*4);
-      }
-    }
-    
-    diff = getAverageDistance(4) - getAverageDistance(5);
-  }
+  turnRight();
+  caliFront();
+  turnLeft();
 }
 
 //-------------------------Sensor Codes-------------------------
@@ -433,8 +437,8 @@ double getAverageDistance(int sensor) {
     }
     average = sum / 20; 
     
-    Serial.print("Front Left SR Distance: ");
-    Serial.println(average);
+    //Serial.print("Front Left SR Distance: ");
+    //Serial.println(average);
 
     return (average);
   } 
@@ -461,8 +465,8 @@ double getAverageDistance(int sensor) {
     }
     average = sum / 20; 
 
-    Serial.print("Front Right SR Distance: ");
-    Serial.println(average);
+    //Serial.print("Front Right SR Distance: ");
+    //Serial.println(average);
 
     return average;
   }
@@ -515,19 +519,19 @@ String getBlock(int sensor){
   if(sensor == 1){
     dist = getAverageDistance(1);
     
-    if(9 <= dist && dist <= 19){ //11 is first point in first grid
+    if(9 <= dist && dist <= 16){ //11 is first point in first grid
       //Serial.println("Front Left SR Block: 1");
       return "1";
     }
-    else if(dist > 19 && dist <= 29){
+    else if(dist > 16 && dist <= 25){ //19 
       //Serial.println("Front Left SR Block: 2");
       return "2";
     }
-    else if(dist > 29 && dist <= 39){
+    else if(dist > 25 && dist <= 35){ //29
       //Serial.println("Front Left SR Block: 3");
       return "3";
     }
-    else{
+    else{ //39
       //Serial.println("Front Left SR Block: 9");
       return "9";
     }
@@ -537,19 +541,19 @@ String getBlock(int sensor){
   if(sensor == 2){
     dist = getAverageDistance(2);
 
-    if(9 <= dist && dist <= 17){ //9 is first point in first grid
+    if(9 <= dist && dist <= 14){ //9 is first point in first grid
       //Serial.println("Front Center SR Block: 1");
       return "1";
     }
-    else if(dist > 17 && dist <=26){
+    else if(dist > 14 && dist <=22){ //17
       //Serial.println("Front Center SR Block: 2");
       return "2";
     }
-    else if(dist > 26 && dist <=35){
+    else if(dist > 22 && dist <=32){ //26
       //Serial.println("Front Center SR Block: 3");
       return "3";
     }
-    else{
+    else{ //35
       //Serial.println("Front Center SR Block: 9");
       return "9";
     }
@@ -559,19 +563,19 @@ String getBlock(int sensor){
   if(sensor == 3){
     dist = getAverageDistance(3);
     
-    if(9 <= dist && dist <= 20){ //11 is first point in first grid
+    if(9 <= dist && dist <= 16){ //11 is first point in first grid
       //Serial.println("Front Right SR Block: 1");
       return "1";
     }
-    else if(dist > 20 && dist <=28){
+    else if(dist > 16 && dist <=24){ //20
       //Serial.println("Front Right SR Block: 2");
       return "2";
     }
-    else if(dist > 28 && dist <=33){
+    else if(dist > 24 && dist <=31){ //28
       //Serial.println("Front Right SR Block: 3");
       return "3";
     }
-    else{
+    else{ //33
       //Serial.println("Front Left SR Block: 9");
       return "9";
     }
@@ -581,19 +585,19 @@ String getBlock(int sensor){
   if(sensor == 4){
     dist = getAverageDistance(4);
 
-    if(9 <= dist && dist <= 18){
+    if(9 <= dist && dist <= 14){ //11
       //Serial.println("Right SR Block: 1");
       return "1";
     }
-    else if(dist > 18 && dist <= 29){
+    else if(dist > 14 && dist <= 24){ //18
       //Serial.println("Right SR Block: 2");
       return "2";
     }
-    else if(dist > 29 && dist <= 50){
+    else if(dist > 24 && dist <= 34){ //29
       //Serial.println("Right SR Block: 3");
       return "3";
     }
-    else{
+    else{ //50
       //Serial.println("Right SR Block: 9");
       return "9";
     }
@@ -606,19 +610,19 @@ String getBlock(int sensor){
       //Serial.println("Right LR Distance: 1");
       return "1";
     }
-    else if (dist > 11 && dist <= 14.5) {
+    else if (dist > 11 && dist <= 13.5) {
       //Serial.println("Right LR Distance: 2");
       return "2";
     }
-    else if (dist > 14.5 && dist <= 18) {
+    else if (dist > 13.5 && dist <= 18) {
       //Serial.println("Right LR Distance: 3");
       return "3";
     }
-    else if (dist > 18 && dist <= 25) {
+    else if (dist > 18 && dist <= 23.5) {
       //Serial.println("Right LR Distance: 4");
       return "4";
     }
-    else if (dist > 25 && dist <= 29) {
+    else if (dist > 23.5 && dist <= 28.5) {
       //Serial.println("Right LR Distance: 5");
       return "5";
     }
@@ -631,23 +635,23 @@ String getBlock(int sensor){
   if(sensor == 0){
     dist = getAverageDistance(0);
 
-    if (dist >= 19 && dist <= 22 ) {
+    if (dist >= 19 && dist <= 20 ) {
       //Serial.println("Left LR Distance: 1");
       return "1";
     }
-    else if (dist > 22 && dist <= 28) {
+    else if (dist > 20 && dist <= 25) {
       //Serial.println("Left LR Distance: 2");
       return "2";
     }
-    else if (dist > 28 && dist <= 35) {
+    else if (dist > 25 && dist <= 32) {
       //Serial.println("Left LR Distance: 3");
       return "3";
     }
-    else if (dist > 35 && dist <= 43) {
+    else if (dist > 32 && dist <= 40.5) {
       //Serial.println("Left LR Distance: 4");
       return "4";
     }
-    else if (dist > 43 && dist <= 54) {
+    else if (dist > 40.5 && dist <= 46) {
       //Serial.println("Left LR Distance: 5");
       return "5";
     }

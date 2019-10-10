@@ -42,14 +42,23 @@ class Main(threading.Thread):
             #Check header and send to arduino
             if(read_bt_msg[0:3].lower() == 'ar:'):
                 print("Message Received from BT: {}".format(read_bt_msg))
-                print("Sending message to Arduino...")
+                print("Sending message to Arduino: {}".format(read_bt_msg[3:]))
                 self.write_to_arduino(read_bt_msg[3:])
 
             # Check header and send to pc
 			elif(read_bt_msg[0:3].lower() == 'al:'):
-                print("Message Received from BT: {}".format(read_bt_msg))
-                print("Sending message to PC...")
-                self.write_to_pc(read_bt_msg[3:])
+                if((read_bt_msg[3:].lower() == 'explore') or (read_bt_msg[3:].lower() == 'fastest')):
+                    print("Message Received from BT: {}".format(read_bt_msg))
+                    print("Sending message to PC: {}".format(read_bt_msg[3:]))
+                    self.write_to_pc(read_bt_msg[3:])
+                    #send to arduino to trigger them to send sensor data
+                    msg = str.encode("I")
+                    print("Sending message to Arduino: {}".format(msg))
+                    self.write_to_arduino(msg)
+                else:
+                    print("Message Received from BT: {}".format(read_bt_msg))
+                    print("Sending message to PC: {}".format(read_bt_msg[3:]))
+                    self.write_to_pc(read_bt_msg[3:])
         
 			else:
 			    print ("Incorrect header received from BT: {}".format(read_bt_msg[0:2])) 
@@ -74,13 +83,13 @@ class Main(threading.Thread):
             #Check header and send to android
             if(read_ard_msg[0:3].lower() == 'an:'):
                 print("Message Received from Arduino: {}".format(read_ard_msg))
-                print("Sending message to Android...")
+                print("Sending message to Android: {}".format(read_ard_msg[3:]))
                 self.write_to_bluetooth(read_ard_msg[3:])
 
             #Check header and send to pc
             elif(read_ard_msg[0:3].lower() == 'al:'):
                 print("Message Received from Arduino: {}".format(read_ard_msg))
-                print("Sending message to PC...")
+                print("Sending message to PC: {}".format(read_ard_msg[3:]))
                 self.write_to_pc(read_ard_msg[3:])
 
     #process to write to arduino
@@ -110,14 +119,23 @@ class Main(threading.Thread):
 
 
                 print("Message Received from PC: {}".format(read_pc_msg))
-                print("Sending message to Android...")
+                print("Sending message to Android: {}".format(read_pc_msg[3:]))
                 self.write_to_bluetooth(read_pc_msg[3:])
 
             #Check header and send to arduino
             elif(read_pc_msg[0:3].lower() == 'ar:'):
                 print("Message Received from PC: {}".format(read_pc_msg))
-                print("Sending message to Arduino...")
+                print("Sending message to Arduino: {}".format(read_pc_msg[3:]))
                 self.write_to_arduino(read_pc_msg[3:])
+
+            #Check header and send to arduino and android
+            elif(read_pc_msg[0:8].lower() == 'movement'):
+                print("Message Received from PC: {}".format(read_pc_msg))
+                msg = read_pc_msg.split("|")
+                print("Sending message to Arduino: {}".format(msg[3]))
+                self.write_to_arduino(msg[3])
+                print("Sending message to Android: {}".format(read_pc_msg))
+                self.write_to_bluetooth(read_pc_msg)
 
             else:
                 print ("Incorrect header received from PC: {}".format(read_pc_msg[0:2])) 
@@ -125,7 +143,7 @@ class Main(threading.Thread):
 
     #process to write to pc
     def write_to_pc(self, msg_to_pc):
-        self.pc_thread.pc_send_msg()
+        self.pc_thread.pc_send_msg(msg_to_pc)
 
     def initialize_threads(self):
         # Bluetooth (BT) read and write thread

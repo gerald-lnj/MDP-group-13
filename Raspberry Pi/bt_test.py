@@ -1,4 +1,5 @@
 from bluetooth import *
+import time
 
 class bt_connection():
     def __init__(self):
@@ -66,3 +67,20 @@ class bt_connection():
         self.server_sock.close()
         self.bt_is_connected = False
         print("all done")
+if __name__ == "__main__":
+    bt = bt_connection()
+    bt.setup()
+
+    try:
+        while True:
+            read_bt_msg = bt.bt_listen_msg()
+            print("Message Received from BT: {}".format(read_bt_msg))
+	    if(read_bt_msg == "al:FASTEST"):
+		print("in if")
+		time.sleep(10)
+	   	msg = str.encode("STOP")
+	   	print("Sending to Android: {}".format(msg))
+	   	bt.bt_send_msg(msg)
+    except KeyboardInterrupt:
+        print("disconnecting")
+        bt.bt_disconnect()

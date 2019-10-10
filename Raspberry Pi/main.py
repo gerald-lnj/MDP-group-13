@@ -132,8 +132,13 @@ class Main(threading.Thread):
             elif(read_pc_msg[0:8].lower() == 'movement'):
                 print("Message Received from PC: {}".format(read_pc_msg))
                 msg = read_pc_msg.split("|")
-                print("Sending message to Arduino: {}".format(msg[3]))
-                self.write_to_arduino(msg[3])
+                len = len(msg)
+                
+                #send all movement char to arduino
+                for i in range(3, len-1):
+                    print("Sending message to Arduino: {}".format(msg[i]))
+                    self.write_to_arduino(msg[i])
+                
                 print("Sending message to Android: {}".format(read_pc_msg))
                 self.write_to_bluetooth(read_pc_msg)
 

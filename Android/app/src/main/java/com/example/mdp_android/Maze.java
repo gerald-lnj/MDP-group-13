@@ -345,15 +345,34 @@ public class Maze extends ViewGroup
             {
                 int xPos = Integer.parseInt(tmp[0]);
                 int yPos = Integer.parseInt(tmp[1]);
+                int direction = Integer.parseInt(tmp[2]);
                 String dir = tmp[2];
 
                 _botCoord[0] = xPos;
                 _botCoord[1] = yPos;
 
+                if (tmp[2].equals("1"))
+                {
+                    direction = Constants.NORTH;
+                }
+                else if (tmp[2].equals("2"))
+                {
+                    direction = Constants.EAST;
+                }
+                if (tmp[2].equals("3"))
+                {
+                    direction = Constants.SOUTH;
+                }
+                if (tmp[2].equals("4"))
+                {
+                    direction = Constants.WEST;
+                }
+
 //                _botCoord[0] = xPos + 1;
 //                _botCoord[1] = yPos - 1;
 
-                _direction = convertDirStrToNum(dir);
+               _direction = direction;
+               // _direction = convertDirStrToNum(dir);
 
                 Log.d("Bot Coord X", Integer.toString(-_botCoord[0]));
                 Log.d("Bot Coord Y", Integer.toString(-_botCoord[1]));

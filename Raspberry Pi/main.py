@@ -1,6 +1,7 @@
 import sys
 import threading
 import Queue
+import subprocess as sp
 import time
 from btclass import *
 from arclass import *
@@ -9,6 +10,8 @@ from tcpclass import *
 class Main(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
+        # make rpi discoverable
+        sp.run(['sudo', 'hciconfig', 'hci0' ,'piscan'])
 
         self.bt_thread = bt_connection()
         self.sr_thread = ard_connection()

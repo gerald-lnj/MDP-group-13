@@ -112,7 +112,7 @@ class Main(threading.Thread):
                 else:
                     arduino_msg = msg[3:-2]
 
-                android_msg = [msg[0], msg[1], msg[2], msg[-2], msg[-1]].join('|')
+                android_msg =  '|'.join([msg[0], msg[1], msg[2], msg[-2], msg[-1]])
                
                 #send all movement char to arduino
                 for i in arduino_msg:
@@ -122,6 +122,9 @@ class Main(threading.Thread):
                 print("Sending message to Android: {}".format(android_msg))
                 self.write_to_bluetooth(read_pc_msg)
                 if(msg[-3].lower() == 'stop'):
+                    print("Sending message to Arduino: Z")
+                    stop_msg = str.encode("Z")
+                    self.write_to_arduino(stop_msg)
                     print("Sending message to Android: {}".format(msg[-3]))
                     self.write_to_bluetooth(msg[-3])
 

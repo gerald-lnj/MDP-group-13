@@ -7,7 +7,7 @@ import os
 import cv2
 import picam
 
-class YOLODetectorClient(server_address):
+class YOLODetectorClient():
 	def __init__(self):
 		self.folderPath = os.path.dirname(os.path.abspath(__file__))
 
@@ -32,9 +32,6 @@ class YOLODetectorClient(server_address):
 			[coordinates_x, coordinates_y, orientation] = filename.split('-')
 		return filename, image, coordinates_x, coordinates_y, orientation
 
-	def take_image(self, coordinates_x, coordinates_y, orientation):
-		picam.takePhoto
-
 	def main(self, coordinates_x, coordinates_y, orientation):
 		image = picam.takePhoto()
 		# returns bytes (utf-8)
@@ -43,7 +40,7 @@ class YOLODetectorClient(server_address):
 
 		if len(response):
 			print('detected {} at {}, orientation {}'.format(response, [coordinates_x, coordinates_y], orientation))
-			return response,
+			return response, coordinates_x, coordinates_y, orientation
 		
 
 if __name__ == "__main__":

@@ -7,6 +7,10 @@ from btclass import *
 from arclass import *
 from tcpclass import *
 
+sys.path.insert(0, "/Image Recognition")
+
+from YOLODetectorClient import *
+
 class Main(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -19,11 +23,20 @@ class Main(threading.Thread):
         self.bt_thread = bt_connection()
         self.sr_thread = ard_connection()
         self.pc_thread = tcp_connection()
+        self.image_thread = YOLODetectorClient()
         
         #initialise connections
         self.bt_thread.setup()
         self.sr_thread.setup()
         self.pc_thread.setup()
+        # TODO: need to find ip of YOLODetectorServer computer
+        self.image_thread.setup('192.168.13.XXX')
+
+        # init coordinates, orientation for image recognition
+        self.row = 0
+        self.col = 0
+        self.orientation = 0
+
         time.sleep(1)	# wait for 1 secs before starting
 
     #process to read from bluetooth
@@ -85,6 +98,11 @@ class Main(threading.Thread):
                 print("Message Received from Arduino: {}".format(read_ard_msg))
                 print("Sending message to PC: {}".format(read_ard_msg[3:]))
                 self.write_to_pc(read_ard_msg[3:])
+                # TODO: uncomment after image recogintion is ready
+                # # on sensor data from ar to al, take pic and send to server
+                # response, coordinates_x, coordinates_y, orientation = self.image_thread.main(self.row, self.col, self.orientation)
+                # if response:
+                #     self.write_to_bluetooth('IMAGE:{}-{}-{}-{}'.format(response, coordinates_x, coordinates_y, orientation))
 
     #process to write to arduino
     def write_to_arduino(self, msg_to_ard):
@@ -112,7 +130,14 @@ class Main(threading.Thread):
             elif(read_pc_msg[0:8].lower() == 'movement'):
                 print("Message Received from PC: {}".format(read_pc_msg))
                 # read_pc_msg = MOVEMENT|MDF1|MDF2|(any combi of w, c, a, d, b, 1-9)|S|[5 6]|orientation
+
+                # update coords, orientation in preperation for img when sensor data received
                 msg = read_pc_msg.split("|")
+                coordinates = msg[-2] #'[5 6]'
+                coordinates = coordinates[1:-1] # '5 6'
+                [self.row, self.col] = coordinates.split(' ') # ['5', '6']
+                self.orientation = msg[-1]
+
                 android_msg = '|'.join([msg[0], msg[1], msg[2], msg[-2], msg[-1]])
                 if (msg[-3].lower() == 'stop'):
                     arduino_msg = msg[3:-3]

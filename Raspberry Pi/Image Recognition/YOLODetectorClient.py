@@ -45,13 +45,15 @@ class YOLODetectorClient():
 
 if __name__ == "__main__":
 	client = YOLODetectorClient()
-	for entry in os.scandir(client.folderPath+'\\Query'):
-		filename, image, x, y, orientation = client.read_image(entry.path)
+	client.setup('127.0.0.1')
+	for entry in os.scandir(client.folderPath+'/Query'):
+		if entry.name != '.DS_Store':
+			filename, image, x, y, orientation = client.read_image(entry.path)
 
-		# returns bytes (utf-8)
-		response = client.send_image(filename, image)
+			# returns bytes (utf-8)
+			response = client.send_image(filename, image)
 
-		# decode to string
-		if len(response):
-			print('detected {} at {}, orientation {}'.format(response, [x, y], orientation))
-		os.remove(entry.path)
+			# decode to string
+			if len(response):
+				print('detected {} at {}, orientation {}'.format(response, [x, y], orientation))
+			os.remove(entry.path)

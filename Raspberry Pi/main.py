@@ -132,10 +132,10 @@ class Main(threading.Thread):
             elif(read_pc_msg[0:8].lower() == 'movement'):
                 print("Message Received from PC: {}".format(read_pc_msg))
                 msg = read_pc_msg.split("|")
-                len = len(msg)
-                
+                length = len(msg)
+
                 #send all movement char to arduino
-                for i in range(3, len-1):
+                for i in range(3, length):
                     print("Sending message to Arduino: {}".format(msg[i]))
                     self.write_to_arduino(msg[i])
                 

@@ -27,9 +27,8 @@ class tcp_connection():
             #self.pc_is_connect = True
             #self.send_message_PC("RPI Ready\n")
 
-        except IOError, e:   
+        except IOError:   
             print ("Failed to connect to PC: {}".format(IOError))
-	    print("Exception: {}".format(e))
 
     def pc_listen_msg(self):
         while True:
@@ -45,15 +44,6 @@ class tcp_connection():
         except IOError:
             print("Failed to send message to PC: {}".format(IOError))
 
-    #comment test_send function if not testing
-    def test_send(self):
-	msg = str.encode("EXPLORE")
-	self.client.sendto(msg, self.addr)
-
-    def send_data(self):
-	msg = str.encode("COMPUTE:9-9-9-1-1-9")
-	self.client.sendto(msg, self.addr)
-
     def pc_disconnect(self):
         self.sock.close()
         self.client.close()
@@ -61,25 +51,32 @@ class tcp_connection():
 
  ###Test wifi (Host) -- To test client use pc_test_socket.py
 
-# if __name__ == "__main__":
-#          print ("main")
-#          pc = tcp_connection()
-#          pc.setup()
+if __name__ == "__main__":
+         print ("main")
+         pc = tcp_connection()
+         pc.setup()
 
-#          #send_msg = ("Rpi Ready\n")
-#          #print ("send_message_PC(): %s " % send_msg)
-#          #pc.send_message_PC(send_msg)
-#         try:
-#             while True:
-#                 #read from pc
-#                 print ("read")
-#                 read_pc_msg = pc.pc_listen_msg()
-#                 print("Message Received from PC: {}".format(read_pc_msg))
+         #send_msg = ("Rpi Ready\n")
+         #print ("send_message_PC(): %s " % send_msg)
+         #pc.send_message_PC(send_msg)
+         try:
+         	while True:
+			print("Sending message to PC")
+                	msg = str.encode("EXPLORE")
+                	pc.pc_send_msg(msg)
+                #read from pc
+                	print ("read")
+               		read_pc_msg = pc.pc_listen_msg()
+               		print("Message Received from PC: {}".format(read_pc_msg))
 
-#                 #send to pc
-#                 print("Sending message to PC")
-#                 pc.pc_send_msg("From pi: " + read_pc_msg)
+                #send to pc
+           	#print("Sending message to PC")
+	    	#msg = str.encode("EXPLORE")
+            	#pc.pc_send_msg(msg)
 
-#         except KeyboardInterrupt:
-#             print ("closing sockets")
-#             pc.pc_disconnect()
+	    #msg2 = str.encode("COMPUTE:01-1X-22-3X-44-5X")
+	    #pc.pc_send_msg(msg2)
+
+         except KeyboardInterrupt:
+            print ("closing sockets")
+            pc.pc_disconnect()

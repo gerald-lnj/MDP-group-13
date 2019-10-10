@@ -398,14 +398,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         }
 
                         //Added for robot position in AMD
-                        if(readMessage.length() > 5)
-                        {
-                            if (readMessage.substring(0,5).equals("COORD"))
-                            {
-                                String robotpos = readMessage.substring(7, readMessage.length()-1);
-                                notifyFragments(Constants.MESSAGE_READ,"COORD",robotpos);
-                            }
-                        }
+//                        if(readMessage.length() > 5)
+//                        {
+//                            if (readMessage.substring(0,5).equals("COORD"))
+//                            {
+//                                String robotpos = readMessage.substring(7, readMessage.length()-1);
+//                                notifyFragments(Constants.MESSAGE_READ,"COORD",robotpos);
+//                            }
+//                        }
 
                         //Added for STOP for EXP and FSP
                         if (readMessage.equals("STOP"))
@@ -414,25 +414,59 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             notifyFragments(Constants.MESSAGE_READ,"STOP", stopmsg);
                         }
 
-                        //Added for MDF1
-                        if (readMessage.length()> 9)
-                        {
-                            if (readMessage.substring(0, 8).equals("MOVEMENT"))
-                            {
-                                String mdf1string = readMessage.substring(9, 84);
-                                notifyFragments(Constants.MESSAGE_READ, "MDF1", mdf1string);
-                            }
-                        }
+                        //Added
+//                        String delimiter = "|";
+                        String received = readMessage;
+                        Log.d("Received", received);
+                        String movement[] = received.split("\\|");
 
-                        //Added for MDF2
-                        if (readMessage.length()> 9)
-                        {
-                            if (readMessage.substring(0, 8).equals("MOVEMENT"))
-                            {
-                                String mdf2string = readMessage.substring(85, 159);
-                                notifyFragments(Constants.MESSAGE_READ, "MDF2", mdf2string);
-                            }
-                        }
+                        String movementstr = movement[0];
+                        Log.d("Movement", movementstr);
+
+                        String mdf1 = movement[1];
+                        Log.d("mdf1", mdf1);
+                        notifyFragments(Constants.MESSAGE_READ, "MDF1", mdf1);
+
+                        String mdf2 = movement[2];
+                        Log.d("mdf2", mdf2);
+                        notifyFragments(Constants.MESSAGE_READ, "MDF2", mdf2);
+
+                        String reccoords = movement[3];
+                        Log.d("coords", reccoords);
+                        String coords = reccoords.substring(1, reccoords.length()-1);
+
+                        String orientation = movement[4];
+                        Log.d("orientation", orientation);
+
+                        String coords_dir = coords + " " + orientation;
+                        Log.d("Final", coords_dir);
+                        notifyFragments(Constants.MESSAGE_READ,"COORD",coords_dir);
+
+                        //Added for MDF1
+//                        if (readMessage.length()> 9)
+//                        {
+//                            if (readMessage.substring(0, 8).equals("MOVEMENT"))
+//                            {
+////                                String mdfstring[] = readMessage.split("|");
+////                                String mdf1string = mdfstring[1];
+//
+//                                String mdf1string = readMessage.substring(9, 85);
+//                                notifyFragments(Constants.MESSAGE_READ, "MDF1", mdf1string);
+//                            }
+//                        }
+//
+//                        //Added for MDF2
+//                        if (readMessage.length()> 9)
+//                        {
+//                            if (readMessage.substring(0, 8).equals("MOVEMENT"))
+//                            {
+//                                String mdf2string = readMessage.substring(86, readMessage.length());
+//                                String mdf2arr[] = mdf2string.split("|");
+//                                Log.d("MDF21", mdf2arr[1]);
+//                                Log.d("MDF22", mdf2arr[2]);
+//                                notifyFragments(Constants.MESSAGE_READ, "MDF2", mdf2string);
+//                            }
+//                        }
                     }
                     break;
 

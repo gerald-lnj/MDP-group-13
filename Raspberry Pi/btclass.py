@@ -1,6 +1,6 @@
 from bluetooth import *
 
-class btconnection():
+class bt_connection():
     def __init__(self):
         self.server_sock = None
         self.client_sock = None
@@ -47,12 +47,11 @@ class btconnection():
 
     def bt_send_msg(self, data):
         try:
-            #client_sock = self.client_sock
-            client_sock.send(data)
+            self.client_sock.send(data)
         except IOError:
             print("Failed to send message to Android: {}".format(IOError))
 
-    def BT_checkStatus():
+    def bt_checkStatus():
         nexus_MAC_addr = '68:B3:5E:58:96:CB'
         stdoutdata = sp.check_output(["hcitool","con"])
         if nexus_MAC_addr in stdoutdata.split():

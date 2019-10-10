@@ -186,8 +186,8 @@ class Main(threading.Thread):
 
 if __name__ == "__main__":
     try:	
-	mainThread = Main()
-	mainThread.initialize_threads()
-	mainThread.keep_main_alive()
+        mainThread = Main()
+        mainThread.initialize_threads()
+        mainThread.keep_main_alive()
     except KeyboardInterrupt:	
-	mainThread.close_all_sockets()
+	    mainThread.close_all_sockets()

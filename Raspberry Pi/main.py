@@ -107,7 +107,7 @@ class Main(threading.Thread):
                 print("Message Received from PC: {}".format(read_pc_msg))
                 # read_pc_msg = MOVEMENT|MDF1|MDF2|(any combi of w, c, a, d, b, 1-9)|S|[5 6]|orientation
                 msg = read_pc_msg.split("|")
-                android_msg = [msg[0], msg[1], msg[2], msg[-2], msg[-1]].join('|')
+                android_msg = '|'.join([msg[0], msg[1], msg[2], msg[-2], msg[-1]])
                 arduino_msg = msg[3:-2]
 
                 #send all movement char to arduino

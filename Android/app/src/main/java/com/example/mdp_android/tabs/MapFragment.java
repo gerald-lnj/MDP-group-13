@@ -370,7 +370,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                 if(key.equals("MDF1")) //Explored Data
                 {
                     MDF1 = msg;
-                    Log.d("MDF1 - ", MDF1);
+                    Log.d("MDF1", MDF1);
 
                     TextView mdf1view = getView().findViewById(R.id.MDF1String);
                     mdf1view.setText(MDF1);
@@ -383,10 +383,31 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                     //For AMD Tool only
                     _storekey = key;
                     MDF2 = msg;
-                    Log.d("MDF2 - ", MDF2);
+
+                    int count = 0;
+
+                    for(int i = 0; i < MDF2.length(); i++) {
+                        if(MDF2.charAt(i) != ' ')
+                            count++;
+                    }
+
+                    Log.d("Count", Integer.toString(count));
+
+                    if (count%2 != 0)
+                    {
+//                        int pad = count % 8;
+//                        int padnums = 8 - pad;
+
+//                        for(int j=0; j<padnums; j++)
+//                        {
+                            MDF2 = MDF2 + "0";
+//                        }
+                    }
+
+                    Log.d("MDF2", MDF2);
 
                     TextView mdf2view = getView().findViewById(R.id.MDF2String);
-                    mdf2view.setText(msg);
+                    mdf2view.setText(MDF2);
 
                     if (_autoRefresh)
                     {

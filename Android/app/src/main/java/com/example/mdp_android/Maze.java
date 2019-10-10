@@ -128,7 +128,10 @@ public class Maze extends ViewGroup
         //String tmp2 = tmp.substring(2, tmp.length() - 2);
 
         String tmp = parseHexCharToBinary(binaryData);
-        _exploreData = convertStrToIntArray(tmp);
+        Log.d("TEMP1", tmp);
+        String tmp2 = tmp.substring(2, tmp.length() - 2);
+        Log.d("TEMP2", tmp2);
+        _exploreData = convertStrToIntArray(tmp2);
         renderMaze();
     }
 
@@ -333,19 +336,23 @@ public class Maze extends ViewGroup
     {
         try
         {
-            String tmp[] = data.split(",");
+            String tmp[] = data.split(" ");
             Log.d("X-coord", tmp[0]);
             Log.d("Y-coord", tmp[1]);
+            Log.d("Direction", tmp[2]);
 
             if (tmp.length == 3)
             {
                 int xPos = Integer.parseInt(tmp[0]);
                 int yPos = Integer.parseInt(tmp[1]);
                 String dir = tmp[2];
+
                 _botCoord[0] = xPos;
                 _botCoord[1] = yPos;
+
 //                _botCoord[0] = xPos + 1;
 //                _botCoord[1] = yPos - 1;
+
                 _direction = convertDirStrToNum(dir);
 
                 Log.d("Bot Coord X", Integer.toString(-_botCoord[0]));

@@ -159,6 +159,7 @@ class Main(threading.Thread):
                     self.write_to_arduino(stop_msg)
                     print("Sending message to Android: {}".format(msg[-3]))
                     self.write_to_bluetooth(msg[-3])
+                    self.pc_thread.pc_disconnect()
 
             else:
                 print ("Incorrect header received from PC: {}".format(read_pc_msg[0:2])) 

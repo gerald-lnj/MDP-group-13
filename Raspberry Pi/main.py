@@ -19,7 +19,8 @@ class Main(threading.Thread):
         if self.is_py2:
             os.system('sudo hciconfig hci0 piscan')
         else:
-            sp.run(['sudo', 'hciconfig', 'hci0' ,'piscan'])            
+            sp.run(['sudo', 'hciconfig', 'hci0' ,'piscan'])
+        
         self.bt_thread = bt_connection()
         self.sr_thread = ard_connection()
         self.pc_thread = tcp_connection()
@@ -30,7 +31,7 @@ class Main(threading.Thread):
         self.sr_thread.setup()
         self.pc_thread.setup()
         # TODO: need to find ip of YOLODetectorServer computer
-        self.image_thread.setup('192.168.13.XXX')
+        self.image_thread.setup('192.168.13.12') # ip of gerald's com
 
         # init coordinates, orientation for image recognition
         self.row = 0
@@ -161,6 +162,7 @@ class Main(threading.Thread):
                     self.write_to_bluetooth(msg[-3])
                     self.pc_thread.pc_disconnect()
 
+            elif (read_pc_msg[])
             else:
                 print ("Incorrect header received from PC: {}".format(read_pc_msg[0:2])) 
                 time.sleep(1)

@@ -68,8 +68,8 @@ class Robot:
         vals = [1]*distance
         if value!=9:
             vals[value-1] = 2
-
-
+            print("record")
+        print(vals)
 
         # if (value >= distance*10):
         #     vals = [1]*distance
@@ -78,23 +78,24 @@ class Robot:
         #     inds = inds[:value+1]
         #     vals = [1]*value + [2]
         for idx, (r,c) in enumerate(inds):
-
             if (0 <= r < MAX_ROWS) and (0 <= c < MAX_COLS):
                 # if self.phase==1:
                 if(self.exploredMap[r][c]==2):
                     if vals[idx]==1:
-                        self.exploredMap[r][c]==1
+                        self.exploredMap[r][c]=1
                     elif vals[idx]==2:
-                        self.exploredMap[r][c]==2
+                        break
                 elif(self.exploredMap[r][c]==1):
                     if vals[idx]==2:
-                        self.exploredMap[r][c]==2
+                        break
                 elif(self.exploredMap[r][c]==0):
                     if vals[idx]==1:
-                        self.exploredMap[r][c]==1
+                        self.exploredMap[r][c]=1
                     elif (vals[idx]==2):
-                        self.exploredMap[r][c]==2
+                        self.exploredMap[r][c]=2
+                        break
 
+        print(self.exploredMap)
 
 
 

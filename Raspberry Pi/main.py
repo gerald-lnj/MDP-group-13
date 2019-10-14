@@ -58,13 +58,19 @@ class Main(threading.Thread):
 
             # Check header and send to pc
             elif(read_bt_msg[0:3].lower() == 'al:'):
-                if((read_bt_msg[3:].lower() == 'explore') or (read_bt_msg[3:].lower() == 'fastest')):
+                if(read_bt_msg[3:].lower() == 'explore'):
                     print("Message Received from BT: {}".format(read_bt_msg))
                     print("Sending message to PC: {}".format(read_bt_msg[3:]))
                     self.write_to_pc(read_bt_msg[3:])
                     msg = str.encode("I")
                     print("Sending message to Arduino: {}".format(msg))
                     self.write_to_arduino(msg)
+
+                elif(read_bt_msg[3:].lower() == 'fastest'):
+                    print("Message Received from BT: {}".format(read_bt_msg))
+                    print("Sending message to PC: {}".format(read_bt_msg[3:]))
+                    self.write_to_pc(read_bt_msg[3:])
+
                 else:	
                     print("Message Received from BT: {}".format(read_bt_msg))
                     print("Sending message to PC: {}".format(read_bt_msg[3:]))
@@ -160,9 +166,31 @@ class Main(threading.Thread):
                     self.write_to_arduino(stop_msg)
                     print("Sending message to Android: {}".format(msg[-3]))
                     self.write_to_bluetooth(msg[-3])
-                    self.pc_thread.pc_disconnect()
+                    # self.pc_thread.pc_disconnect()
 
-            elif (read_pc_msg[])
+            elif(read_pc_msg[0:4].lower() == 'done'):
+                print("Message Received from PC: {}".format(read_pc_msg))
+                # read_pc_msg = DONE|MDF1|MDF2|(any combi of w, c, a, d, b, 1-9)|[5 6]|orientation
+                msg = read_pc_msg.split("|")
+                 
+                arduino_msg = msg[3:-2]
+                for i in arduino_msg:
+                    print("Sending message to Arduino: {}".format(i))
+                    self.write_to_arduino(i)
+
+                android_msg =  '|'.join([msg[0], msg[1], msg[2])
+                print("Sending message to Android: {}".format(android_msg))
+                self.write_to_bluetooth(android_msg)
+                #Wait for callibration to be done
+                time.sleep(5)
+
+            elif(read_pc_msg[0:7].lower() == 'fastest'):
+                msg = read_pc_msg.split("|")
+                arduino_msg = msg[1:-1]
+                for i in arduino_msg:
+                    print("Sending message to Arduino: {}".format(i))
+                    self.write_to_arduino(i)
+                    
             else:
                 print ("Incorrect header received from PC: {}".format(read_pc_msg[0:2])) 
                 time.sleep(1)

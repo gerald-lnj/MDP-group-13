@@ -46,12 +46,16 @@ class tcp_connection():
             print("Failed to send message to PC: {}".format(IOError))
 
     #comment test_send function if not testing
-    def test_send(self):
+    def test_explore(self):
         msg = str.encode("EXPLORE")
         self.client.sendto(msg, self.addr)
 
     def send_data(self):
-        msg = str.encode("COMPUTE:9-9-9-1-1-9")
+        msg = str.encode("WAYPOINT:16:13")
+        self.client.sendto(msg, self.addr)
+    
+    def test_fastest(self):
+        msg = str.encode("FASTEST")
         self.client.sendto(msg, self.addr)
 
     def pc_disconnect(self):

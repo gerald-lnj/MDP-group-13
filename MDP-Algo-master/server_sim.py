@@ -192,8 +192,6 @@ def exploration(exp, limit, coverage):
         currentMap = exp.currentMap
         area = exp.exploredArea
         steps += 1
-        print(str(exp.robot.center))
-        print(str(exp.robot.direction))
         currentPos = tuple(exp.robot.center)
         if (currentPos in visited):
             visited[currentPos] += 1
@@ -205,8 +203,9 @@ def exploration(exp, limit, coverage):
                                       exp.robot.direction, None)
                     fastestPath(fsp, neighbour, exp.exploredArea, None)
                     exp.robot.center = neighbour
-                    exp.robot.head = fsp.robot.head
-                    exp.robot.direction = fsp.robot.direction
+                    # exp.robot.head = fsp.robot.head
+                    # exp.robot.direction = fsp.robot.direction
+                    exp.robot.direction=3
                 else:
                     break
         else:

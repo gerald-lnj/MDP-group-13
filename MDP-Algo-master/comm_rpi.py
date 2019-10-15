@@ -415,6 +415,14 @@ class RPi(threading.Thread):
                                     exp.robot.center = neighbour
                                     exp.robot.head = fsp.robot.head
                                     exp.robot.direction = fsp.robot.direction
+                                    if exp.robot.direction!=3:
+                                        if exp.robot.direction==1:
+                                            move.append('B')
+                                        elif exp.robot.direction==2:
+                                            move.append('D')
+                                        elif exp.robot.direction==4:
+                                            move.append('A')
+                                    exp.robot.direction=3    
                                     currentMap = exp.currentMap
                             if (np.array_equal(exp.robot.center, START) and exp.exploredArea > 50):
                                 numCycle += 1

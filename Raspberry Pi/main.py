@@ -7,9 +7,9 @@ from btclass import *
 from arclass import *
 from tcpclass import *
 
-sys.path.insert(0, "/Image Recognition")
-
 from YOLODetectorClient import *
+
+from 
 
 class Main(threading.Thread):
     def __init__(self):

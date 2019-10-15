@@ -20,12 +20,15 @@ import java.util.Arrays;
 
 public class Maze extends ViewGroup
 {
+    private final Handler refreshHandler = new Handler();
+
     //Maze Constants
     private static final int MAZE_WIDTH = 15;
     private static final int MAZE_HEIGHT = 20;
     public static int TILESIZE = 0;
     private final int[] _emptyArray = new int[MAZE_HEIGHT * MAZE_WIDTH];
     private static final String AR = "ar:";
+    public boolean isFastest = true;
 
     //Maze Entities
     private ArrayList<MazeTile> _tileList;
@@ -313,6 +316,155 @@ public class Maze extends ViewGroup
         }
     }
 
+    boolean tryParseInt(String value)
+    {
+        try
+        {
+            Integer.parseInt(value);
+            return true;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
+        }
+    }
+
+    // fastest path
+    public void handleFastestPath(String fasteststr)
+    {
+        Log.d("I'm here!", fasteststr);
+        Integer totaldelay = 0;
+        Integer currentdir = Constants.NORTH;
+        String fastestarr[] = fasteststr.split("\\|");
+        Log.d("Slot 1", fastestarr[0]);
+
+        for (int i=0; i < fastestarr.length; i++)
+        {
+            final String movement = fastestarr[i];
+            Log.d("Fastest Move", fastestarr[i]);
+
+            if (tryParseInt(movement))
+            {
+                int j;
+
+                for (j=0; j < Integer.parseInt(movement); j++)
+                {
+                    refreshHandler.postDelayed(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (_direction == Constants.NORTH)
+                            {
+                                attemptMoveBot(Constants.NORTH, true);
+                            }
+                            else if(_direction == Constants.SOUTH)
+                            {
+                                attemptMoveBot(Constants.SOUTH, true);
+                            }
+                            else if (_direction == Constants.EAST)
+                            {
+                                attemptMoveBot(Constants.EAST, true);
+                            }
+                            else if (_direction == Constants.WEST)
+                            {
+                                attemptMoveBot(Constants.WEST, true);
+                            }
+                        }
+                    }, totaldelay + (500 * j));
+                }
+
+                totaldelay = totaldelay + (500 * j);
+            }
+
+            else {
+                switch (movement)
+                {
+                    case "W":
+                        refreshHandler.postDelayed(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                if (_direction == Constants.NORTH)
+                                {
+                                    attemptMoveBot(Constants.NORTH, true);
+                                }
+                                else if (_direction == Constants.SOUTH)
+                                {
+                                    attemptMoveBot(Constants.SOUTH, true);
+                                }
+                                else if (_direction == Constants.EAST)
+                                {
+                                    attemptMoveBot(Constants.EAST, true);
+                                }
+                                else if (_direction == Constants.WEST)
+                                {
+                                    attemptMoveBot(Constants.WEST, true);
+                                }
+                            }
+                        }, totaldelay + 500);
+                        totaldelay = totaldelay + 500;
+                        break;
+
+                    case "D":
+                        refreshHandler.postDelayed(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                if (_direction == Constants.NORTH)
+                                {
+                                    attemptMoveBot(Constants.EAST, true);
+                                }
+                                else if (_direction == Constants.EAST)
+                                {
+                                    attemptMoveBot(Constants.SOUTH, true);
+                                }
+                                else if (_direction == Constants.SOUTH)
+                                {
+                                    attemptMoveBot(Constants.WEST, true);
+                                }
+                                else if (_direction == Constants.WEST)
+                                {
+                                    attemptMoveBot(Constants.NORTH, true);
+                                }
+                            }
+                        }, totaldelay + 500);
+                        totaldelay = totaldelay + 500;
+                        break;
+
+                    case "A":
+                        refreshHandler.postDelayed(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                if (_direction == Constants.NORTH)
+                                {
+                                    attemptMoveBot(Constants.WEST, true);
+                                }
+                                else if (_direction == Constants.WEST)
+                                {
+                                    attemptMoveBot(Constants.SOUTH, true);
+                                }
+                                else if (_direction == Constants.SOUTH)
+                                {
+                                    attemptMoveBot(Constants.EAST, true);
+                                }
+                                else if (_direction == Constants.EAST)
+                                {
+                                    attemptMoveBot(Constants.NORTH, true);
+                                }
+                            }
+                        }, totaldelay + 500);
+                        totaldelay = totaldelay + 500;
+                        break;
+                }
+            }
+        }
+    }
+
     // amd tool only
     public void handleAMDGrid(String binaryData)
     {
@@ -337,8 +489,8 @@ public class Maze extends ViewGroup
         try
         {
             String tmp[] = data.split(" ");
-            Log.d("X-coord", tmp[0]);
-            Log.d("Y-coord", tmp[1]);
+            Log.d("Y-coord", tmp[0]);
+            Log.d("X-coord", tmp[1]);
             Log.d("Direction", tmp[2]);
 
             if (tmp.length == 3)
@@ -346,8 +498,8 @@ public class Maze extends ViewGroup
 //                int xPos = Integer.parseInt(tmp[0]);
 //                int yPos = Integer.parseInt(tmp[1]);
 
-                int xPos = Integer.parseInt(tmp[1]);
-                int yPos = Integer.parseInt(tmp[0]);
+                int xPos = Integer.parseInt(tmp[0]);
+                int yPos = 19 - (Integer.parseInt(tmp[1]));
                 int direction = Integer.parseInt(tmp[2]);
                 String dir = tmp[2];
 
@@ -359,7 +511,8 @@ public class Maze extends ViewGroup
 
                 if (tmp[2].equals("1"))
                 {
-                    direction = Constants.NORTH;
+//                    direction = Constants.NORTH;
+                    direction = Constants.SOUTH;
                 }
                 else if (tmp[2].equals("2"))
                 {
@@ -367,7 +520,8 @@ public class Maze extends ViewGroup
                 }
                 if (tmp[2].equals("3"))
                 {
-                    direction = Constants.SOUTH;
+//                    direction = Constants.SOUTH;
+                    direction = Constants.NORTH;
                 }
                 if (tmp[2].equals("4"))
                 {
@@ -727,59 +881,100 @@ public class Maze extends ViewGroup
                 {
                     if (dir == Constants.WEST && _direction == Constants.NORTH)
                     {
-                        BluetoothManager.getInstance().sendMessage("ar", "L");
+                        if(!isFastest)
+                        {
+                            BluetoothManager.getInstance().sendMessage("ar", "L");
+                        }
                     }
                     else if (dir == Constants.SOUTH && _direction == Constants.WEST)
                     {
-                        BluetoothManager.getInstance().sendMessage("ar", "L");
+                        if(!isFastest)
+                        {
+                            BluetoothManager.getInstance().sendMessage("ar", "L");
+                        }
                     }
                     else if (dir == Constants.EAST && _direction == Constants.SOUTH)
                     {
-                        BluetoothManager.getInstance().sendMessage("ar", "L");
+                        if(!isFastest)
+                        {
+                            BluetoothManager.getInstance().sendMessage("ar", "L");
+                        }
                     }
                     else if (dir == Constants.NORTH && _direction == Constants.EAST)
                     {
-                        BluetoothManager.getInstance().sendMessage("ar", "L");
+                        if(!isFastest)
+                        {
+                            BluetoothManager.getInstance().sendMessage("ar", "L");
+                        }
                     }
                     else if (dir == Constants.EAST && _direction == Constants.NORTH)
                     {
-                        BluetoothManager.getInstance().sendMessage("ar", "R");
+                        if(!isFastest)
+                        {
+                            BluetoothManager.getInstance().sendMessage("ar", "R");
+                        }
                     }
                     else if (dir == Constants.SOUTH && _direction == Constants.EAST)
                     {
-                        BluetoothManager.getInstance().sendMessage("ar", "R");
+                        if(!isFastest)
+                        {
+                            BluetoothManager.getInstance().sendMessage("ar", "R");
+                        }
                     }
                     else if (dir == Constants.WEST && _direction == Constants.SOUTH)
                     {
-                        BluetoothManager.getInstance().sendMessage("ar", "R");
+                        if(!isFastest)
+                        {
+                            BluetoothManager.getInstance().sendMessage("ar", "R");
+                        }
                     }
                     else if (dir == Constants.NORTH && _direction == Constants.WEST)
                     {
-                        BluetoothManager.getInstance().sendMessage("ar", "R");
+                        if(!isFastest)
+                        {
+                            BluetoothManager.getInstance().sendMessage("ar", "R");
+                        }
                     }
                 }
-                else if (dir == _direction) {
+                else if (dir == _direction)
+                {
                     if (dir == Constants.NORTH)
-                 {
-                    BluetoothManager.getInstance().sendMessage("ar", "F");
-                    _botCoord[1] += 1;
-                    _direction = Constants.NORTH;
-                 }
-                    if (dir == Constants.SOUTH) {
-                        BluetoothManager.getInstance().sendMessage("ar", "F");
+                    {
+                        if (!isFastest)
+                        {
+                            BluetoothManager.getInstance().sendMessage("ar", "F");
+                        }
+                        _botCoord[1] += 1;
+                        _direction = Constants.NORTH;
+                    }
+                    else if (dir == Constants.SOUTH)
+                    {
+                        if (!isFastest)
+                        {
+                            BluetoothManager.getInstance().sendMessage("ar", "F");
+                        }
                         _botCoord[1] -= 1;
                         _direction = Constants.SOUTH;
                     }
-                    else if (dir == Constants.EAST) {
-                        BluetoothManager.getInstance().sendMessage("ar", "F");
-                        _botCoord[0] += 1;
-                        _direction = Constants.EAST; }
-                    else if (dir == Constants.WEST) {
+                    else if (dir == Constants.EAST)
+                    {
+                        if (!isFastest)
+                        {
                             BluetoothManager.getInstance().sendMessage("ar", "F");
-                            _botCoord[0] -= 1;
-                            _direction = Constants.WEST;
                         }
+                        _botCoord[0] += 1;
+                        _direction = Constants.EAST;
                     }
+                    else if (dir == Constants.WEST)
+                    {
+                        if (!isFastest)
+                        {
+                            BluetoothManager.getInstance().sendMessage("ar", "F");
+                        }
+                        _botCoord[0] -= 1;
+                        _direction = Constants.WEST;
+                    }
+                }
             }
            moveBot(dir);
         }
@@ -838,7 +1033,7 @@ public class Maze extends ViewGroup
         }
         else if (dir == Constants.NORTH)
         {
-           //_botCoord[1] += 1;
+            // _botCoord[1] += 1;
             _direction = Constants.NORTH;
         }
         else if (dir == Constants.SOUTH)

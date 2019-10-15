@@ -573,10 +573,16 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                     maze.updateBotPosDir(msg);
                 }
 
-                else if(key.equals("MOVE"))
+                else if (key.equals("FASTEST")) //fastest path
                 {
-                    maze.handleBotData(msg);
+                    Log.d("Fastest Path Route", msg);
+                    maze.handleFastestPath(msg);
                 }
+
+//                else if(key.equals("MOVE"))
+//                {
+//                    maze.handleBotData(msg);
+//                }
                 else if (key.equals("STATUS"))
                 {
                     TextView tv = getView().findViewById(R.id.statusText);

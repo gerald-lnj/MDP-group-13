@@ -170,23 +170,22 @@ class Main(threading.Thread):
 
             elif(read_pc_msg[0:4].lower() == 'done'):
                 print("Message Received from PC: {}".format(read_pc_msg))
-                # read_pc_msg = DONE|MDF1|MDF2|(any combi of w, c, a, d, b, 1-9)|[5 6]|orientation
+                # read_pc_msg = DONE|MDF1|MDF2|(any combi of w, c, a, d, b, 1-9)
                 msg = read_pc_msg.split("|")
                  
-                arduino_msg = msg[3:-2]
+                arduino_msg = msg[3:]
                 for i in arduino_msg:
                     print("Sending message to Arduino: {}".format(i))
                     self.write_to_arduino(i)
 
-                android_msg =  '|'.join([msg[0], msg[1], msg[2])
-                print("Sending message to Android: {}".format(android_msg))
-                self.write_to_bluetooth(android_msg)
                 #Wait for callibration to be done
                 time.sleep(5)
 
             elif(read_pc_msg[0:7].lower() == 'fastest'):
+                print("Message Received from PC: {}".format(read_pc_msg))
+                # read_pc_msg = FASTEST|(any combi of w, c, a, d, b, 1-9)
                 msg = read_pc_msg.split("|")
-                arduino_msg = msg[1:-1]
+                arduino_msg = msg[1:]
                 for i in arduino_msg:
                     print("Sending message to Arduino: {}".format(i))
                     self.write_to_arduino(i)

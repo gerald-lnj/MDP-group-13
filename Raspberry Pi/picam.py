@@ -3,25 +3,24 @@ from datetime import datetime
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 
+camera = PiCamera()
+camera.resolution = (640, 640)
+camera.rotation = 180
+rawCapture = PiRGBArray(camera)
+
 def savePhoto(coordinates_x, coordinates_y, orientation):
-    camera = PiCamera()
-    camera.resolution = (600, 600)
-    camera.start_preview()
     # Camera warm-up time
+    camera.start_preview()
     filename = '{}-{}-{}.jpg'.format(coordinates_x, coordinates_y, orientation)
-    camera.capture('Raspberry Pi/Image Recognition/Query/'+filename)
+    camera.capture(filename)
     print('took a photo!')
 
 def takePhoto():
     # initialize the camera and grab a reference to the raw camera capture
-    camera = PiCamera()
-    camera.resolution = (600, 600)
-    rawCapture = PiRGBArray(camera)
-    
     # allow the camera to warmup
-    sleep(0.1)
-    
+    camera.start_preview()
     # grab an image from the camera
     camera.capture(rawCapture, format="bgr")
+    rawCapture.truncate(0)
     image = rawCapture.array
     return image

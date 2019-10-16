@@ -29,7 +29,7 @@ class Main(threading.Thread):
         self.sr_thread.setup()
         self.pc_thread.setup()
         # TODO: need to find ip of YOLODetectorServer computer
-        self.image_thread.setup('192.168.13.12') # ip of gerald's com
+        self.image_thread.setup('192.168.13.16') # ip of gerald's com
 
         # init coordinates, orientation for image recognition
         self.row = 0
@@ -89,7 +89,9 @@ class Main(threading.Thread):
         #if self.bt_thread.bt_checkStatus() == False:
         #       self.bt_thread.setup()
         self.bt_thread.bt_send_msg(msg_to_bt)
-
+        print('sending message: {}'.format(msg_to_bt))
+        if (msg_to_bt[0] == 'I'):
+            print(dir(self))
     #process to read from arduino
     def read_from_arduino(self):
         while True:
@@ -110,9 +112,9 @@ class Main(threading.Thread):
                 self.write_to_pc(read_ard_msg[3:])
                 # TODO: uncomment after image recogintion is ready
                 # # on sensor data from ar to al, take pic and send to server
-                # response, coordinates_x, coordinates_y, orientation = self.image_thread.main(self.row, self.col, self.orientation)
-                # if response:
-                #     self.write_to_bluetooth('IMAGE:{}-{}-{}-{}'.format(response, coordinates_x, coordinates_y, orientation))
+                #response, coordinates_x, coordinates_y, orientation = self.image_thread.main(self.row, self.col, self.orientation)
+                #if response:
+                #    self.write_to_bluetooth('IMAGE:{}-{}-{}-{}'.format(response, coordinates_x, coordinates_y, orientation))
 
     #process to write to arduino
     def write_to_arduino(self, msg_to_ard):
@@ -145,7 +147,8 @@ class Main(threading.Thread):
                 msg = read_pc_msg.split("|")
                 coordinates = msg[-2] #'[5 6]'
                 coordinates = coordinates[1:-1] # '5 6'
-                [self.row, self.col] = coordinates.split(' ') # ['5', '6']
+                coordinates = coordinates.split(' ')
+                [self.row, self.col] = [i for i in coordinates if len(i)>0] # ['5', '6']
                 self.orientation = msg[-1]
 
                 android_msg = '|'.join([msg[0], msg[1], msg[2], msg[-2], msg[-1]])
@@ -165,7 +168,7 @@ class Main(threading.Thread):
                 self.write_to_bluetooth(android_msg)
                 if(msg[-3].lower() == 'stop'):
                     print("Sending message to Arduino: Z")
-                    stop_msg = str.encode("Z")
+                    stop_msg = "Z"
                     self.write_to_arduino(stop_msg)
                     print("Sending message to Android: {}".format(msg[-3]))
                     self.write_to_bluetooth(msg[-3])
@@ -175,8 +178,13 @@ class Main(threading.Thread):
                 print("Message Received from PC: {}".format(read_pc_msg))
                 # read_pc_msg = DONE|MDF1|MDF2|(any combi of w, c, a, d, b, 1-9)
                 msg = read_pc_msg.split("|")
-                 
-                arduino_msg = msg[3:]
+                
+                temp = 'MOVEMENT'
+                android_msg = '|'.join([temp, msg[1], msg[2], '[18 1]', '1'])
+                print("Sending message to Android: {}".format(android_msg))
+                self.write_to_bluetooth(android_msg)
+ 
+                arduino_msg = msg[3:-2]
                 for i in arduino_msg:
                     print("Sending message to Arduino: {}".format(i))
                     self.write_to_arduino(i)
@@ -190,12 +198,16 @@ class Main(threading.Thread):
             elif(read_pc_msg[0:7].lower() == 'fastest'):
                 print("Message Received from PC: {}".format(read_pc_msg))
                 # read_pc_msg = FASTEST|(any combi of w, c, a, d, b, 1-9)
+                print("Sending message to Android: {}".format(read_pc_msg))
+                self.write_to_bluetooth(read_pc_msg)
                 msg = read_pc_msg.split("|")
                 arduino_msg = msg[1:]
                 for i in arduino_msg:
                     print("Sending message to Arduino: {}".format(i))
                     self.write_to_arduino(i)
-                    
+                temp = 'STOP'
+                print("Sending message to Android: {}".format(temp))
+                self.write_to_bluetooth(temp)    
             else:
                 print ("Incorrect header received from PC: {}".format(read_pc_msg[0:2])) 
                 time.sleep(1)
@@ -251,11 +263,22 @@ class Main(threading.Thread):
         while True:
             #suspend the thread  
             time.sleep(0.5)
+    
+    def image_test(self):
+        row = 1
+        col = 1
+        orientation = 1
+        thread = threading.Thread(target=self.image_thread.main(row, col, orientation, self.write_to_bluetooth))
+        thread.start()
+
+
+
 
 if __name__ == "__main__":
     try:	
         mainThread = Main()
         mainThread.initialize_threads()
+        mainThread.image_test()
         mainThread.keep_main_alive()
     except KeyboardInterrupt:	
 	    mainThread.close_all_sockets()

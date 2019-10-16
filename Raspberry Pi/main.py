@@ -52,8 +52,6 @@ class Main(threading.Thread):
 
             #Get message from bluetooth
             read_bt_msg = self.bt_thread.bt_listen_msg()
-            print('received: ',read_bt_msg)
-            read_bt_msg = read_bt_msg.decode(encoding="utf-8")
 
             #Check header and send to arduino
             if(read_bt_msg[0:3].lower() == 'ar:'):

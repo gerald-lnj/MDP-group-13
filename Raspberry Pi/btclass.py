@@ -45,7 +45,7 @@ class bt_connection():
         while True:
             try:
                 client_sock = self.client_sock
-                data = client_sock.recv(2048)
+                data = client_sock.recv(2048).decode('utf-8')
                 #print("Message Received: {}".format(data))
                 return(data)
             except Exception as e:

@@ -438,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 Log.d("coords", reccoords);
                                 String coords = reccoords.substring(1, reccoords.length() - 1);
 
-                                int mid = reccoords.length() / 2;
+                                int mid = coords.length() / 2;
                                 String y_coord = coords.substring(0, mid);
                                 y_coord = y_coord.trim();
                                 String x_coord = coords.substring(mid);

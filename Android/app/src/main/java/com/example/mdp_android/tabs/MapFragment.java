@@ -272,7 +272,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                 //Added for AMD Tool
                 if(_storekey.equals("GRID"))
                 {
-                    maze.handleAMDGrid(_testmsg);
+                    maze.handleGridObstacle(_testmsg);
                 }
 
                 maze.renderMaze();
@@ -411,7 +411,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 
                     if (_autoRefresh)
                     {
-                        maze.handleAMDGrid(msg);
+                        maze.handleGridObstacle(msg);
                     }
 
                     Log.d("data",msg);

@@ -466,12 +466,31 @@ public class Maze extends ViewGroup
     }
 
     // amd tool only
-    public void handleAMDGrid(String binaryData)
+    public void handleGridObstacle(String binaryData)
     {
-        Log.d("Explored Data", Arrays.toString(_exploreData));
-        //_exploreData = convertStrToIntArray(parseHexCharToBinary("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
-        _obstacleData = convertStrToIntArray(parseHexCharToBinary(binaryData));
+        //Obstacle Data is mapped to explored tiles in _Exploreddata
+        int[] exploredObstacleData = convertStrToIntArray(parseHexCharToBinary(binaryData));
+        int[] mappedObstacleData = _exploreData.clone();
+        int j = 0;
+        for (int i = 0; i < mappedObstacleData.length; i++)
+        {
+            if (mappedObstacleData[i] == 1){
+                try{
+                mappedObstacleData[i] = exploredObstacleData[j];
+                j++;}
+                catch (Exception e)
+                {
+                    mappedObstacleData[i] = 0;
+                }
+            };
+        }
+        _obstacleData = mappedObstacleData;
+        Log.d("Obstacle Data", Arrays.toString(_obstacleData));
         renderMaze();
+//        Log.d("Explored Data", Arrays.toString(_exploreData));
+//        //_exploreData = convertStrToIntArray(parseHexCharToBinary("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
+//        _obstacleData = convertStrToIntArray(parseHexCharToBinary(binaryData));
+//        renderMaze();
     }
 
     //amd tool only (Show arrow block Position)
@@ -499,31 +518,26 @@ public class Maze extends ViewGroup
 //                int yPos = Integer.parseInt(tmp[1]);
 
                 int xPos = Integer.parseInt(tmp[0]);
-                int yPos = 19 - (Integer.parseInt(tmp[1]));
+                int yPos = 19-Integer.parseInt(tmp[1]);
                 int direction = Integer.parseInt(tmp[2]);
                 String dir = tmp[2];
 
-                _botCoord[0] = yPos;
-                _botCoord[1] = xPos;
-
-//                _botCoord[0] = xPos;
-//                _botCoord[1] = yPos;
+                _botCoord[0] = xPos;
+                _botCoord[1] = yPos;
 
                 if (tmp[2].equals("1"))
                 {
-//                    direction = Constants.NORTH;
-                    direction = Constants.SOUTH;
+                    direction = Constants.NORTH;
                 }
                 else if (tmp[2].equals("2"))
                 {
                     direction = Constants.EAST;
                 }
-                if (tmp[2].equals("3"))
+                else if (tmp[2].equals("3"))
                 {
-//                    direction = Constants.SOUTH;
-                    direction = Constants.NORTH;
+                    direction = Constants.SOUTH;
                 }
-                if (tmp[2].equals("4"))
+                else  if (tmp[2].equals("4"))
                 {
                     direction = Constants.WEST;
                 }

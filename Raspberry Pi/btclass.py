@@ -37,8 +37,8 @@ class bt_connection():
             print("Accepted connection from ", client_address)
             self.bt_is_connected = True
 
-        except IOError:
-            print("Failed to connect to Android: {} ".format(IOError))
+        except Exception as e:
+            print("Failed to connect to Android: \n{} ".format(e))
             return False
 
     def bt_listen_msg(self):
@@ -48,14 +48,16 @@ class bt_connection():
                 data = client_sock.recv(2048)
                 #print("Message Received: {}".format(data))
                 return(data)
-            except IOError:
-                print("Failed to listen from Android: {}".format(IOError))
+            except Exception as e:
+                print("Failed to listen to Android: \n{} ".format(e))
+                return False
 
     def bt_send_msg(self, data):
         try:
             self.client_sock.send(data)
-        except IOError:
-            print("Failed to send message to Android: {}".format(IOError))
+        except Exception as e:
+            print("Failed to send to Android: \n{} ".format(e))
+            return False
 
     def bt_checkStatus(self):
         nexus_MAC_addr = '68:B3:5E:58:96:CB'

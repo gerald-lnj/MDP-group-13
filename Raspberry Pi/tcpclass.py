@@ -41,7 +41,8 @@ class tcp_connection():
 
     def pc_send_msg(self, data):
         try:
-            self.client.sendto(data, self.addr)
+            data_bytes = data.encode('utf-8')
+            self.client.sendto(data_bytes, self.addr)
         except IOError:
             print("Failed to send message to PC: {}".format(IOError))
 

@@ -25,7 +25,7 @@ class Main(threading.Thread):
         self.image_thread = YOLODetectorClient()
         
         #initialise connections
-        # self.bt_thread.setup()
+        self.bt_thread.setup()
         self.sr_thread.setup()
         self.pc_thread.setup()
         # TODO: need to find ip of YOLODetectorServer computer
@@ -65,7 +65,7 @@ class Main(threading.Thread):
                     print("Message Received from BT: {}".format(read_bt_msg))
                     print("Sending message to PC: {}".format(read_bt_msg[3:]))
                     self.write_to_pc(read_bt_msg[3:])
-                    msg = str.encode("I")
+                    msg = "I"
                     print("Sending message to Arduino: {}".format(msg))
                     self.write_to_arduino(msg)
 

@@ -185,7 +185,7 @@ class Main(threading.Thread):
                 time.sleep(10)
 
                 #TEST: start fastest path
-                self.pc_thread.test_fastest()
+                #self.pc_thread.test_fastest()
 
             elif(read_pc_msg[0:7].lower() == 'fastest'):
                 print("Message Received from PC: {}".format(read_pc_msg))

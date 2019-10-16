@@ -9,8 +9,6 @@ from tcpclass import *
 
 from YOLODetectorClient import *
 
-from 
-
 class Main(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -21,7 +19,7 @@ class Main(threading.Thread):
         else:
             sp.run(['sudo', 'hciconfig', 'hci0' ,'piscan'])
         
-        # self.bt_thread = bt_connection()
+        self.bt_thread = bt_connection()
         self.sr_thread = ard_connection()
         self.pc_thread = tcp_connection()
         self.image_thread = YOLODetectorClient()
@@ -40,57 +38,57 @@ class Main(threading.Thread):
 
         time.sleep(1)	# wait for 1 secs before starting
 
-        #TEST: send waypoint to pc
-        self.pc_thread.send_data()
-        #TEST: send explore to pc
-        self.pc_thread.test_explore()
+        # #TEST: send waypoint to pc
+        # self.pc_thread.send_data()
+        # #TEST: send explore to pc
+        # self.pc_thread.test_explore()
 
-    # #process to read from bluetooth
-    # def read_from_bluetooth(self):
-    #     while True:
-    #         #check if android is connected via bt
-    #         if self.bt_thread.bt_checkStatus() == False:
-    #             self.bt_thread.setup()
+    #process to read from bluetooth
+    def read_from_bluetooth(self):
+        while True:
+            #check if android is connected via bt
+            if self.bt_thread.bt_checkStatus() == False:
+                self.bt_thread.setup()
 
-    #         #Get message from bluetooth
-    #         read_bt_msg = self.bt_thread.bt_listen_msg()
+            #Get message from bluetooth
+            read_bt_msg = self.bt_thread.bt_listen_msg()
 
-    #         #Check header and send to arduino
-    #         if(read_bt_msg[0:3].lower() == 'ar:'):
-    #             print("Message Received from BT: {}".format(read_bt_msg))
-    #             print("Sending message to Arduino: {}".format(read_bt_msg[3:]))
-    #             self.write_to_arduino(read_bt_msg[3:])
+            #Check header and send to arduino
+            if(read_bt_msg[0:3].lower() == 'ar:'):
+                print("Message Received from BT: {}".format(read_bt_msg))
+                print("Sending message to Arduino: {}".format(read_bt_msg[3:]))
+                self.write_to_arduino(read_bt_msg[3:])
 
-    #         # Check header and send to pc
-    #         elif(read_bt_msg[0:3].lower() == 'al:'):               
-    #             if(read_bt_msg[3:].lower() == 'explore'):
-    #                 print("Message Received from BT: {}".format(read_bt_msg))
-    #                 print("Sending message to PC: {}".format(read_bt_msg[3:]))
-    #                 self.write_to_pc(read_bt_msg[3:])
-    #                 msg = str.encode("I")
-    #                 print("Sending message to Arduino: {}".format(msg))
-    #                 self.write_to_arduino(msg)
+            # Check header and send to pc
+            elif(read_bt_msg[0:3].lower() == 'al:'):               
+                if(read_bt_msg[3:].lower() == 'explore'):
+                    print("Message Received from BT: {}".format(read_bt_msg))
+                    print("Sending message to PC: {}".format(read_bt_msg[3:]))
+                    self.write_to_pc(read_bt_msg[3:])
+                    msg = str.encode("I")
+                    print("Sending message to Arduino: {}".format(msg))
+                    self.write_to_arduino(msg)
 
-    #             elif(read_bt_msg[3:].lower() == 'fastest'):
-    #                 print("Message Received from BT: {}".format(read_bt_msg))
-    #                 print("Sending message to PC: {}".format(read_bt_msg[3:]))
-    #                 self.write_to_pc(read_bt_msg[3:])
+                elif(read_bt_msg[3:].lower() == 'fastest'):
+                    print("Message Received from BT: {}".format(read_bt_msg))
+                    print("Sending message to PC: {}".format(read_bt_msg[3:]))
+                    self.write_to_pc(read_bt_msg[3:])
 
-    #             else:	
-    #                 print("Message Received from BT: {}".format(read_bt_msg))
-    #                 print("Sending message to PC: {}".format(read_bt_msg[3:]))
-    #                 self.write_to_pc(read_bt_msg[3:])
+                else:	
+                    print("Message Received from BT: {}".format(read_bt_msg))
+                    print("Sending message to PC: {}".format(read_bt_msg[3:]))
+                    self.write_to_pc(read_bt_msg[3:])
         
-    #         else:
-    #             print ("Incorrect header received from BT: {}".format(read_bt_msg[0:2])) 
-    #             time.sleep(1)
+            else:
+                print ("Incorrect header received from BT: {}".format(read_bt_msg[0:2])) 
+                time.sleep(1)
 
-    # #process to write to bluetooth
-    # def write_to_bluetooth(self, msg_to_bt):
-    #     #check if android is connected via bt
-    #     #if self.bt_thread.bt_checkStatus() == False:
-    #     #       self.bt_thread.setup()
-    #     self.bt_thread.bt_send_msg(msg_to_bt)
+    #process to write to bluetooth
+    def write_to_bluetooth(self, msg_to_bt):
+        #check if android is connected via bt
+        #if self.bt_thread.bt_checkStatus() == False:
+        #       self.bt_thread.setup()
+        self.bt_thread.bt_send_msg(msg_to_bt)
 
     #process to read from arduino
     def read_from_arduino(self):

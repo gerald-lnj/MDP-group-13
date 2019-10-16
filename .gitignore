@@ -3,7 +3,7 @@
 
 .vscode/
 
-Raspberry Pi/Image Recognition/Output/
+**/Image Recognition/Output/
 
 **/rpi_best.weights
 
@@ -13,4 +13,5 @@ Raspberry Pi/Image Recognition/Output/
 
 **/rpi.names
 
-Raspberry Pi/Image Recognition/__pycache__/
+**/__pycache__/
+**/*.pyc

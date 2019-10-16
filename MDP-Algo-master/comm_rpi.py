@@ -361,13 +361,12 @@ class RPi(threading.Thread):
         time_t = time.time()
         a=0
         while True:
-            a=a+1
-            print(a)
+            # a=a+1
+            # print(a)
             current_pos = None
             data = self.client_socket.recv(2048)
             log_file.write(data+'\n')
             log_file.flush()
-            print("Hello")
             if (data):
                 print("Hello")
                 print ('Received %s from RPi' % (data))
@@ -416,6 +415,14 @@ class RPi(threading.Thread):
                                     exp.robot.center = neighbour
                                     exp.robot.head = fsp.robot.head
                                     exp.robot.direction = fsp.robot.direction
+                                    if exp.robot.direction!=3:
+                                        if exp.robot.direction==1:
+                                            move.append('B')
+                                        elif exp.robot.direction==2:
+                                            move.append('D')
+                                        elif exp.robot.direction==4:
+                                            move.append('A')
+                                    exp.robot.direction=3    
                                     currentMap = exp.currentMap
                             if (np.array_equal(exp.robot.center, START) and exp.exploredArea > 50):
                                 numCycle += 1
@@ -437,17 +444,20 @@ class RPi(threading.Thread):
                         global mdfCounter
                         if mdfCounter == 3:
                             get_msg = output_formatter('MOVEMENT', [str(exp.robot.descriptor_1()),
-                                                       str(exp.robot.descriptor_2())] + move + ['S'])
-                            mdfCounter = 0
-                            print("here")
-                        else:
-                            get_msg = output_formatter('MOVEMENT', [str(0), str(0)] + move + ['S'])
-                            mdfCounter += 1
+                                                       str(exp.robot.descriptor_2())] + move + ['S'] + [str(exp.robot.center), str(exp.robot.direction)])
+                            # mdfCounter = 0
+                            print(move)
+                            print(current_pos)
+
+
+                        # else:
+                        #     get_msg = output_formatter('MOVEMENT', [str(0), str(0)] + move + ['S'])
+                        #     mdfCounter += 1
                         print 'Time 2: %s s' % (time.time() - time_t)
                     else:
                         move = combineMovement(current[0])
                         get_msg = output_formatter('MOVEMENT', [str(exp.robot.descriptor_1()),
-                                                   str(exp.robot.descriptor_2())] + move)
+                                                   str(exp.robot.descriptor_2())] + move + ['STOP'] + [str(exp.robot.center), str(exp.robot.direction)])
                         self.client_socket.send(get_msg)
                         print ('Sent %s to RPi' % (get_msg))
                         log_file.write('Robot Center: %s\n' % (str(exp.robot.center)))
@@ -467,18 +477,18 @@ class RPi(threading.Thread):
                         currentMap = exp.currentMap
                         global direction
                         if (fsp.robot.direction == WEST):
-                            calibrate_move = ['A', 'L', 'O']
+                            calibrate_move = ['A', 'L', 'B']
                         else:
-                            calibrate_move = ['L', 'O']
+                            calibrate_move = ['L', 'B']
                         direction = NORTH
                         get_msg = output_formatter('DONE', [str(exp.robot.descriptor_1()),
-                                                   str(exp.robot.descriptor_2())] + ['N'] + move +
+                                                   str(exp.robot.descriptor_2())] + move +
                                                    calibrate_move)
-                        self.client_socket.send(get_msg)
+                        # self.client_socket.send(get_msg)
                         time.sleep(1)
-                        get_msg = output_formatter('MOVEMENT', [str(exp.robot.descriptor_1()),
-                                                   str(exp.robot.descriptor_2())] + ['N'] + move +
-                                                   calibrate_move)
+                        # get_msg = output_formatter('MOVEMENT', [str(exp.robot.descriptor_1()),
+                        #                            str(exp.robot.descriptor_2())] + move +
+                        #                            calibrate_move)
                     self.client_socket.send(get_msg)
                     print ('Sent %s to RPi' % (get_msg))
                     time_t = time.time()
@@ -492,7 +502,7 @@ class RPi(threading.Thread):
                     fastestPath(fsp, GOAL, 300, waypoint)
                     # move = fsp.movement
                     move = combineMovement(fsp.movement)
-                    get_msg = output_formatter('FASTEST', ['N'] + move + ['C'])
+                    get_msg = output_formatter('FASTEST',move)
                     self.client_socket.send(get_msg)
                     print ('Sent %s to RPi' % (get_msg))
                 elif (split_data[0] == 'MANUAL'):

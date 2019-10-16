@@ -203,8 +203,9 @@ def exploration(exp, limit, coverage):
                                       exp.robot.direction, None)
                     fastestPath(fsp, neighbour, exp.exploredArea, None)
                     exp.robot.center = neighbour
-                    exp.robot.head = fsp.robot.head
-                    exp.robot.direction = fsp.robot.direction
+                    # exp.robot.head = fsp.robot.head
+                    # exp.robot.direction = fsp.robot.direction
+                    exp.robot.direction=3
                 else:
                     break
         else:

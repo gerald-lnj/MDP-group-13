@@ -4,7 +4,7 @@
 import numpy as np
 import time
  
-from Constants import NORTH, SOUTH, WEST, EAST, FORWARD, LEFT, RIGHT, START, MAX_ROWS, MAX_COLS
+from Constants import NORTH, SOUTH, WEST, EAST, FORWARD, LEFT, RIGHT, START, MAX_ROWS, MAX_COLS, BACK
 
 __author__ = "Utsav Garg"
 
@@ -84,6 +84,7 @@ class Exploration:
         move = []
         # multi step
         front = self.frontFree()
+        print(front)
         if (self.checkFree([1, 2, 3, 0], self.robot.center)):
             self.robot.moveBot(RIGHT)
             move.append(RIGHT)
@@ -91,10 +92,12 @@ class Exploration:
             for i in range(front):
                 self.robot.moveBot(FORWARD)
             move.extend([FORWARD]*front)
+            print("try right")
         elif (front):
             for i in range(front):
                 self.robot.moveBot(FORWARD)
             move.extend([FORWARD]*front)
+            print("try front")
         elif (self.checkFree([3, 0, 1, 2], self.robot.center)):
             self.robot.moveBot(LEFT)
             move.append(LEFT)
@@ -102,10 +105,12 @@ class Exploration:
             for i in range(front):
                 self.robot.moveBot(FORWARD)
             move.extend([FORWARD]*front)
+            print("try Left")
         else:
             self.robot.moveBot(RIGHT)
             self.robot.moveBot(RIGHT)
-            move.extend(('O'))
+            move.append(BACK)
+
         # single step
         # if (self.checkFree([1, 2, 3, 0], self.robot.center)):
         #     self.robot.moveBot(RIGHT)

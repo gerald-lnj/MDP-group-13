@@ -46,7 +46,7 @@ class YOLODetectorClient():
 		try:
 			image = picam.takePhoto()
 			# returns bytes (utf-8)
-			response = send_image('rpi', image)
+			response = self.send_image('rpi', image)
 			response = response.decode('utf-8') 
 
 			if len(response):

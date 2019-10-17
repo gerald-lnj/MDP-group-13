@@ -178,7 +178,7 @@ class Main(threading.Thread):
                 msg = read_pc_msg.split("|")
 
                 temp = 'MOVEMENT'
-                android_msg = '|'.join([temp, msg[1], msg[2], msg[-2], msg[-1]])
+                android_msg = '|'.join([temp, msg[1], msg[2], '[18 1]', '1'])
                 print("Sending message to Android: {}".format(android_msg))
                 self.write_to_bluetooth(android_msg)
                  

@@ -29,7 +29,7 @@ class Main(threading.Thread):
         self.sr_thread.setup()
         self.pc_thread.setup()
         # TODO: need to find ip of YOLODetectorServer computer
-        self.image_thread.setup('192.168.13.12') # ip of gerald's com
+        self.image_thread.setup('192.168.13.16') # ip of gerald's com
 
         # init coordinates, orientation for image recognition
         self.row = 0
@@ -110,9 +110,9 @@ class Main(threading.Thread):
                 self.write_to_pc(read_ard_msg[3:])
                 # TODO: uncomment after image recogintion is ready
                 # # on sensor data from ar to al, take pic and send to server
-                # response, coordinates_x, coordinates_y, orientation = self.image_thread.main(self.row, self.col, self.orientation)
-                # if response:
-                #     self.write_to_bluetooth('IMAGE:{}-{}-{}-{}'.format(response, coordinates_x, coordinates_y, orientation))
+                response, coordinates_x, coordinates_y, orientation = self.image_thread.main(self.row, self.col, self.orientation)
+                if response:
+                    self.write_to_bluetooth('IMAGE:{}-{}-{}-{}'.format(response, coordinates_x, coordinates_y, orientation))
 
     #process to write to arduino
     def write_to_arduino(self, msg_to_ard):

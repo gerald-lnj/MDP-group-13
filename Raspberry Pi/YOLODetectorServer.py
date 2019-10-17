@@ -42,7 +42,7 @@ imageHub = imagezmq.ImageHub()
 folderPath = os.path.dirname(os.path.abspath(__file__))
 
 # load the COCO class labels our YOLO model was trained on
-labelsPath =os.path.join(folderPath, "rpi.names")
+labelsPath =os.path.join(folderPath, "Image Recognition/rpi.names")
 LABELS = open(labelsPath).read().strip().split("\n")
 
 # initialize a list of colors to represent each possible class label
@@ -51,8 +51,8 @@ COLORS = np.random.randint(0, 255, size=(len(LABELS), 3),
 	dtype="uint8")
 
 # derive the paths to the YOLO weights and model configuration
-weightsPath = os.path.sep.join([folderPath, "rpi_best.weights"])
-configPath = os.path.sep.join([folderPath, "rpi.cfg"])
+weightsPath = os.path.sep.join([folderPath, "Image Recognition/rpi_best.weights"])
+configPath = os.path.sep.join([folderPath, "Image Recognition/rpi.cfg"])
 
 # load our YOLO object detector trained on COCO dataset (80 classes)
 # and determine only the output layer names that we need from YOLO

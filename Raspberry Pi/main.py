@@ -166,7 +166,7 @@ class Main(threading.Thread):
                 self.write_to_bluetooth(android_msg)
                 if(msg[-3].lower() == 'stop'):
                     print("Sending message to Arduino: Z")
-                    stop_msg = str.encode("Z")
+                    stop_msg = "Z"
                     self.write_to_arduino(stop_msg)
                     print("Sending message to Android: {}".format(msg[-3]))
                     self.write_to_bluetooth(msg[-3])
@@ -176,12 +176,12 @@ class Main(threading.Thread):
                 print("Message Received from PC: {}".format(read_pc_msg))
                 # read_pc_msg = DONE|MDF1|MDF2|(any combi of w, c, a, d, b, 1-9)
                 msg = read_pc_msg.split("|")
-
+                
                 temp = 'MOVEMENT'
                 android_msg = '|'.join([temp, msg[1], msg[2], '[18 1]', '1'])
                 print("Sending message to Android: {}".format(android_msg))
                 self.write_to_bluetooth(android_msg)
-                 
+ 
                 arduino_msg = msg[3:-2]
                 for i in arduino_msg:
                     print("Sending message to Arduino: {}".format(i))
@@ -203,7 +203,9 @@ class Main(threading.Thread):
                 for i in arduino_msg:
                     print("Sending message to Arduino: {}".format(i))
                     self.write_to_arduino(i)
-                    
+                temp = 'STOP'
+                print("Sending message to Android: {}".format(temp))
+                self.write_to_bluetooth(temp)    
             else:
                 print ("Incorrect header received from PC: {}".format(read_pc_msg[0:2])) 
                 time.sleep(1)

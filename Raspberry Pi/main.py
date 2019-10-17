@@ -176,8 +176,13 @@ class Main(threading.Thread):
                 print("Message Received from PC: {}".format(read_pc_msg))
                 # read_pc_msg = DONE|MDF1|MDF2|(any combi of w, c, a, d, b, 1-9)
                 msg = read_pc_msg.split("|")
+
+                temp = 'MOVEMENT'
+                android_msg = '|'.join([temp, msg[1], msg[2], msg[-2], msg[-1]])
+                print("Sending message to Android: {}".format(android_msg))
+                self.write_to_bluetooth(android_msg)
                  
-                arduino_msg = msg[3:]
+                arduino_msg = msg[3:-2]
                 for i in arduino_msg:
                     print("Sending message to Arduino: {}".format(i))
                     self.write_to_arduino(i)

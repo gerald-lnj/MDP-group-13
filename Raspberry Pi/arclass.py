@@ -27,6 +27,7 @@ class ard_connection():
             if len(data) == 0: 
                 print("No message received.")
                 return None
+            data = data.decode('utf-8')
             #print("Message Received: {}".format(data))
             return data
         except IOError:

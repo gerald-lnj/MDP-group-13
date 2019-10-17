@@ -145,7 +145,8 @@ class Main(threading.Thread):
                 msg = read_pc_msg.split("|")
                 coordinates = msg[-2] #'[5 6]'
                 coordinates = coordinates[1:-1] # '5 6'
-                [self.row, self.col] = coordinates.split(' ') # ['5', '6']
+                coordinates = coordinates.split(' ')
+                [self.row, self.col] = [i for i in coordinates if len(i)>0] # ['5', '6']
                 self.orientation = msg[-1]
 
                 android_msg = '|'.join([msg[0], msg[1], msg[2], msg[-2], msg[-1]])

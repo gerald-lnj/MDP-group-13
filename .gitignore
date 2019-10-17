@@ -5,12 +5,12 @@
 
 Raspberry Pi/Image Recognition/Output/
 
-Raspberry Pi/Image Recognition/rpi_best.weights
+Raspberry Pi/rpi_best.weights
 
-Raspberry Pi/Image Recognition/rpi.cfg
+Raspberry Pi/rpi.cfg
 
-Raspberry Pi/Image Recognition/rpi.data
+Raspberry Pi/rpi.data
 
-Raspberry Pi/Image Recognition/rpi.names
+Raspberry Pi/rpi.names
 
 Raspberry Pi/Image Recognition/__pycache__/

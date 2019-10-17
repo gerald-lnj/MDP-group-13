@@ -415,42 +415,56 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         }
 
                         //Added
-                        if(readMessage.length() > 20)
+                        if (readMessage.length() > 8)
+                        //if(readMessage.substring(0,8).equals("MOVEMENT"))
                         {
-                            String received = readMessage;
-                            Log.d("Received", received);
-                            String movement[] = received.split("\\|");
+                            if (readMessage.substring(0, 8).equals("MOVEMENT")) {
+                                String received = readMessage;
+                                Log.d("Received", received);
+                                String movement[] = received.split("\\|");
 
-                            String movementstr = movement[0];
-                            Log.d("Movement", movementstr);
+                                String movementstr = movement[0];
+                                Log.d("Movement", movementstr);
 
-                            String mdf1 = movement[1];
-                            Log.d("mdf1", mdf1);
-                            notifyFragments(Constants.MESSAGE_READ, "MDF1", mdf1);
+                                String mdf1 = movement[1];
+                                Log.d("mdf1", mdf1);
+                                notifyFragments(Constants.MESSAGE_READ, "MDF1", mdf1);
 
-                            String mdf2 = movement[2];
-                            Log.d("mdf2", mdf2);
-                            notifyFragments(Constants.MESSAGE_READ, "MDF2", mdf2);
+                                String mdf2 = movement[2];
+                                Log.d("mdf2", mdf2);
+                                notifyFragments(Constants.MESSAGE_READ, "MDF2", mdf2);
 
-                            String reccoords = movement[3];
-                            Log.d("coords", reccoords);
-                            String coords = reccoords.substring(1, reccoords.length()-1);
+                                String reccoords = movement[3];
+                                Log.d("coords", reccoords);
+                                String coords = reccoords.substring(1, reccoords.length() - 1);
 
-                            int mid = reccoords.length()/2;
-                            String x_coord = coords.substring(0,mid);
-                            x_coord = x_coord.trim();
-                            String y_coord = coords.substring(mid);
-                            y_coord = y_coord.trim();
+                                int mid = coords.length() / 2;
+                                String y_coord = coords.substring(0, mid);
+                                y_coord = y_coord.trim();
+                                String x_coord = coords.substring(mid);
+                                x_coord = x_coord.trim();
 
-                            String orientation = movement[4];
-                            Log.d("orientation", orientation);
+                                String orientation = movement[4];
+                                Log.d("orientation", orientation);
 
-                            String coords_dir = x_coord + " " + y_coord + " " + orientation;
-                            Log.d("Final", coords_dir);
-                            notifyFragments(Constants.MESSAGE_READ,"COORD",coords_dir);
+                                String coords_dir = x_coord + " " + y_coord + " " + orientation;
+                                //String coords_dir = x_coord + " " + y_coord + " " + orientation;
+                                Log.d("Final", coords_dir);
+                                notifyFragments(Constants.MESSAGE_READ, "COORD", coords_dir); //comment
+                            }
+
+                            if (readMessage.substring(0, 7).equals("FASTEST")) {
+                                String recfastest = readMessage;
+                                Log.d("Received Fastest", recfastest);
+
+                                String fastestpath = recfastest.substring(8, recfastest.length());
+                                Log.d("Fastest Path", fastestpath);
+
+                                notifyFragments(Constants.MESSAGE_READ, "FASTEST", fastestpath);
+                            }
                         }
 
-                        //Added for MDF1
+                            //Added for MDF1
 //                        if (readMessage.length()> 9)
 //                        {
 //                            if (readMessage.substring(0, 8).equals("MOVEMENT"))
@@ -475,6 +489,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //                                notifyFragments(Constants.MESSAGE_READ, "MDF2", mdf2string);
 //                            }
 //                        }
+
                     }
                     break;
 

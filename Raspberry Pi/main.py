@@ -196,6 +196,8 @@ class Main(threading.Thread):
             elif(read_pc_msg[0:7].lower() == 'fastest'):
                 print("Message Received from PC: {}".format(read_pc_msg))
                 # read_pc_msg = FASTEST|(any combi of w, c, a, d, b, 1-9)
+                print("Sending message to Android: {}".format(read_pc_msg))
+                self.write_to_bluetooth(read_pc_msg)
                 msg = read_pc_msg.split("|")
                 arduino_msg = msg[1:]
                 for i in arduino_msg:

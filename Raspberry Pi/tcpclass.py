@@ -35,6 +35,7 @@ class tcp_connection():
         while True:
             try:
                 data = self.client.recv(2048)
+                data = data.decode('utf-8')
                 return(data)
             except IOError:
                 print("Failed to listen from PC: {}".format(IOError))

@@ -27,6 +27,7 @@ class ard_connection():
             if len(data) == 0: 
                 print("No message received.")
                 return None
+            data = data.decode('utf-8')
             #print("Message Received: {}".format(data))
             return data
         except IOError:
@@ -34,6 +35,9 @@ class ard_connection():
 
     def ard_send_msg(self, data):
         try:
-            self.s1.write(data)
+            #TODO: ensure that arduino can also read a byte array
+            # data_bytes = bytes(data, 'utf-8')
+            data_bytes = (data.encode('utf-8'))
+            self.s1.write(data_bytes)
         except IOError:
             print("Failed to send message to Arduino: {}".format(IOError))

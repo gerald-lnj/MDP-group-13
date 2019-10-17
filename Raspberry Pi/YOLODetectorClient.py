@@ -46,7 +46,7 @@ class YOLODetectorClient():
 if __name__ == "__main__":
 	client = YOLODetectorClient()
 	client.setup('127.0.0.1')
-	for entry in os.scandir(client.folderPath+'/Query'):
+	for entry in os.scandir(client.folderPath+'Image Recognition/Query'):
 		if entry.name != '.DS_Store':
 			filename, image, x, y, orientation = client.read_image(entry.path)
 

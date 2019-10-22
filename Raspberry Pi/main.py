@@ -90,8 +90,7 @@ class Main(threading.Thread):
         #       self.bt_thread.setup()
         self.bt_thread.bt_send_msg(msg_to_bt)
         print('sending message: {}'.format(msg_to_bt))
-        if (msg_to_bt[0] == 'I'):
-            print(dir(self))
+
     #process to read from arduino
     def read_from_arduino(self):
         while True:
@@ -110,11 +109,7 @@ class Main(threading.Thread):
                 print("Message Received from Arduino: {}".format(read_ard_msg))
                 print("Sending message to PC: {}".format(read_ard_msg[3:]))
                 self.write_to_pc(read_ard_msg[3:])
-                # TODO: uncomment after image recogintion is ready
-                # # on sensor data from ar to al, take pic and send to server
-                #response, coordinates_x, coordinates_y, orientation = self.image_thread.main(self.row, self.col, self.orientation)
-                #if response:
-                #    self.write_to_bluetooth('IMAGE:{}-{}-{}-{}'.format(response, coordinates_x, coordinates_y, orientation))
+                self.image_request()
 
     #process to write to arduino
     def write_to_arduino(self, msg_to_ard):
@@ -264,11 +259,11 @@ class Main(threading.Thread):
             #suspend the thread  
             time.sleep(0.5)
     
-    def image_test(self):
-        row = 1
-        col = 1
-        orientation = 1
-        thread = threading.Thread(target=self.image_thread.main(row, col, orientation, self.write_to_bluetooth))
+    def image_request(self):
+        # currently only triggered on msg from ar to al
+        # meaning, when move completed
+
+        thread = threading.Thread(target=self.image_thread.main(self.row, self.col, self.orientation, self.write_to_bluetooth))
         thread.start()
 
 
@@ -278,7 +273,7 @@ if __name__ == "__main__":
     try:	
         mainThread = Main()
         mainThread.initialize_threads()
-        mainThread.image_test()
+        mainThread.image_request()
         mainThread.keep_main_alive()
     except KeyboardInterrupt:	
 	    mainThread.close_all_sockets()

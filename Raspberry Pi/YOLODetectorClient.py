@@ -51,7 +51,6 @@ class YOLODetectorClient():
 
 			if len(response):
 				print('detected {} at {}, orientation {}'.format(response, [coordinates_x, coordinates_y], orientation))
-				# return response, coordinates_x, coordinates_y, orientation
 				msg = 'IMAGE:{}-{}-{}-{}'.format(response, coordinates_x, coordinates_y, orientation)
 				write_to_bluetooth(msg)
 

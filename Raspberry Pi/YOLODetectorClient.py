@@ -42,7 +42,7 @@ class YOLODetectorClient():
 			print('Error in YOLOClient read_image')
 			print(e)
 
-	def main(self, coordinates_x, coordinates_y, orientation):
+	def main(self, coordinates_x, coordinates_y, orientation, write_to_bluetooth):
 		try:
 			image = picam.takePhoto()
 			# returns bytes (utf-8)
@@ -51,7 +51,10 @@ class YOLODetectorClient():
 
 			if len(response):
 				print('detected {} at {}, orientation {}'.format(response, [coordinates_x, coordinates_y], orientation))
-				return response, coordinates_x, coordinates_y, orientation
+				# return response, coordinates_x, coordinates_y, orientation
+				msg = 'IMAGE:{}-{}-{}-{}'.format(response, coordinates_x, coordinates_y, orientation)
+				write_to_bluetooth(msg)
+
 		except Exception as e:
 			print('Error in YOLOClient main')
 			print(e)

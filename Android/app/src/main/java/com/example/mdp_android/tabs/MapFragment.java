@@ -28,6 +28,7 @@ import com.example.mdp_android.R;
 import com.example.mdp_android.bluetooth.BluetoothManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MapFragment extends Fragment implements MainActivity.CallbackFragment
 {
@@ -114,7 +115,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
         TextView mdf2view = getView().findViewById(R.id.MDF2String);
         mdf2view.setText("000000000000000000000000000000000000000000000000000000000000000000000000000");
 
-        BluetoothManager.getInstance().sendMessage("SET_STATUS", "Ready!");
+        //BluetoothManager.getInstance().sendMessage("SET_STATUS", "Ready!");
     }
 
     private void setupButtonListeners()
@@ -204,7 +205,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
             public void onClick(View v)
             {
                 Toast.makeText(getActivity(), "Maze Reset!", Toast.LENGTH_SHORT).show();
-                BluetoothManager.getInstance().sendMessage("reset", "");
+                //BluetoothManager.getInstance().sendMessage("reset", "");
                 maze.reset();
                 initializeButtons();
             }
@@ -309,10 +310,10 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 
                                 if (_autoRefresh)
                                 {
-                                    refreshHandler.postDelayed(this, 2000);
+                                    refreshHandler.postDelayed(this, 1000);
                                 }
                             }
-                        }, 2000);
+                        }, 1000);
                     }
                 }
                 else
@@ -530,13 +531,12 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                 {
                     String[] tmp = msg.split("-");
                     Log.d("Image ID", tmp[0]);
-                    Log.d("X-Axis", tmp[1]);
-                    Log.d("Y-Axis", tmp[2]);
+                    Log.d("X-Axis", tmp[2]);
+                    Log.d("Y-Axis", tmp[1]);
                     Log.d("Orientation", tmp[3]);
 
-                    int img_xpos = Integer.parseInt(tmp[1]);
-                    int img_ypos = Integer.parseInt(tmp[2]);
-
+                    int img_xpos = Integer.parseInt(tmp[2]);
+                    int img_ypos = Integer.parseInt(tmp[1]);
                     img_coord = img_xpos + (15 * img_ypos);
 
                     int[] intArray;
@@ -630,5 +630,5 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
         return maze;
     }
 
-    public static int getImageCoord() { return img_coord;}
+    public static int getImagePos() { return img_coord;}
 }

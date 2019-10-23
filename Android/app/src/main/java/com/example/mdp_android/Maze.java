@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.example.mdp_android.bluetooth.BluetoothManager;
 import com.example.mdp_android.tabs.MapFragment;
+import com.example.mdp_android.tabs.ImageCheckFragment;
 import com.example.mdp_android.MainActivity;
 
 import org.json.JSONObject;
@@ -27,6 +28,7 @@ public class Maze extends ViewGroup
     private static final int MAZE_HEIGHT = 20;
     public static int TILESIZE = 0;
     private final int[] _emptyArray = new int[MAZE_HEIGHT * MAZE_WIDTH];
+    private final int[] _emptyimageData = new int[MAZE_HEIGHT * MAZE_WIDTH];
     private static final String AR = "ar:";
     public boolean isFastest = true;
 
@@ -47,6 +49,8 @@ public class Maze extends ViewGroup
     private static int[] _imageData = new int[MAZE_HEIGHT * MAZE_WIDTH];
     private int _imageID;
 
+    private String[] _unresolvedImageDataArr = new String[]{"0"};
+    private int[] _receivedImagePosLog = new int[]{0};
     private ArrayList<Integer[]> _arrowBlockBanList = new ArrayList<Integer[]>();
 
     //Managing Input State
@@ -465,19 +469,21 @@ public class Maze extends ViewGroup
         }
     }
 
-    // amd tool only
     public void handleGridObstacle(String binaryData)
     {
         //Obstacle Data is mapped to explored tiles in _Exploreddata
         int[] exploredObstacleData = convertStrToIntArray(parseHexCharToBinary(binaryData));
-        int[] mappedObstacleData = _exploreData.clone();
+        int [] mappedObstacleData = _exploreData.clone();
         int j = 0;
         for (int i = 0; i < mappedObstacleData.length; i++)
         {
-            if (mappedObstacleData[i] == 1){
-                try{
-                mappedObstacleData[i] = exploredObstacleData[j];
-                j++;}
+            if (mappedObstacleData[i] == 1)
+            {
+                try
+                {
+                    mappedObstacleData[i] = exploredObstacleData[j];
+                    j++;
+                }
                 catch (Exception e)
                 {
                     mappedObstacleData[i] = 0;
@@ -496,10 +502,10 @@ public class Maze extends ViewGroup
     //amd tool only (Show arrow block Position)
     public void handleImageBlock(String binaryData, int imgID)
     {
-        _exploreData = convertStrToIntArray(parseHexCharToBinary("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
+       //_exploreData = convertStrToIntArray(parseHexCharToBinary("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
         _imageData = convertStrToIntArray(binaryData);
         _imageID = imgID;
-//        Log.d("String", binaryData);
+        Log.d("Image ID", Integer.toString(imgID));
         renderMaze();
     }
 
@@ -1136,15 +1142,26 @@ public class Maze extends ViewGroup
 
             if (_obstacleData[i] == 1 && _obstacleData[i] != _imageData[i])
             {
-//                Log.d("XXXBI " , Integer.toString(i));
-//                Log.d("XXXBU" , Integer.toString(_obstacleData.length));
                 _tileList.get(i).setState(Constants.OBSTACLE);
             }
         }
 
-        if (MapFragment.getImageCoord() != 0)
+        if (MapFragment.getImagePos() != 0)
         {
-            _tileList.get(MapFragment.getImageCoord()).setState(_imageID + 20);
+            _tileList.get(MapFragment.getImagePos()).setState(_imageID + 20);
+            int[] newImagePosEntry = new int[]{MapFragment.getImagePos(), _imageID};
+            _receivedImagePosLog = joinIntArray(_receivedImagePosLog, newImagePosEntry);
+
+            if (_receivedImagePosLog.length > 2)
+            {
+                for (int j = 2; j < _receivedImagePosLog.length-2; j += 2)
+                {
+                    if (newImagePosEntry[1] == _receivedImagePosLog[j] && newImagePosEntry[0] != _receivedImagePosLog[j-1])
+                    {
+                        _tileList.get(_receivedImagePosLog[j-1]).setState(Constants.EXPLORED);
+                    }
+                }
+            }
         }
 
         //ARROW BLOCKS
@@ -1366,6 +1383,78 @@ public class Maze extends ViewGroup
                 return Constants.NORTH;
         }
         return Constants.NORTH;
+    }
+
+//    public String[] convertImgCoord(String[] recImgStr)
+//    {
+//        int robot_x_coord = Integer.parseInt(recImgStr[2]);
+//        int robot_y_coord = Integer.parseInt(recImgStr[1]);
+//        String img_captured_orient = recImgStr[3];
+//
+//        //initialise image coordinates to be robot coordinates
+//        int img_x_coord = robot_x_coord;
+//        int img_y_coord = robot_y_coord;
+//
+//        //map coordinates to mdp string binary format position
+//        int real_img_pos = img_x_coord + (15 * img_y_coord);
+//
+//        while (_obstacleData[real_img_pos] != 1
+//                && img_x_coord+1 > 0 && img_x_coord < 15
+//                && img_y_coord+1 > 0 && img_y_coord < 20)
+//        {
+//            if (img_captured_orient.equals("N")){
+//                real_img_pos += 15;
+//                img_y_coord++;
+//            }
+//            else if (img_captured_orient.equals("S")){
+//                real_img_pos -= 15;
+//                img_y_coord--;
+//            }
+//            else if (img_captured_orient.equals("E")){
+//                real_img_pos += 1;
+//                img_x_coord++;
+//            }
+//            else if (img_captured_orient.equals("W")){
+//                real_img_pos -= 1;
+//                img_x_coord--;
+//            }
+//        }
+//
+//        if (img_x_coord < 0 || img_x_coord > 14 || img_y_coord < 0 || img_y_coord > 19){
+//            img_x_coord = -1;
+//            img_y_coord = -1;
+//            _unresolvedImageDataArr = ImageCheckFragment.joinArray(_unresolvedImageDataArr, recImgStr);
+//        }
+//
+//        String[] _convertedImgStr = new String[]{recImgStr[0], Integer.toString(img_y_coord), Integer.toString(img_x_coord), recImgStr[3]};
+//        return _convertedImgStr;
+//    }
+
+//    public void resolveMisplacedImages()
+//    {
+//        _unresolvedImageDataArr[1]
+//        _unresolvedImageDataArr[2]
+//        _unresolvedImageDataArr[3]
+//        _unresolvedImageDataArr[4]_receivedImagePosLog
+//        handleImageBlock();
+//    }
+
+    private static int[] joinIntArray(int[]... arrays)
+    {
+        int length = 0;
+        for (int[] array : arrays) {
+            length += array.length;
+        }
+
+        final int[] result = new int[length];
+
+        int offset = 0;
+        for (int[] array : arrays) {
+            System.arraycopy(array, 0, result, offset, array.length);
+            offset += array.length;
+        }
+
+        return result;
     }
 
     public static void setAuto(){

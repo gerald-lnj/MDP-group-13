@@ -9,11 +9,12 @@
     <TableLayout
         android:id="@+id/image_table"
         android:layout_width="wrap_content"
-        android:layout_height="600dp"
+        android:layout_height="300dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25">
 
 
         <TableRow
@@ -78,5 +79,33 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </TableRow>
     </TableLayout>
+
+    <TextView
+        android:id="@+id/ipsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="{ ... }"
+        android:textSize="@dimen/description_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/image_table"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ipshTextView"
+        app:layout_constraintVertical_bias="0.19999999" />
+
+    <TextView
+        android:id="@+id/ipshTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:background="#009688"
+        android:gravity="center"
+        android:text="IMAGE PROCESSING STRINGS"
+        android:textColor="@color/White"
+        android:textSize="@dimen/description_text_size"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

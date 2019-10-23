@@ -34,7 +34,7 @@ imshowDebug = False # mostly going to be used for cv2.imshow debugging perposes
 if platform.node() == 'raspberrypi': # can't display images on rpi
     imshowDebug = False
 
-imwriteDebug = False
+imwriteDebug = True
 
 boundingBoxDemo = False
 

@@ -36,25 +36,25 @@ class YOLODetectorClient():
 			# filename should contain coordinates, orientation
 			# eg filename = '0-2-N'
 			if ('-' in filename):
-				[coordinates_x, coordinates_y, orientation] = filename.split('-')
-			return filename, image, coordinates_x, coordinates_y, orientation
+				[coordinates_y, coordinates_x, orientation] = filename.split('-')
+			return filename, image, coordinates_y, coordinates_x, orientation
 		except Exception as e:
 			print('Error in YOLOClient read_image')
 			print(e)
 
-	def main(self, coordinates_x, coordinates_y, orientation, write_to_bluetooth):
+	def main(self, coordinates_y, coordinates_x, orientation, write_to_bluetooth):
 		try:
 			image = picam.takePhoto()
 
-			filename = '{}-{}-{}'.format(coordinates_x, coordinates_y, orientation)
+			filename = '{}-{}-{}'.format(coordinates_y, coordinates_x, orientation)
 
 			# returns bytes (utf-8)
 			response = self.send_image(filename, image)
 			response = response.decode('utf-8') 
 
 			if len(response):
-				print('detected {} at {}, orientation {}'.format(response, [coordinates_x, coordinates_y], orientation))
-				msg = 'IMAGE:{}-{}-{}-{}'.format(response, coordinates_x, coordinates_y, orientation)
+				print('detected {} at {}, orientation {}'.format(response, [coordinates_y, coordinates_x], orientation))
+				msg = 'IMAGE:{}-{}-{}-{}'.format(response, coordinates_y, coordinates_x, orientation)
 				write_to_bluetooth(msg)
 
 		except Exception as e:
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 	client.setup('127.0.0.1')
 	for entry in os.scandir(client.folderPath+'Image Recognition/Query'):
 		if entry.name != '.DS_Store':
-			filename, image, x, y, orientation = client.read_image(entry.path)
+			filename, image, y, x, orientation = client.read_image(entry.path)
 
 			# returns bytes (utf-8)
 			response = client.send_image(filename, image)

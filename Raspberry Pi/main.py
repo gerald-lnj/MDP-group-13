@@ -33,9 +33,9 @@ class Main(threading.Thread):
         # self.image_thread.setup('192.168.13.4') # ip of wanting's com
 
         # init coordinates, orientation for image recognition
-        self.row = 0
-        self.col = 0
-        self.orientation = 0
+        self.x_coords = 1
+        self.y_coords = 18
+        self.orientation = 4
 
         time.sleep(1)	# wait for 1 secs before starting
 
@@ -144,7 +144,7 @@ class Main(threading.Thread):
                 coordinates = msg[-2] #'[5 6]'
                 coordinates = coordinates[1:-1] # '5 6'
                 coordinates = coordinates.split(' ')
-                [self.row, self.col] = [i for i in coordinates if len(i)>0] # ['5', '6']
+                [self.y_coords, self.x_coords] = [i for i in coordinates if len(i)>0] # ['5', '6']
                 self.orientation = msg[-1]
 
                 android_msg = '|'.join([msg[0], msg[1], msg[2], msg[-2], msg[-1]])
@@ -264,7 +264,7 @@ class Main(threading.Thread):
         # currently only triggered on msg from ar to al
         # meaning, when move completed
 
-        thread = threading.Thread(target=self.image_thread.main(self.row, self.col, self.orientation, self.write_to_bluetooth))
+        thread = threading.Thread(target=self.image_thread.main(self.y_coords, self.x_coords, self.orientation, self.write_to_bluetooth))
         thread.start()
 
 

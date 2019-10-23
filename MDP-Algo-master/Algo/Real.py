@@ -68,8 +68,8 @@ class Robot:
         vals = [1]*distance
         if value!=9:
             vals[value-1] = 2
-            print("record")
-        print(vals)
+            # print("record")
+        # print(vals)
 
         # if (value >= distance*10):
         #     vals = [1]*distance
@@ -95,7 +95,7 @@ class Robot:
                         self.exploredMap[r][c]=2
                         break
 
-        print(self.exploredMap)
+        # print(self.exploredMap)
 
 
 

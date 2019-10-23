@@ -8,6 +8,7 @@ from Constants import NORTH, SOUTH, WEST, EAST, FORWARD, LEFT, RIGHT, START, MAX
 
 __author__ = "Utsav Garg"
 
+cal_count=0
 
 class Exploration:
 
@@ -140,7 +141,10 @@ class Exploration:
             if self.robot.is_corner():
                 move.append('L')
             elif (calibrate_right[0]):
-                move.append(calibrate_right[1])
+                global cal_count
+                cal_count=cal_count+1
+                if (cal_count%3==0):
+                    move.append(calibrate_right[1])
             elif (calibrate_front[0]):
                 move.append(calibrate_front[1])
         return move

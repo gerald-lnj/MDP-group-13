@@ -34,7 +34,11 @@ imshowDebug = False # mostly going to be used for cv2.imshow debugging perposes
 if platform.node() == 'raspberrypi': # can't display images on rpi
     imshowDebug = False
 
+imwriteDebug = False
+
 boundingBoxDemo = False
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # initialize the ImageHub object
 imageHub = imagezmq.ImageHub()
@@ -65,10 +69,16 @@ ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 def detectImage():
 	try:
 		(filename, input_img) = imageHub.recv_image()
-
+		# filename = x_cor, y_cor, orientation
+		
 		# resize the frame to have a maximum width of 400 pixels, then
 		# grab the frame dimensions and construct a blob
 		input_img = imutils.resize(input_img, width=640)
+
+		# if false positive,
+		# can try using this to mask out non black areas
+		input_img = blackMask(input_img)
+
 		(H, W) = input_img.shape[:2]
 		# construct a blob from the input frame and then perform a forward
 		# pass of the YOLO object detector, giving us our bounding boxes
@@ -166,6 +176,11 @@ def detectImage():
 				cv2.imshow('result', input_img);cv2.waitKey(0);cv2.destroyAllWindows()
 			reply = bytes('{}'.format(detected_id), 'utf-8')
 
+			if imwriteDebug:
+				filename = '{}-{}'.format(result_list[detected_id], filename)
+				cv2.imwrite('{}/debug/{}.jpg'.format(dir_path, filename))
+
+
 			# imageHub.send_reply(reply)
 			imageHub.send_reply(reply)
 
@@ -176,6 +191,36 @@ def detectImage():
 			return None
 	except KeyboardInterrupt:
 		return KeyboardInterrupt
+
+def blackMask(input_img):
+	input_img_HSV = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
+	black_boundaries_HSV = [
+		np.array([0, 0, 0], dtype = "uint8"),
+		np.array([120, 127, 100], dtype = "uint8")
+	]
+
+	black_mask = cv2.inRange(input_img_HSV, black_boundaries_HSV[0], black_boundaries_HSV[1])
+	_, thresh = cv2.threshold(black_mask, 127, 255, 0)
+
+	# get countours of playing field
+	contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+	if len(contours) ==  0:
+		return input_img
+	else:
+		largestContour = contours[0]
+		for countour in contours:
+			if (cv2.contourArea(countour) > cv2.contourArea(largestContour)):
+				largestContour = countour
+
+		# use the largest countour as selection (exclude windows, etc)
+		filled_black_mask = cv2.drawContours(black_mask, [largestContour], -1, (255, 255, 255), cv2.FILLED)
+		black_masked_img = cv2.bitwise_and(input_img, input_img, mask = filled_black_mask)
+		return black_masked_img
+
+
+
+
 
 while True:
 	try:

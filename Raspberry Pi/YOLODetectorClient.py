@@ -45,8 +45,11 @@ class YOLODetectorClient():
 	def main(self, coordinates_x, coordinates_y, orientation, write_to_bluetooth):
 		try:
 			image = picam.takePhoto()
+
+			filename = '{}-{}-{}'.format(coordinates_x, coordinates_y, orientation)
+
 			# returns bytes (utf-8)
-			response = self.send_image('rpi', image)
+			response = self.send_image(filename, image)
 			response = response.decode('utf-8') 
 
 			if len(response):

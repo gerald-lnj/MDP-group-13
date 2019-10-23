@@ -28,8 +28,9 @@ class Main(threading.Thread):
         self.bt_thread.setup()
         self.sr_thread.setup()
         self.pc_thread.setup()
-        # TODO: need to find ip of YOLODetectorServer computer
+
         self.image_thread.setup('192.168.13.16') # ip of gerald's com
+        # self.image_thread.setup('192.168.13.4') # ip of wanting's com
 
         # init coordinates, orientation for image recognition
         self.row = 0
@@ -273,7 +274,6 @@ if __name__ == "__main__":
     try:	
         mainThread = Main()
         mainThread.initialize_threads()
-        mainThread.image_request()
         mainThread.keep_main_alive()
     except KeyboardInterrupt:	
 	    mainThread.close_all_sockets()

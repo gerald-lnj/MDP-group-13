@@ -28,11 +28,10 @@ import com.example.mdp_android.R;
 import com.example.mdp_android.bluetooth.BluetoothManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class MapFragment extends Fragment implements MainActivity.CallbackFragment
 {
-    private static Maze maze;
+    public static Maze maze;
     private Boolean _autoRefresh = true;
     private long fastestTime = 0;
     private long fastestpathtime = 0;
@@ -48,7 +47,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
     private static String _storekey = "";
     private String _testmsg;
 
-    private static int img_coord;
+    private static int img_pos;
 
     /**
      * Display Map Activity
@@ -115,7 +114,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
         TextView mdf2view = getView().findViewById(R.id.MDF2String);
         mdf2view.setText("000000000000000000000000000000000000000000000000000000000000000000000000000");
 
-        //BluetoothManager.getInstance().sendMessage("SET_STATUS", "Ready!");
+        BluetoothManager.getInstance().sendMessage("SET_STATUS", "Ready!");
     }
 
     private void setupButtonListeners()
@@ -205,7 +204,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
             public void onClick(View v)
             {
                 Toast.makeText(getActivity(), "Maze Reset!", Toast.LENGTH_SHORT).show();
-                //BluetoothManager.getInstance().sendMessage("reset", "");
+                BluetoothManager.getInstance().sendMessage("reset", "");
                 maze.reset();
                 initializeButtons();
             }
@@ -310,10 +309,10 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 
                                 if (_autoRefresh)
                                 {
-                                    refreshHandler.postDelayed(this, 1000);
+                                    refreshHandler.postDelayed(this, 2000);
                                 }
                             }
-                        }, 1000);
+                        }, 2000);
                     }
                 }
                 else
@@ -530,41 +529,56 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                 else if(key.equals("IMAGE"))
                 {
                     String[] tmp = msg.split("-");
-                    Log.d("Image ID", tmp[0]);
-                    Log.d("X-Axis", tmp[2]);
-                    Log.d("Y-Axis", tmp[1]);
-                    Log.d("Orientation", tmp[3]);
+                    String[] imgStr = maze.convertImgCoord(tmp).clone();
+//                    Log.d("Image ID", imgStr[0]);
+//                    Log.d("X-Coord", imgStr[2]);
+//                    Log.d("Y-Coord", imgStr[1]);
+//                    Log.d("Orientation", imgStr[3]);
 
-                    int img_xpos = Integer.parseInt(tmp[2]);
-                    int img_ypos = Integer.parseInt(tmp[1]);
-                    img_coord = img_xpos + (15 * img_ypos);
+                    int img_xcoord = Integer.parseInt(imgStr[2]);
+                    int img_ycoord = Integer.parseInt(imgStr[1]);
+                    if (img_xcoord != -1 && img_ycoord != -1){
+                        img_pos = img_xcoord + 15 * img_ycoord;
 
-                    int[] intArray;
+                        int[] imgCoordArr = Maze.getImageData();
+                        imgCoordArr[img_pos] = 1;
+                        StringBuilder imgCoordStr = new StringBuilder();
+                        for (int i = 0; i < imgCoordArr.length; i++) {imgCoordStr.append(imgCoordArr[i]);}
 
-                    intArray = Maze.getImageData();
-                    intArray[img_coord] = 1;
-
-//                    if (!firstImage)
-//                    {
-//                        for (int i = 0; i < 300; i++)
-//                        {
-//                            intArray[i] = 0;
-//                        }
-//
-//                        firstImage = true;
-//                    }
-//
-//                    maze._[img_coord] = 1;
-
-                    StringBuilder stringBuilder = new StringBuilder();
-
-                    for (int i = 0; i < intArray.length; i++)
-                    {
-                        stringBuilder.append(intArray[i]);
+                        maze.handleImageBlock(imgCoordStr.toString(), Integer.parseInt(imgStr[0]));
+//                    Log.d("data", msg);
                     }
+                }
 
-                    maze.handleImageBlock(stringBuilder.toString(), Integer.parseInt(tmp[0]));
-                    Log.d("data", msg);
+                else if(key.equals("RESIMG"))
+                {
+                    String[] unresolvedImageDataArr = Maze.resolveMisplacedImages();
+                    if (unresolvedImageDataArr.length > 4) {
+                        String[][] imgStringArr = new String[(unresolvedImageDataArr.length - 1) / 4][4];
+                        int j = 1;
+                        for (int i = 0; i < (unresolvedImageDataArr.length - 1) / 4; i++) {
+                            imgStringArr[i][0] = unresolvedImageDataArr[j];
+                            imgStringArr[i][1] = unresolvedImageDataArr[j + 1];
+                            imgStringArr[i][2] = unresolvedImageDataArr[j + 2];
+                            imgStringArr[i][3] = unresolvedImageDataArr[j + 3];
+                            String[] imgStr = maze.convertImgCoord(imgStringArr[i]).clone();
+
+                            int img_xcoord = Integer.parseInt(imgStr[2]);
+                            int img_ycoord = Integer.parseInt(imgStr[1]);
+                            if (img_xcoord != -1 && img_ycoord != -1) {
+                                img_pos = img_xcoord + 15 * img_ycoord;
+                                int[] imgCoordArr = Maze.getImageData();
+                                imgCoordArr[img_pos] = 1;
+                                StringBuilder imgCoordStr = new StringBuilder();
+                                for (int k = 0; k < imgCoordArr.length; k++) {
+                                    imgCoordStr.append(imgCoordArr[k]);
+                                }
+                                maze.handleImageBlock(imgCoordStr.toString(), Integer.parseInt(imgStr[0]));
+                            }
+
+                            j += 4;
+                        }
+                    }
                 }
 
                 else if (key.equals("COORD")) ///robot position
@@ -630,5 +644,5 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
         return maze;
     }
 
-    public static int getImagePos() { return img_coord;}
+    public static int getImagePos() { return img_pos;}
 }

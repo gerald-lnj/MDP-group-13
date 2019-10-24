@@ -412,6 +412,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         {
                             String stopmsg = readMessage.substring(0,4);
                             notifyFragments(Constants.MESSAGE_READ,"STOP", stopmsg);
+                            notifyFragments(Constants.MESSAGE_READ,"RESIMG", "ResolveImages");
                         }
 
                         //Added

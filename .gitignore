@@ -17,3 +17,9 @@
 **/*.pyc
 
 *.txt
+
+MDP/
+
+MDP-Algo-master/.python-version
+
+.python-version

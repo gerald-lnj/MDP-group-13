@@ -34,7 +34,7 @@ imshowDebug = False # mostly going to be used for cv2.imshow debugging perposes
 if platform.node() == 'raspberrypi': # can't display images on rpi
     imshowDebug = False
 
-imwriteDebug = True
+imwriteDebug = False
 
 boundingBoxDemo = False
 
@@ -77,7 +77,7 @@ def detectImage():
 
 		# if false positive,
 		# can try using this to mask out non black areas
-		input_img = blackMask(input_img)
+		# input_img = blackMask(input_img)
 
 		(H, W) = input_img.shape[:2]
 		# construct a blob from the input frame and then perform a forward

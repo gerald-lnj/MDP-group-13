@@ -412,7 +412,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         {
                             String stopmsg = readMessage.substring(0,4);
                             notifyFragments(Constants.MESSAGE_READ,"STOP", stopmsg);
-                            notifyFragments(Constants.MESSAGE_READ,"RESIMG", "ResolveImages");
                         }
 
                         //Added
@@ -452,6 +451,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 //String coords_dir = x_coord + " " + y_coord + " " + orientation;
                                 Log.d("Final", coords_dir);
                                 notifyFragments(Constants.MESSAGE_READ, "COORD", coords_dir); //comment
+                                notifyFragments(Constants.MESSAGE_READ,"RESIMG", "ResolveImages");
                             }
 
                             if (readMessage.substring(0, 7).equals("FASTEST")) {

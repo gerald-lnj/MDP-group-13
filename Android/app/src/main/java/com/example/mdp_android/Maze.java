@@ -537,7 +537,7 @@ public class Maze extends ViewGroup
                 {
                     direction = Constants.EAST;
                 }
-                else if (tmp[2].equals("3"))
+                else if (tmp[2].equals("3'"))
                 {
                     direction = Constants.SOUTH;
                 }
@@ -1134,17 +1134,6 @@ public class Maze extends ViewGroup
             setTile(targetTiles, Constants.WAYPOINT);
         }
 
-        //OBSTACLES
-        for (int i = 0; i < _obstacleData.length; i++)
-        {
-            if (_obstacleData[i] == 1 && _obstacleData[i] != _imageData[i])
-            {
-//                Log.d("XXXBI " , Integer.toString(i));
-//                Log.d("XXXBU" , Integer.toString(_obstacleData.length));
-                _tileList.get(i).setState(Constants.OBSTACLE);
-            }
-        }
-
         if (MapFragment.getImagePos() != 0)
         {
             _tileList.get(MapFragment.getImagePos()).setState(_imageID + 20);
@@ -1153,9 +1142,26 @@ public class Maze extends ViewGroup
             if (_receivedImagePosLog.length > 2) {
                 for (int j = 2; j < _receivedImagePosLog.length-2; j += 2) {
                     if (newImagePosEntry[1] == _receivedImagePosLog[j] && newImagePosEntry[0] != _receivedImagePosLog[j-1]) {
-                        _tileList.get(_receivedImagePosLog[j-1]).setState(Constants.OBSTACLE);
+                        if (_obstacleData[_receivedImagePosLog[j-1]] == 1){
+                            _tileList.get(_receivedImagePosLog[j-1]).setState(Constants.OBSTACLE);
+                        }
+                        else if (_exploreData[_receivedImagePosLog[j-1]] == Constants.EXPLORED){
+                            _tileList.get(_receivedImagePosLog[j-1]).setState(Constants.EXPLORED);
+                        }
+                        else _tileList.get(_receivedImagePosLog[j-1]).setState(Constants.UNEXPLORED);
                     }
                 }
+            }
+        }
+
+        //OBSTACLES
+        for (int i = 0; i < _obstacleData.length; i++)
+        {
+            if (_obstacleData[i] == 1 && _obstacleData[i] != _imageData[i])
+            {
+//                Log.d("XXXBI " , Integer.toString(i));
+//                Log.d("XXXBU" , Integer.toString(_obstacleData.length));
+                _tileList.get(i).setState(Constants.OBSTACLE);
             }
         }
 
@@ -1396,21 +1402,24 @@ public class Maze extends ViewGroup
                 && img_x_coord+1 > 0 && img_x_coord < 15
                 && img_y_coord+1 > 0 && img_y_coord < 20)
         {
-            if (img_captured_orient.equals("N")){
+            if (img_captured_orient.equals("1")){
                 real_img_pos += 15;
                 img_y_coord++;
             }
-            else if (img_captured_orient.equals("S")){
-                real_img_pos -= 15;
-                img_y_coord--;
-            }
-            else if (img_captured_orient.equals("E")){
+            else if (img_captured_orient.equals("2")){
                 real_img_pos += 1;
                 img_x_coord++;
             }
-            else if (img_captured_orient.equals("W")){
+            else if (img_captured_orient.equals("3")){
+                real_img_pos -= 15;
+                img_y_coord--;
+            }
+            else if (img_captured_orient.equals("4")){
                 real_img_pos -= 1;
                 img_x_coord--;
+            }
+            if (real_img_pos < 0 || real_img_pos > 300){
+                break;
             }
         }
 

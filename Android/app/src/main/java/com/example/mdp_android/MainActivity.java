@@ -423,35 +423,41 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 Log.d("Received", received);
                                 String movement[] = received.split("\\|");
 
-                                String movementstr = movement[0];
-                                Log.d("Movement", movementstr);
+                                for (int i = 0; i < movement.length; i++){
+                                    Log.d("Received", movement[i]);
+                                }
 
-                                String mdf1 = movement[1];
-                                Log.d("mdf1", mdf1);
-                                notifyFragments(Constants.MESSAGE_READ, "MDF1", mdf1);
+                                if (movement.length == 5){
+                                    String movementstr = movement[0];
+                                    Log.d("Movement", movementstr);
 
-                                String mdf2 = movement[2];
-                                Log.d("mdf2", mdf2);
-                                notifyFragments(Constants.MESSAGE_READ, "MDF2", mdf2);
+                                    String mdf1 = movement[1];
+                                    Log.d("mdf1", mdf1);
+                                    notifyFragments(Constants.MESSAGE_READ, "MDF1", mdf1);
 
-                                String reccoords = movement[3];
-                                Log.d("coords", reccoords);
-                                String coords = reccoords.substring(1, reccoords.length() - 1);
+                                    String mdf2 = movement[2];
+                                    Log.d("mdf2", mdf2);
+                                    notifyFragments(Constants.MESSAGE_READ, "MDF2", mdf2);
 
-                                int mid = coords.length() / 2;
-                                String y_coord = coords.substring(0, mid);
-                                y_coord = y_coord.trim();
-                                String x_coord = coords.substring(mid);
-                                x_coord = x_coord.trim();
+                                    String reccoords = movement[3];
+                                    Log.d("coords", reccoords);
+                                    String coords = reccoords.substring(1, reccoords.length() - 1);
 
-                                String orientation = movement[4];
-                                Log.d("orientation", orientation);
+                                    int mid = coords.length() / 2;
+                                    String y_coord = coords.substring(0, mid);
+                                    y_coord = y_coord.trim();
+                                    String x_coord = coords.substring(mid);
+                                    x_coord = x_coord.trim();
 
-                                String coords_dir = x_coord + " " + y_coord + " " + orientation;
-                                //String coords_dir = x_coord + " " + y_coord + " " + orientation;
-                                Log.d("Final", coords_dir);
-                                notifyFragments(Constants.MESSAGE_READ, "COORD", coords_dir); //comment
-                                notifyFragments(Constants.MESSAGE_READ,"RESIMG", "ResolveImages");
+                                    String orientation = movement[4];
+                                    Log.d("orientation", orientation);
+
+                                    String coords_dir = x_coord + " " + y_coord + " " + orientation;
+                                    //String coords_dir = x_coord + " " + y_coord + " " + orientation;
+                                    Log.d("Final", coords_dir);
+                                    notifyFragments(Constants.MESSAGE_READ, "COORD", coords_dir); //comment
+                                    notifyFragments(Constants.MESSAGE_READ,"RESIMG", "ResolveImages");
+                                }
                             }
 
                             if (readMessage.substring(0, 7).equals("FASTEST")) {

@@ -6,6 +6,7 @@ import time
 from btclass import *
 from arclass import *
 from tcpclass import *
+from queue import Queue
 
 from YOLODetectorClient import *
 
@@ -18,6 +19,8 @@ class Main(threading.Thread):
             os.system('sudo hciconfig hci0 piscan')
         else:
             sp.run(['sudo', 'hciconfig', 'hci0' ,'piscan'])
+
+        self.q = Queue()
         
         self.bt_thread = bt_connection()
         self.sr_thread = ard_connection()
@@ -30,12 +33,12 @@ class Main(threading.Thread):
         self.pc_thread.setup()
 
         self.image_thread.setup('192.168.13.16') # ip of gerald's com
-        # self.image_thread.setup('192.168.13.4') # ip of wanting's com
+        #self.image_thread.setup('192.168.13.4') # ip of wanting's com
 
         # init coordinates, orientation for image recognition
         self.x_coords = 1
         self.y_coords = 18
-        self.orientation = 4
+        self.orientation = 1
 
         time.sleep(1)	# wait for 1 secs before starting
 
@@ -110,7 +113,9 @@ class Main(threading.Thread):
                 print("Message Received from Arduino: {}".format(read_ard_msg))
                 print("Sending message to PC: {}".format(read_ard_msg[3:]))
                 self.write_to_pc(read_ard_msg[3:])
-                self.image_request()
+                # self.image_request()
+                self.q.put(1)
+                time.sleep(1.5)
 
     #process to write to arduino
     def write_to_arduino(self, msg_to_ard):
@@ -263,9 +268,35 @@ class Main(threading.Thread):
     def image_request(self):
         # currently only triggered on msg from ar to al
         # meaning, when move completed
+        while True:
+            if not self.q.empty():
+                self.q.get()
+                print('y, x, orintation: {}, {}, {}'.format(self.y_coords, self.x_coords, self.orientation))
+                wall =  (
+                    (self.y_coords == 18 and self.orientation == 2) or
+                    (self.y_coords == 1 and self.orientation == 4) or
+                    (self.x_coords == 1 and self.orientation == 3) or
+                    (self.x_coords == 13 and self.orientation == 1)
+                )
+                if not wall:
+                    temp_orientation = ((int(self.orientation)+1)%4)
+                    if (temp_orientation == 0):
+                        temp_orientation = 4
+                    print('not wall!!!!!!!!!!!!!')
+                    thread = threading.Thread(target=self.image_thread.main(self.y_coords, self.x_coords, temp_orientation, self.write_to_bluetooth))
+                    #thread = threading.Thread(target=self.image_thread.main(self.y_coords, self.x_coords, temp_orientation, None))
+                    thread.start()
 
-        thread = threading.Thread(target=self.image_thread.main(self.y_coords, self.x_coords, self.orientation, self.write_to_bluetooth))
+    def image_request_test(self):
+        # currently only triggered on msg from ar to al
+        # meaning, when move completed
+        y_coords, x_coords, orientation = 1, 1, 1
+        thread = threading.Thread(target=self.image_thread.main(y_coords, x_coords, orientation, self.write_to_bluetooth))
         thread.start()
+
+    def main(self):
+        self.initialize_threads()
+        self.keep_main_alive()
 
 
 
@@ -273,7 +304,9 @@ class Main(threading.Thread):
 if __name__ == "__main__":
     try:	
         mainThread = Main()
-        mainThread.initialize_threads()
-        mainThread.keep_main_alive()
+        t1 = threading.Thread(target=mainThread.main, name='t1') 
+        t2 = threading.Thread(target=mainThread.image_request, name='t2') 
+        t1.start()
+        t2.start() 
     except KeyboardInterrupt:	
 	    mainThread.close_all_sockets()

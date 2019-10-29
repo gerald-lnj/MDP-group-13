@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:id="@+id/mazeLayout"
+        android:layout_width="@dimen/maze_height"
+        android:layout_height="@dimen/maze_width"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.16000003">
+    </RelativeLayout>
+
+    <TableLayout
+        android:id="@+id/switch_table"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mazeLayout"
+        app:layout_constraintVertical_bias="0.0">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Switch
+                android:id="@+id/acceSwitch"
+                android:layout_width="180dp"
+                android:layout_height="40dp"
+                android:text="Acceleromter"
+                android:textAllCaps="true"
+                android:textSize="@dimen/description_text_size"
+                android:textStyle="bold"
+                tools:checked="false" />
+
+            <Switch
+                android:id="@+id/updateSwitch"
+                android:layout_width="165dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="5dp"
+                android:checked="true"
+                android:text="Auto Update"
+                android:textAllCaps="true"
+                android:textSize="@dimen/description_text_size"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/updateBtn"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="20dp"
+                android:background="@mipmap/update"
+                android:textColor="@color/White"
+                android:textSize="@dimen/btn_text_size"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/resetBtn"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
+                android:background="@color/pink"
+                android:text="RESET"
+                android:textColor="@color/White"
+                android:textSize="@dimen/btn_text_size"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!--            <Button-->
+            <!--                android:id="@+id/autoBtn"-->
+            <!--                android:layout_width="140dp"-->
+            <!--                android:layout_height="40dp"-->
+            <!--                android:layout_marginRight="30dp"-->
+            <!--                android:background="@color/pink"-->
+            <!--                android:text="Auto Update"-->
+            <!--                android:textColor="@color/White"-->
+            <!--                android:textSize="@dimen/btn_text_size"-->
+            <!--                app:layout_constraintStart_toStartOf="parent"-->
+            <!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/controller_table"
+        android:layout_width="250dp"
+        android:layout_height="200dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.08"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switch_table"
+        app:layout_constraintVertical_bias="0.050000012">
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Space
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:id="@+id/upBtn"
+                android:layout_width="75dp"
+                android:layout_height="65dp"
+                android:background="@android:color/transparent"
+                android:src="@mipmap/up_arrow_foreground"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Space
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/leftBtn"
+                android:layout_width="75dp"
+                android:layout_height="65dp"
+
+                android:background="@android:color/transparent"
+                android:src="@mipmap/left_arrow_foreground"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Space
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:id="@+id/rightBtn"
+                android:layout_width="75dp"
+                android:layout_height="65dp"
+                android:background="@android:color/transparent"
+                android:src="@mipmap/right_arrow_foreground"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </TableRow>
+
+        <TableRow>
+
+            <Space
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:id="@+id/downBtn"
+                android:layout_width="75dp"
+                android:layout_height="65dp"
+                android:background="@android:color/transparent"
+                android:src="@mipmap/down_arrow_foreground"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Space
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/mode_table"
+        android:layout_width="570dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/controller_table"
+        app:layout_constraintVertical_bias="0.42000002">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/MDF1Text"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:background="#009688"
+                android:gravity="center"
+                android:text="MDF1"
+                android:textColor="@color/White"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.89"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/MDF1String"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="left"
+                android:singleLine="false"
+                android:text="000000000000000000000000000000000000000000000000000000000000000000000000000"
+                android:textSize="9sp"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.89"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/MDF2Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#009688"
+                android:gravity="center"
+                android:text="MDF2"
+                android:textColor="@color/White"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.89"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/MDF2String"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:gravity="center"
+                android:text="000000000000000000000000000000000000000000000000000000000000000000000000000"
+                android:textSize="9sp"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.89"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/button_table"
+        android:layout_width="290dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.7"
+        app:layout_constraintStart_toEndOf="@+id/controller_table"
+        app:layout_constraintTop_toBottomOf="@+id/switch_table"
+        app:layout_constraintVertical_bias="0.100000024">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/statusBtn"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
+                android:background="#071E38"
+                android:text="Robot Status"
+                android:textColor="@color/White"
+                android:textSize="@dimen/btn_text_size"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Ready!"
+                android:textSize="@dimen/description_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.89"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/coordBtn"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
+                android:background="#071E38"
+                android:text="Set Coordinates"
+                android:textColor="@color/White"
+                android:textSize="@dimen/btn_text_size"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/waypoint_button"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:background="#071E38"
+                android:text="Set Waypoint"
+                android:textColor="@color/White"
+                android:textSize="@dimen/btn_text_size"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </TableRow>
+
+        <TableRow android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/exploreBtn"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
+                android:background="#071E38"
+                android:text="Exploration"
+                android:textColor="@color/White"
+                android:textSize="@dimen/btn_text_size"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/explTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="0 mins 0 s"
+                android:textSize="@dimen/description_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </TableRow>
+
+        <TableRow android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/fastestBtn"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
+                android:background="#071E38"
+                android:text="Fastest Path"
+                android:textColor="@color/White"
+                android:textSize="@dimen/btn_text_size"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/fastestTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="0 mins 0 s"
+                android:textSize="@dimen/description_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </TableRow>
+
+    </TableLayout>
+</android.support.constraint.ConstraintLayout>
+
+    <!--            <Button-->
+    <!--                android:id="@+id/calibrateBtn"-->
+    <!--                android:layout_width="140dp"-->
+    <!--                android:layout_height="40dp"-->
+    <!--                android:layout_marginLeft="10dp"-->
+    <!--                android:background="#2196F3"-->
+    <!--                android:text="Auto-Calibrate"-->
+    <!--                android:textColor="@color/White"-->
+    <!--                android:textSize="@dimen/btn_text_size"-->
+    <!--                app:layout_constraintStart_toStartOf="parent"-->
+    <!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--            <Button-->
+    <!--                android:id="@+id/manualBtn"-->
+    <!--                android:layout_width="120dp"-->
+    <!--                android:layout_height="40dp"-->
+    <!--                android:background="#2196F3"-->
+    <!--                android:text="Manual"-->
+    <!--                android:textColor="@color/White"-->
+    <!--                android:textSize="@dimen/btn_text_size"-->
+    <!--                app:layout_constraintStart_toStartOf="parent"-->
+    <!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--            <Button-->
+    <!--                android:id="@+id/modeBtn"-->
+    <!--                android:layout_width="120dp"-->
+    <!--                android:layout_height="40dp"-->
+    <!--                android:layout_marginLeft="10dp"-->
+    <!--                android:background="#2196F3"-->
+    <!--                android:text="Tilt Control"-->
+    <!--                android:textColor="@color/White"-->
+    <!--                android:textSize="@dimen/btn_text_size"-->
+    <!--                app:layout_constraintStart_toStartOf="parent"-->
+    <!--                app:layout_constraintTop_toTopOf="parent" />-->

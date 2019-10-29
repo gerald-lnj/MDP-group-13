@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MDP Group 13</string>
+    <string name="map">MAZE &amp; CONTROLLER</string>
+    <string name="bluetooth">BLUETOOTH</string>
+    <string name="comm">STRING PROCESSING</string>
+    <string name="img">IMAGE CHECK</string>
+</resources>

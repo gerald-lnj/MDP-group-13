@@ -1,0 +1,25 @@
+
+.DS_Store
+
+.vscode/
+
+**/Image Recognition/Output/
+
+**/rpi_best.weights
+
+**/rpi.cfg
+
+**/rpi.data
+
+**/rpi.names
+
+**/__pycache__/
+**/*.pyc
+
+*.txt
+
+MDP/
+
+MDP-Algo-master/.python-version
+
+.python-version

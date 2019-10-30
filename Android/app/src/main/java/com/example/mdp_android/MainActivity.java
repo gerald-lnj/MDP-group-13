@@ -410,8 +410,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         //Added for STOP for EXP and FSP
                         if (readMessage.equals("STOP"))
                         {
+                            Log.d("Stop", "Stop");
                             String stopmsg = readMessage.substring(0,4);
                             notifyFragments(Constants.MESSAGE_READ,"STOP", stopmsg);
+                            notifyFragments(Constants.MESSAGE_READ,"RESIMG", "ResolveImages");
                         }
 
                         //Added
@@ -423,8 +425,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 Log.d("Received", received);
                                 String movement[] = received.split("\\|");
 
-                                for (int i = 0; i < movement.length; i++){
-                                    Log.d("Received", movement[i]);
+                                if (movement.length < 5)
+                                {
+                                    for (int i = 0; i < movement.length; i++)
+                                    {
+                                        Log.d("Movement String Error", movement[i]);
+                                    }
                                 }
 
                                 if (movement.length == 5){
@@ -456,7 +462,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     //String coords_dir = x_coord + " " + y_coord + " " + orientation;
                                     Log.d("Final", coords_dir);
                                     notifyFragments(Constants.MESSAGE_READ, "COORD", coords_dir); //comment
-                                    notifyFragments(Constants.MESSAGE_READ,"RESIMG", "ResolveImages");
+//                                    notifyFragments(Constants.MESSAGE_READ,"RESIMG", "ResolveImages");
                                 }
                             }
 

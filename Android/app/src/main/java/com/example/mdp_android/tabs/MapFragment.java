@@ -465,11 +465,12 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 
                         //Update Time
                         fastestpathtime = System.nanoTime() - fastestTime;
-                        int seconds = Math.round(fastestpathtime/1000000000);
-                        int minutes = seconds/60;
-                        seconds = seconds - minutes*60;
+                        int fseconds = Math.round(fastestpathtime/1000000000);
+                        int fminutes = fseconds/60;
+                        fseconds = fseconds - fminutes*60;
+
                         TextView fsptime = getView().findViewById(R.id.fastestTime);
-                        fsptime.setText(minutes + " mins " + seconds + " s");
+                        fsptime.setText(fminutes + " mins " + fseconds + " s");
 
                         //Update Text and Status
                         Toast.makeText(getActivity(), "Fastest Path completed!", Toast.LENGTH_SHORT).show();
@@ -536,7 +537,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 //                    Log.d("Orientation", imgStr[3]);
 
                     int img_xcoord = Integer.parseInt(imgStr[2]);
-                    int img_ycoord = Integer.parseInt(imgStr[1]);
+                    int img_ycoord = 19-Integer.parseInt(imgStr[1]); //added 19- just to changed
                     if (img_xcoord != -1 && img_ycoord != -1){
                         img_pos = img_xcoord + 15 * img_ycoord;
 
@@ -552,6 +553,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 
                 else if(key.equals("RESIMG"))
                 {
+                    Log.d("Resolved String", "Resolved String Received!");
                     String[] unresolvedImageDataArr = Maze.resolveMisplacedImages();
                     if (unresolvedImageDataArr.length > 4) {
                         String[][] imgStringArr = new String[(unresolvedImageDataArr.length - 1) / 4][4];

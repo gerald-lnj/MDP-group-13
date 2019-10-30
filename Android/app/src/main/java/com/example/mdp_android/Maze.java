@@ -524,7 +524,6 @@ public class Maze extends ViewGroup
                 int xPos = Integer.parseInt(tmp[0]);
                 int yPos = 19-Integer.parseInt(tmp[1]);
                 int direction = Integer.parseInt(tmp[2]);
-                String dir = tmp[2];
 
                 _botCoord[0] = xPos;
                 _botCoord[1] = yPos;
@@ -537,11 +536,11 @@ public class Maze extends ViewGroup
                 {
                     direction = Constants.EAST;
                 }
-                else if (tmp[2].equals("3'"))
+                else if (tmp[2].equals("3"))
                 {
                     direction = Constants.SOUTH;
                 }
-                else  if (tmp[2].equals("4"))
+                else if (tmp[2].equals("4"))
                 {
                     direction = Constants.WEST;
                 }

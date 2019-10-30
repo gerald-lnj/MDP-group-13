@@ -537,7 +537,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 //                    Log.d("Orientation", imgStr[3]);
 
                     int img_xcoord = Integer.parseInt(imgStr[2]);
-                    int img_ycoord = 19-Integer.parseInt(imgStr[1]); //added 19- just to changed
+                    int img_ycoord = Integer.parseInt(imgStr[1]); //added 19- just to changed
                     if (img_xcoord != -1 && img_ycoord != -1){
                         img_pos = img_xcoord + 15 * img_ycoord;
 

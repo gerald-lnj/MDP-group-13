@@ -1387,7 +1387,7 @@ public class Maze extends ViewGroup
 
     public String[] convertImgCoord(String[] recImgStr){
         int robot_x_coord = Integer.parseInt(recImgStr[2]);
-        int robot_y_coord = Integer.parseInt(recImgStr[1]);
+        int robot_y_coord = 19-Integer.parseInt(recImgStr[1]);
         String img_captured_orient = recImgStr[3];
 
         //initialise image coordinates to be robot coordinates

@@ -275,9 +275,12 @@ class Main(threading.Thread):
             response = self.sender.send_image(filename, frame)
             response = response.decode('utf-8') 
             if len(response):
-                print('detected {}'.format(response))
-                msg = 'IMAGE:{}-{}-{}-{}'.format(response, self.y_coords, self.x_coords, self.orientation)
-                self.write_to_bluetooth(msg)
+                # response = '1' if 1 detected, else '1|2|3 etc' for multiple
+                responseList = response.split('|')
+                for imgID in responseList:
+                    print('detected {}'.format(response))
+                    msg = 'IMAGE:{}-{}-{}-{}'.format(response, self.y_coords, self.x_coords, self.orientation)
+                    self.write_to_bluetooth(msg)
 
     def main(self):
         self.initialize_threads()

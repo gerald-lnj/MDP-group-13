@@ -59,6 +59,7 @@ ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
 # loop over frames from the video file stream
 while True:
+	imgIDList = []
 	# receive RPi name and frame from the RPi and acknowledge
 	# the receipt
 	(rpiName, frame) = imageHub.recv_image()
@@ -129,11 +130,18 @@ while True:
 			confidence = confidences[i]
 			text = 'detected ID {} ({}), confidence {}'.format(imgID, imgName, confidence)
 			print(text)
-			reply = bytes(imgID, 'utf-8')
-			imageHub.send_reply(reply)
+			imgIDList.append(imgID)
+		# imgIDList = ['imgID1', 'imgID2' etc]
+		reply = '|'.join(imgIDList) # '1|2|3'
+		reply = bytes(reply, 'utf-8')
+		imageHub.send_reply(reply)
 	else:
 		print('Nothing detected')
 		reply = bytes('', 'utf-8')
 		imageHub.send_reply(reply)
 
+
+
+
+'1', '2', '3'
 			

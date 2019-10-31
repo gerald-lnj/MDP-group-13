@@ -1388,11 +1388,30 @@ public class Maze extends ViewGroup
     public String[] convertImgCoord(String[] recImgStr){
         int robot_x_coord = Integer.parseInt(recImgStr[2]);
         int robot_y_coord = 19-Integer.parseInt(recImgStr[1]);
-        String img_captured_orient = recImgStr[3];
+
+        String img_captured_orient = "";
+
+        if (recImgStr[3].equals("1")){
+            img_captured_orient = "2";
+        }
+        else if (recImgStr[3].equals("2")){
+            img_captured_orient = "3";
+        }
+        else if (recImgStr[3].equals("3")){
+            img_captured_orient = "4";
+        }
+        else if (recImgStr[3].equals("4")){
+            img_captured_orient = "1";
+        }
 
         //initialise image coordinates to be robot coordinates
         int img_x_coord = robot_x_coord;
         int img_y_coord = robot_y_coord;
+
+        //12 - 3 correct 3
+        //8 - 1 correct 2
+        //6 - 1 correct 2
+        //13 - 4 correct 1
 
         //map coordinates to mdp string binary format position
         int real_img_pos = img_x_coord + (15 * img_y_coord);

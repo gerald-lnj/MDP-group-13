@@ -309,10 +309,10 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 
                                 if (_autoRefresh)
                                 {
-                                    refreshHandler.postDelayed(this, 2000);
+                                    refreshHandler.postDelayed(this, 1000);
                                 }
                             }
-                        }, 2000);
+                        }, 1000);
                     }
                 }
                 else

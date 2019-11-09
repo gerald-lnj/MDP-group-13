@@ -165,24 +165,42 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     zAccel = event.values[2];
                     Log.d("Z", Float.toString(zAccel));
 
-
-                    if (xAccel <= 0 && yAccel <= -0.3 && zAccel >= 1.1) {
+                    if (xAccel <= 0 && yAccel <= -2.5 && zAccel >= 1.1) {
                         accel_dir = Constants.up;
                         Log.d(TAG, "tilting up");
                         MapFragment.getMaze().attemptMoveBot(Constants.NORTH, true);
-                    } else if (xAccel <= 0 && yAccel >= 0.3 && zAccel >= 1.1) {
+                    } else if (xAccel <= 0 && yAccel >= 2.5 && zAccel >= 1.1) {
                         accel_dir = Constants.down;
                         Log.d(TAG, "tilting down");
                         MapFragment.getMaze().attemptMoveBot(Constants.SOUTH, true);
-                    } else if (xAccel >= 0.4 && yAccel >= 0 && zAccel >= 1.1) {
+                    } else if (xAccel >= 2.5 && yAccel >= 0 && zAccel >= 1.1) {
                         accel_dir = Constants.left;
                         Log.d(TAG, "tilting left");
                         MapFragment.getMaze().attemptMoveBot(Constants.WEST, true);
-                    } else if (xAccel <= -0.4 && yAccel >= 0 && zAccel >= 1.1) {
+                    } else if (xAccel <= -2.5 && yAccel >= 0 && zAccel >= 1.1) {
                         accel_dir = Constants.right;
                         Log.d(TAG, "tilting right");
                         MapFragment.getMaze().attemptMoveBot(Constants.EAST, true);
                     }
+
+
+//                    if (xAccel <= 0 && yAccel <= -0.3 && zAccel >= 1.1) {
+//                        accel_dir = Constants.up;
+//                        Log.d(TAG, "tilting up");
+//                        MapFragment.getMaze().attemptMoveBot(Constants.NORTH, true);
+//                    } else if (xAccel <= 0 && yAccel >= 0.3 && zAccel >= 1.1) {
+//                        accel_dir = Constants.down;
+//                        Log.d(TAG, "tilting down");
+//                        MapFragment.getMaze().attemptMoveBot(Constants.SOUTH, true);
+//                    } else if (xAccel >= 0.4 && yAccel >= 0 && zAccel >= 1.1) {
+//                        accel_dir = Constants.left;
+//                        Log.d(TAG, "tilting left");
+//                        MapFragment.getMaze().attemptMoveBot(Constants.WEST, true);
+//                    } else if (xAccel <= -0.4 && yAccel >= 0 && zAccel >= 1.1) {
+//                        accel_dir = Constants.right;
+//                        Log.d(TAG, "tilting right");
+//                        MapFragment.getMaze().attemptMoveBot(Constants.EAST, true);
+//                    }
 
 //                Message msg = mHandler.obtainMessage(Constants.ACCELERATE);
 //                Bundle bundle = new Bundle();

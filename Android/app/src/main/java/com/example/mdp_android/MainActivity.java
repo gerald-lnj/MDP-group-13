@@ -43,8 +43,6 @@ import com.example.mdp_android.tabs.SectionPageAdapter;
 
 import java.util.ArrayList;
 
-import static com.example.mdp_android.R.menu.menu_items;
-
 public class MainActivity extends AppCompatActivity implements SensorEventListener
 {
     private BluetoothManager mBluetoothMgr;
@@ -58,7 +56,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static ArrayList<CallbackFragment> callbackFragList = new ArrayList<CallbackFragment>();
 
     //RPI sends complete buffers of strings, so split by ";", and store any leftover message
-    //For the next message
     private String _storedMessage = "";
 
     private static final String TAG = "MainActivity";
@@ -86,44 +83,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
         }
-
-        //Tab layout tab items
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
-        TabItem tabMap = findViewById(R.id.map);
-        TabItem tabComm = findViewById(R.id.comm);
-        TabItem tabBluetooth = findViewById(R.id.bluetooth);
-        TabItem tabImage = findViewById(R.id.imagecheck);
-
-        final ViewPager mViewPager = findViewById(R.id.container);
-        SectionPageAdapter pageAdapter = new SectionPageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        mViewPager.setAdapter(pageAdapter);
-
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
-        {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab)
-            {
-                final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(mViewPager.getWindowToken(), 0);
-                mViewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab)
-            {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab)
-            {
-
-            }
-        });
-
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        mViewPager.setCurrentItem(1);
 
         //Bluetooth
         mBluetoothMgr = new BluetoothManager(this, mHandler);
@@ -153,9 +112,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         int accel_dir  = 0;
         controlswitch = (Switch)findViewById(R.id.acceSwitch);
 
-        if(controlswitch!=null) {
-            if (controlswitch.isChecked()) {
-                if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+        if(controlswitch!=null)
+        {
+            if (controlswitch.isChecked())
+            {
+                if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+                {
                     xAccel = event.values[0];
                     Log.d("X", Float.toString(xAccel));
 
@@ -165,59 +127,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     zAccel = event.values[2];
                     Log.d("Z", Float.toString(zAccel));
 
-                    if (xAccel <= 0 && yAccel <= -2.5 && zAccel >= 1.1) {
+                    if (xAccel <= 0 && yAccel <= -2.5 && zAccel >= 1.1)
+                    {
                         accel_dir = Constants.up;
                         Log.d(TAG, "tilting up");
                         MapFragment.getMaze().attemptMoveBot(Constants.NORTH, true);
-                    } else if (xAccel <= 0 && yAccel >= 2.5 && zAccel >= 1.1) {
+                    }
+                    else if (xAccel <= 0 && yAccel >= 2.5 && zAccel >= 1.1)
+                    {
                         accel_dir = Constants.down;
                         Log.d(TAG, "tilting down");
                         MapFragment.getMaze().attemptMoveBot(Constants.SOUTH, true);
-                    } else if (xAccel >= 2.5 && yAccel >= 0 && zAccel >= 1.1) {
+                    }
+                    else if (xAccel >= 2.5 && yAccel >= 0 && zAccel >= 1.1)
+                    {
                         accel_dir = Constants.left;
                         Log.d(TAG, "tilting left");
                         MapFragment.getMaze().attemptMoveBot(Constants.WEST, true);
-                    } else if (xAccel <= -2.5 && yAccel >= 0 && zAccel >= 1.1) {
+                    }
+                    else if (xAccel <= -2.5 && yAccel >= 0 && zAccel >= 1.1)
+                    {
                         accel_dir = Constants.right;
                         Log.d(TAG, "tilting right");
                         MapFragment.getMaze().attemptMoveBot(Constants.EAST, true);
                     }
-
-
-//                    if (xAccel <= 0 && yAccel <= -0.3 && zAccel >= 1.1) {
-//                        accel_dir = Constants.up;
-//                        Log.d(TAG, "tilting up");
-//                        MapFragment.getMaze().attemptMoveBot(Constants.NORTH, true);
-//                    } else if (xAccel <= 0 && yAccel >= 0.3 && zAccel >= 1.1) {
-//                        accel_dir = Constants.down;
-//                        Log.d(TAG, "tilting down");
-//                        MapFragment.getMaze().attemptMoveBot(Constants.SOUTH, true);
-//                    } else if (xAccel >= 0.4 && yAccel >= 0 && zAccel >= 1.1) {
-//                        accel_dir = Constants.left;
-//                        Log.d(TAG, "tilting left");
-//                        MapFragment.getMaze().attemptMoveBot(Constants.WEST, true);
-//                    } else if (xAccel <= -0.4 && yAccel >= 0 && zAccel >= 1.1) {
-//                        accel_dir = Constants.right;
-//                        Log.d(TAG, "tilting right");
-//                        MapFragment.getMaze().attemptMoveBot(Constants.EAST, true);
-//                    }
-
-//                Message msg = mHandler.obtainMessage(Constants.ACCELERATE);
-//                Bundle bundle = new Bundle();
-//                bundle.putString("ACCEL_EVENT", String.valueOf(accel_dir));
-//                msg.setData(bundle);
-//
-//                mHandler.handleMessage(msg);
-//                //_accelReady = false;
-//                handler.postDelayed(new Runnable()
-//                {
-//                    public void run()
-//                    {
-//                      _accelReady = true;
-//                      controlswitch.setChecked(true);
-//                    }
-//                }, 1000);
-//                }
                 }
             }
         }
@@ -274,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     };
 
     /**
-     * The handler that gets ifo back from the bluetoothchatservice and updates main activity/bluetooth fragment
+     * The handler that gets info back from the bluetoothchatservice and updates main activity/bluetooth fragment
      */
     private final Handler mHandler = new Handler()
     {
@@ -364,7 +297,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 else if(tmp.length == 2)
                                 {
                                     //Message contain both key and value
-                                    // issue: sometimes message becomes: "F    BOT"|3,3,S;
                                     if (tmp[0].contains("BOT"))
                                     {
                                         type = "BOT";
@@ -415,16 +347,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             }
                         }
 
-                        //Added for robot position in AMD
-//                        if(readMessage.length() > 5)
-//                        {
-//                            if (readMessage.substring(0,5).equals("COORD"))
-//                            {
-//                                String robotpos = readMessage.substring(7, readMessage.length()-1);
-//                                notifyFragments(Constants.MESSAGE_READ,"COORD",robotpos);
-//                            }
-//                        }
-
                         //Added for STOP for EXP and FSP
                         if (readMessage.equals("STOP"))
                         {
@@ -438,7 +360,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         if (readMessage.length() > 8)
                         //if(readMessage.substring(0,8).equals("MOVEMENT"))
                         {
-                            if (readMessage.substring(0, 8).equals("MOVEMENT")) {
+                            if (readMessage.substring(0, 8).equals("MOVEMENT"))
+                            {
                                 String received = readMessage;
                                 Log.d("Received", received);
                                 String movement[] = received.split("\\|");
@@ -451,7 +374,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     }
                                 }
 
-                                if (movement.length == 5){
+                                if (movement.length == 5)
+                                {
                                     String movementstr = movement[0];
                                     Log.d("Movement", movementstr);
 
@@ -477,10 +401,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     Log.d("orientation", orientation);
 
                                     String coords_dir = x_coord + " " + y_coord + " " + orientation;
-                                    //String coords_dir = x_coord + " " + y_coord + " " + orientation;
                                     Log.d("Final", coords_dir);
-                                    notifyFragments(Constants.MESSAGE_READ, "COORD", coords_dir); //comment
-//                                    notifyFragments(Constants.MESSAGE_READ,"RESIMG", "ResolveImages");
+                                    notifyFragments(Constants.MESSAGE_READ, "COORD", coords_dir);
                                 }
                             }
 
@@ -494,33 +416,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 notifyFragments(Constants.MESSAGE_READ, "FASTEST", fastestpath);
                             }
                         }
-
-                            //Added for MDF1
-//                        if (readMessage.length()> 9)
-//                        {
-//                            if (readMessage.substring(0, 8).equals("MOVEMENT"))
-//                            {
-////                                String mdfstring[] = readMessage.split("|");
-////                                String mdf1string = mdfstring[1];
-//
-//                                String mdf1string = readMessage.substring(9, 85);
-//                                notifyFragments(Constants.MESSAGE_READ, "MDF1", mdf1string);
-//                            }
-//                        }
-//
-//                        //Added for MDF2
-//                        if (readMessage.length()> 9)
-//                        {
-//                            if (readMessage.substring(0, 8).equals("MOVEMENT"))
-//                            {
-//                                String mdf2string = readMessage.substring(86, readMessage.length());
-//                                String mdf2arr[] = mdf2string.split("|");
-//                                Log.d("MDF21", mdf2arr[1]);
-//                                Log.d("MDF22", mdf2arr[2]);
-//                                notifyFragments(Constants.MESSAGE_READ, "MDF2", mdf2string);
-//                            }
-//                        }
-
                     }
                     break;
 

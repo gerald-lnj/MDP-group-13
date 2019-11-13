@@ -67,10 +67,6 @@ public class MazeTile extends View
     @Override
     protected void onDraw(Canvas canvas)
     {
-        /* TBD: for directional blocks, use images
-        if(_state == Constants.NORTH) {
-            return
-        } */
         if (_state >= Constants.UNEXPLORED && _state <= Constants.OBSTACLE /*|| _state ==999*/)
         {
             Rect rectangle = new Rect(0, 0, Maze.TILESIZE-Constants.tilePadding, Maze.TILESIZE-Constants.tilePadding);
@@ -84,24 +80,6 @@ public class MazeTile extends View
         {
             Bitmap bitmap = null;
             bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.up_arrow_foreground);
-
-            /* only up arrows are tested
-            switch (_state){
-                case Constants.NORTH:
-                    bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.up_arrow_foreground);
-                    break;
-                case Constants.SOUTH:
-                    bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.down_arrow_foreground);
-                    break;
-                case Constants.EAST:
-                    bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.left_arrow_foreground);
-                    break;
-                case Constants.WEST:
-                    default:
-                    bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.right_arrow_foreground);
-                    break;
-            }
-            */
             canvas.drawBitmap(bitmap, null, new RectF(0, 0, Maze.TILESIZE-Constants.tilePadding, Maze.TILESIZE-Constants.tilePadding), null);
         }
 
@@ -171,10 +149,8 @@ public class MazeTile extends View
 
     public void setState(int newState)
     {
-        // if(newState != _state){
-            _state = newState;
-            invalidate();
-        // }
+        _state = newState;
+        invalidate();
     }
 
     public int get_xPos()

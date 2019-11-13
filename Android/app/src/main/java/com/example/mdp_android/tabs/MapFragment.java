@@ -436,8 +436,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                         MainActivity.updateMsgHistory("MDF2: "+ MDF2);
                         Log.d("MDF2: ", MDF2);
 
-                        maze.displayArrowBlockString();
-
                         //Update Time
                         exploredTime = System.nanoTime() - exploreTime;
                         int seconds = Math.round(exploredTime/1000000000);
@@ -603,12 +601,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                 {
                     TextView tv = getView().findViewById(R.id.statusText);
                     tv.setText(msg);
-                }
-                else if (key.equals("AU"))
-                {
-                    Log.d("arrow",msg);
-                    Log.d("arrowBotPos",maze._botCoord[0]+" "+maze._botCoord[1]);
-                    maze.handleArrowBlock(Constants.NORTH, msg);
                 }
                 break;
 

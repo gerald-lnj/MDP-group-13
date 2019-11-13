@@ -2,7 +2,6 @@
  * @file {custom.js} 
  * For receiving messages from back-end to update the UI and sending messages to initiate
  	algorithms.
-* @author {Utsav Garg}
  */
 
 document.addEventListener('DOMContentLoaded', function initialize(e) {

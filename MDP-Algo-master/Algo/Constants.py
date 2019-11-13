@@ -1,11 +1,4 @@
-#!/usr/bin/env python
-"""Predefined constant values to be used in the algorithms
-
-"""
-
 import numpy as np
-
-__author__ = "Utsav Garg"
 
 # DIRECTIONS
 NORTH = 1

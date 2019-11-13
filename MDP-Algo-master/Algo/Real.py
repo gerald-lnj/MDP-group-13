@@ -1,37 +1,15 @@
-#!/usr/bin/env python
-"""Implementation of the Robot class for simulation mode.
-"""
+
 import numpy as np
 
 from Constants import MAX_ROWS, MAX_COLS, NORTH, SOUTH, EAST, WEST, RIGHT, LEFT, BOTTOM_LEFT_CORNER, BOTTOM_RIGHT_CORNER, TOP_RIGHT_CORNER, TOP_LEFT_CORNER
 
-__author__ = "Utsav Garg"
 
 
 class Robot:
 
-    """Robot class keeps track of the current location and direction of the robot,
-       gets values from the distance sensors and sends commands to move the robot
-
-    Attributes:
-        center (list): Center location of the robot
-        direction (int): Current direction of the robot (see Constants)
-        exploredMap (Numpy array): The current explored map
-        head (list): Location of the head of the robot
-        map (Numpy array): Real map of the arena for simulation mode
-        movement (string): The latest movement of the robot (see Constants)
-        realMap (string): File name for map
-    """
 
     def __init__(self, exploredMap, direction, start):
-        """Constructor to initialise an instance of the Exploration class
 
-        Args:
-            exploredMap (Numpy array): To initial state of the exploration map
-            direction (int): The starting direction for the robot (see Constants)
-            start (list): The starting center location of the robot
-            realMap (string): File name of the real map
-        """
         self.exploredMap = exploredMap
         self.direction = direction
         self.center = np.asarray(start)
@@ -43,13 +21,7 @@ class Robot:
         self.phase = 1
 
     def markArea(self, center, value):
-        """To mark a 3x3 neighbourhood around the center location with a particular
-           value
 
-        Args:
-            center (list): Location to mark neighbourhood around
-            value (int): The value to be filled
-        """
         self.exploredMap[center[0]-1:center[0]+2, center[1]-1:center[1]+2] = value
 
     def setHead(self):
@@ -63,23 +35,14 @@ class Robot:
             self.head = self.center + [0, -1]
 
     def getValue(self, inds, value, distance, sr, right=False):
-        # if value != 0:
-        #     value = round(value - 6, -1)
+
         vals = [1]*distance
         if value!=9:
             vals[value-1] = 2
-            # print("record")
-        # print(vals)
 
-        # if (value >= distance*10):
-        #     vals = [1]*distance
-        # else:
-        #     value = int(value//10)
-        #     inds = inds[:value+1]
-        #     vals = [1]*value + [2]
         for idx, (r,c) in enumerate(inds):
             if (0 <= r < MAX_ROWS) and (0 <= c < MAX_COLS):
-                # if self.phase==1:
+
                 if(self.exploredMap[r][c]==2):
                     if vals[idx]==1:
                         self.exploredMap[r][c]=1
@@ -95,7 +58,7 @@ class Robot:
                         self.exploredMap[r][c]=2
                         break
 
-        # print(self.exploredMap)
+        print(self.exploredMap)
 
 
 
@@ -109,48 +72,15 @@ class Robot:
 
 
 
-        # for idx, (r, c) in enumerate(inds):
-        #     if (0 <= r < MAX_ROWS) and (0 <= c < MAX_COLS):
-        #         # for override
-        #         if self.phase == 1:
-        #             if (self.exploredMap[r][c] == 2 and vals[idx] == 1 and
-        #                self.marked[r][c] < 2 and sr and (not right)):
-        #                 self.exploredMap[r][c] = vals[idx]
-        #                 self.marked[r][c] == 1
-        #             elif self.exploredMap[r][c] == 2:
-        #                 break
-        #             elif (self.exploredMap[r][c] == 0):
-        #                 self.exploredMap[r][c] = vals[idx]
-        #             self.marked[r][c] += 1
-        #         else:
-        #             if self.exploredMap[r][c] == 2:
-        #                 break
-        #             elif (self.exploredMap[r][c] == 0):
-        #                 self.exploredMap[r][c] = vals[idx]
 
-                        
-                # without override
-                # if self.exploredMap[r][c] == 0:
-                #     self.exploredMap[r][c] = vals[idx]
-                # # elif (sr and self.marked[r][c] == 0):
-                # #     self.exploredMap[r][c] = vals[idx]
-                # #     self.marked[r][c] = 1
-                # elif self.exploredMap[r][c] == 2:
-                #     break
 
 
     def getSensors(self, sensor_vals):
-        """Generated indices to get values from sensors and gets the values using getValue() function.
 
-        Returns:
-            Numpy array of Numpy arrays: Sensor values from all sensors
-        """
         distanceShort = 3
         distanceLong = 5
         r, c = self.center
-        # sensor_vals = [FL_SR, FC_SR, FR_SR, RT_SR, RB_LR, LT_LR]
 
-        # Front Left
         if self.direction == NORTH:
             self.getValue(zip(range(r-distanceShort-1, r-1), [c-1]*distanceShort)[::-1],
                           sensor_vals[0], distanceShort, True)
@@ -164,7 +94,7 @@ class Robot:
             self.getValue(zip(range(r+2, r+distanceShort+2), [c+1]*distanceShort),
                           sensor_vals[0], distanceShort, True)
 
-        # Front Center
+
         if self.direction == NORTH:
             self.getValue(zip(range(r-distanceShort-1, r-1), [c]*distanceShort)[::-1],
                           sensor_vals[1], distanceShort, True)
@@ -178,7 +108,7 @@ class Robot:
             self.getValue(zip(range(r+2, r+distanceShort+2), [c]*distanceShort),
                           sensor_vals[1], distanceShort, True)
 
-        # Front Right
+
         if self.direction == NORTH:
             self.getValue(zip(range(r-distanceShort-1, r-1), [c+1]*distanceShort)[::-1],
                           sensor_vals[2], distanceShort, True)
@@ -192,7 +122,7 @@ class Robot:
             self.getValue(zip(range(r+2, r+distanceShort+2), [c-1]*distanceShort),
                           sensor_vals[2], distanceShort, True)
 
-        # Right Top
+
         if self.direction == NORTH:
             self.getValue(zip([r-1]*distanceShort, range(c+2, c+distanceShort+2)),
                           sensor_vals[3], distanceShort, True, True)
@@ -206,7 +136,7 @@ class Robot:
             self.getValue(zip([r+1]*distanceShort, range(c-distanceShort-1, c-1))[::-1],
                           sensor_vals[3], distanceShort, True, True)
 
-        # Right Bottom
+
         if self.direction == NORTH:
             self.getValue(zip([r+1]*distanceLong, range(c+2, c+distanceLong+2)),
                           sensor_vals[4], distanceLong, False)
@@ -220,7 +150,7 @@ class Robot:
             self.getValue(zip([r-1]*distanceLong, range(c-distanceLong-1, c-1))[::-1],
                           sensor_vals[4], distanceLong, False)
 
-        # Left Top
+
         if self.direction == NORTH:
             self.getValue(zip([r-1]*distanceLong, range(c-distanceLong-1, c-1))[::-1],
                           sensor_vals[5], distanceLong, False)

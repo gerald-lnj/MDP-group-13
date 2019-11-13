@@ -20,13 +20,12 @@ from Algo.Exploration import Exploration
 from Algo.FastestPath import FastestPath
 from Algo.Constants import START, GOAL, NORTH
 
-__author__ = "Utsav Garg"
-
 define("port", default=8888, help="run on the given port", type=int)
 
 clients = dict()
 
 currentMap = np.zeros([20, 15])
+
 map_name = 'map.txt'
 
 area = 0
@@ -180,6 +179,9 @@ def exploration(exp, limit, coverage):
     logger('Exploration Started !')
     current = exp.moveStep()
     currentMap = exp.currentMap
+    # currentMap[16][0]=1
+    # currentMap[16][1]=1
+    # currentMap[16][2]=1
     area = exp.exploredArea
     visited = dict()
     steps = 0

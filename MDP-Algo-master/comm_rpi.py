@@ -1,11 +1,4 @@
-#!/usr/bin/env python
-"""Tornado server to run the simulation experiments
 
-Attributes:
-    app (tornado.web.Application): Address mappings
-    clients (dict): Dictionary of active clients
-    settings (dict): Settings for the web-server
-"""
 
 import socket
 import json
@@ -23,8 +16,6 @@ from Algo.Exploration import Exploration
 from Algo.FastestPath import FastestPath
 from Algo.Constants import START, GOAL, NORTH, WEST
 
-__author__ = "Utsav Garg"
-
 # Global Variables
 define("port", default=8888, help="run on the given port", type=int)
 clients = dict()
@@ -32,11 +23,7 @@ currentMap = np.zeros([20, 15])
 mdfCounter = 3
 
 
-# def loadMap():
-#     with open(os.path.join('Maps', 'sample_wk11.txt')) as f:
-#         return np.genfromtxt(f, dtype=int, delimiter=1)
 
-# currentMap = loadMap()
 
 log_file = open('log.txt', 'w')
 
@@ -57,30 +44,22 @@ step = 0.1
 
 class FuncThread(threading.Thread):
 
-    """Class to create and run functions on different threads
-    """
+
 
     def __init__(self, target, *args):
-        """Construction to initialize the thread
 
-        Args:
-            target (function): Function to be run on new threads
-            *args: arguments to be passed to the function
-        """
         self._target = target
         self._args = args
         threading.Thread.__init__(self)
 
     def run(self):
-        """Overrides run function to run the function with given arguments
-        """
+
         self._target(*self._args)
 
 
 class IndexHandler(web.RequestHandler):
 
-    """To display the front-end interface
-    """
+
 
     @web.asynchronous
     def get(self):
@@ -89,31 +68,21 @@ class IndexHandler(web.RequestHandler):
 
 class WebSocketHandler(websocket.WebSocketHandler):
 
-    """Handles web-socket requests from the front-end to receive/send messages
 
-    Attributes:
-        id (string): id string from GET request
-    """
 
     def open(self):
-        """Open a web socket for communication
-        """
+
         self.id = self.get_argument("Id")
         self.stream.set_nodelay(True)
         clients[self.id] = {"id": self.id, "object": self}
         print("WebSocket opened")
 
     def on_message(self, message):
-        """Displays any message received
 
-        Args:
-            message (string): Message received from front-end
-        """
         print("Client " + str(self.id) + " received a message : " + str(message))
 
     def on_close(self):
-        """Run when the web socket is closed
-        """
+
         print("WebSocket closed")
         if self.id in clients:
             del clients[self.id]
@@ -121,8 +90,6 @@ class WebSocketHandler(websocket.WebSocketHandler):
 
 class StartHandler(web.RequestHandler):
 
-    """Handles the start of exploration for the maze
-    """
 
     @web.asynchronous
     def get(self):
@@ -138,8 +105,7 @@ class StartHandler(web.RequestHandler):
 
 class ResetHandler(web.RequestHandler):
 
-    """Handles the reset of the current map
-    """
+
 
     @web.asynchronous
     def get(self):
@@ -152,8 +118,6 @@ class ResetHandler(web.RequestHandler):
 
 class FSPHandler(web.RequestHandler):
 
-    """Handles the start of fastest path for the maze
-    """
 
     @web.asynchronous
     def get(self):
@@ -166,8 +130,6 @@ class FSPHandler(web.RequestHandler):
 
 class LoadMapHandler(web.RequestHandler):
 
-    """Handles the start of fastest path for the maze
-    """
 
     @web.asynchronous
     def get(self):
@@ -177,22 +139,17 @@ class LoadMapHandler(web.RequestHandler):
 
 
 def startExploration(limit, coverage):
-    """To start the exploration of the maze
-    """
+
     global exp, t_s
     exp = Exploration(map_name, 5)
     t_s = time.time()
     t2 = FuncThread(exploration, exp, limit, coverage)
     t2.start()
-    # t2.join()
+
 
 
 def exploration(exp, limit, coverage):
-    """To explore the map and update the front-end after each move
 
-    Args:
-        exp (Exploration): New instance of the exploration class
-    """
     global currentMap, area
     limit = map(int, str(limit).strip().split(':'))
     time_limit = limit[0]*60*60 + limit[1]*60 + limit[2]
@@ -263,7 +220,6 @@ def startFastestPath(waypoint):
     logger('Fastest Path Started !')
     t3 = FuncThread(fastestPath, fsp, GOAL, area, waypoint)
     t3.start()
-    # t3.join() this causes the thread to close after exploration and websocket closes
 
 
 def markMap(curMap, waypoint):
@@ -306,17 +262,7 @@ def fastestPath(fsp, goal, area, waypoint):
 
 
 def update(current_map, exploredArea, center, head, start, goal, elapsedTime):
-    """To send messages to update the front-end
 
-    Args:
-        current_map (Numpy array): Current state of the exploration map
-        exploredArea (int): Number of cells that have been explored
-        center (list): Location of center of the robot
-        head (list): Location of head of the robot
-        start (list): Location of the starting point for the robot
-        goal (list): Location of the finishing point for the robot
-        elapsedTime (float): The time that has elapsed since exploration started
-    """
     for key in clients:
         message = dict()
         message['area'] = '%.2f' % (exploredArea)
@@ -381,6 +327,7 @@ class RPi(threading.Thread):
                     waypoint = map(int, split_data[1:])
                     waypoint[0] = 19 - waypoint[0]
                 elif (split_data[0] == 'COMPUTE'):
+
                     print 'Time 0: %s s' % (time.time() - time_t)
                     print(split_data)
                     split_data=split_data[1].split("-")
@@ -390,6 +337,9 @@ class RPi(threading.Thread):
                     current_pos = exp.robot.center
                     current = exp.moveStep(sensors)
                     currentMap = exp.currentMap
+                    # currentMap[16][0]=1
+                    # currentMap[16][1]=1
+                    # currentMap[16][2]=1
                     ### add 
                     # visited[tuple(current_pos)] = 1
                     ###

@@ -1,39 +1,16 @@
-#!/usr/bin/env python
-"""Implementation of exploration algorithm for maze solving robot
-"""
 import numpy as np
 import time
  
 from Constants import NORTH, SOUTH, WEST, EAST, FORWARD, LEFT, RIGHT, START, MAX_ROWS, MAX_COLS, BACK
 
-__author__ = "Utsav Garg"
-
 cal_count=0
 
 class Exploration:
 
-    """Implementation of the Right-Wall hugging algorithm for a maze solving
-       robot.
-       The implementation assumes that the robot starts at the bottom-left corner of the map,
-       i.e. (Rows - 2, 1). And the robot is facing North
 
-
-    Attributes:
-        currentMap (Numpy array): To store the current state of the exploration map
-        exploredArea (int): Count of the number of cells explored
-        robot (Robot): Instance of the Robot class
-        sensors (list of Numpy arrays): Readings from all sensors
-        timeLimit (int): Maximum time allowed for exploration
-    """
 
     def __init__(self, realMap=None, timeLimit=None, calibrateLim=6, sim=True):
-        """Constructor to initialise an instance of the Exploration class
 
-        Args:
-            realMap (string): File name for real map during simulation stage
-            timeLimit (int): Maximum time allowed for exploration
-            sim (bool, optional): To specify is the exploration mode is simulation or real
-        """
         self.timeLimit = timeLimit
         self.exploredArea = 0
         self.currentMap = np.zeros([20, 15])
@@ -50,40 +27,7 @@ class Exploration:
         self.virtualWall = [0, 0, MAX_ROWS, MAX_COLS]
 
     def __validInds(self, inds):
-        """To check if the passed indices are valid or not
-        To be valid the following conditions should be met:
-            * A 3x3 neighbourhood around the center should lie within the arena
-            * A 3x3 neighbourhood around the center should have no obstacle
 
-        Args:
-            inds (list of list): List of coordinates to be checked
-
-        Returns:
-            list of list: All indices that were valid
-        """
-        valid = []
-        for i in inds:
-            r, c = i
-            x, y = np.meshgrid([-1, 0, 1], [-1, 0, 1])
-            x, y = x+r, y+c
-            if (np.any(x < 0) or np.any(y < 0) or np.any(x >= MAX_ROWS) or np.any(y >= MAX_COLS)):
-                valid.append(False)
-            elif (np.any(self.currentMap[x[0, 0]:x[0, 2]+1, y[0, 0]:y[2, 0]+1] != 1)):
-                valid.append(False)
-            else:
-                valid.append(True)
-        return [tuple(inds[i]) for i in range(len(inds)) if valid[i]]
-
-    def getExploredArea(self):
-        """Updates the total number of cells explored at the current state
-        """
-        self.exploredArea = (np.sum(self.currentMap != 0)/300.0)*100
-
-    def nextMove(self):
-        """Decides which direction is free and commands the robot the next action
-        """
-        move = []
-        # multi step
         front = self.frontFree()
         print(front)
         if (self.checkFree([1, 2, 3, 0], self.robot.center)):
@@ -112,26 +56,7 @@ class Exploration:
             self.robot.moveBot(RIGHT)
             move.append(BACK)
 
-        # single step
-        # if (self.checkFree([1, 2, 3, 0], self.robot.center)):
-        #     self.robot.moveBot(RIGHT)
-        #     move.append(RIGHT)
-        #     if (self.checkFree([0, 1, 2, 3], self.robot.center)):
-        #         self.robot.moveBot(FORWARD)
-        #         move.append(FORWARD)
-        # elif (self.checkFree([0, 1, 2, 3], self.robot.center)):
-        #     self.robot.moveBot(FORWARD)
-        #     move.append(FORWARD)
-        # elif (self.checkFree([3, 0, 1, 2], self.robot.center)):
-        #     self.robot.moveBot(LEFT)
-        #     move.append(LEFT)
-        #     if (self.checkFree([0, 1, 2, 3], self.robot.center)):
-        #         self.robot.moveBot(FORWARD)
-        #         move.append(FORWARD)
-        # else:
-        #     self.robot.moveBot(RIGHT)
-        #     self.robot.moveBot(RIGHT)
-        #     move.extend(('O'))
+
 
 
         
@@ -143,22 +68,14 @@ class Exploration:
             elif (calibrate_right[0]):
                 global cal_count
                 cal_count=cal_count+1
-                if (cal_count%3==0):
+                if (cal_count%2==0):
                     move.append(calibrate_right[1])
             elif (calibrate_front[0]):
                 move.append(calibrate_front[1])
         return move
 
     def checkFree(self, order, center):
-        """Checks if a specific direction is free to move to
 
-        Args:
-            order (list): Ordering for the directionFree list based on the
-                          the next move (Right, Left, Forward)
-
-        Returns:
-            bool: If the queried direction is free
-        """
         directionFree = np.asarray([self.northFree(center), self.eastFree(center),
                                     self.southFree(center), self.westFree(center)])
         directionFree = directionFree[order]
@@ -172,14 +89,7 @@ class Exploration:
             return directionFree[3]
 
     def validMove(self, inds):
-        """Checks if all the three cells on one side of the robot are free
 
-        Args:
-            inds (list of list): List of cell indices to be checked
-
-        Returns:
-            bool: If all indices are free (no obstacle)
-        """
         for (r, c) in inds:
             if not ((self.virtualWall[0] <= r < self.virtualWall[2]) and (
                      self.virtualWall[1] <= c < self.virtualWall[3])):
@@ -189,41 +99,25 @@ class Exploration:
                 self.currentMap[inds[2][0], inds[2][1]] == 1)
 
     def northFree(self, center):
-        """Checks if the north direction is free to move
 
-        Returns:
-            bool: if north is free
-        """
         r, c = center
         inds = [[r-2, c], [r-2, c-1], [r-2, c+1]]
         return self.validMove(inds)
 
     def eastFree(self, center):
-        """Checks if the east direction is free to move
 
-        Returns:
-            bool: if east is free
-        """
         r, c = center
         inds = [[r, c+2], [r-1, c+2], [r+1, c+2]]
         return self.validMove(inds)
 
     def southFree(self, center):
-        """Checks if the south direction is free to move
 
-        Returns:
-            bool: if south is free
-        """
         r, c = center
         inds = [[r+2, c], [r+2, c-1], [r+2, c+1]]
         return self.validMove(inds)
 
     def westFree(self, center):
-        """Checks if the west direction is free to move
 
-        Returns:
-            bool: if west is free
-        """
         r, c = center
         inds = [[r, c-2], [r-1, c-2], [r+1, c-2]]
         return self.validMove(inds)
@@ -306,11 +200,7 @@ class Exploration:
 
 
     def moveStep(self, sensor_vals=None):
-        """Moves the robot one step for exploration
 
-        Returns:
-            bool: True is the map is fully explored
-        """
         if (sensor_vals):
             self.robot.getSensors(sensor_vals)
         else:
@@ -323,8 +213,7 @@ class Exploration:
             return move, False
 
     def explore(self):
-        """Runs the exploration till the map is fully explored of time runs out
-        """
+
         print "Starting exploration ..."
         startTime = time.time()
         endTime = startTime + self.timeLimit

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableLayout
+        android:id="@+id/image_table"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25">
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#071E38">
+
+            <TextView
+                android:id="@+id/imageText"
+                android:layout_width="130dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:text="Image ID"
+                android:textColor="@color/White"
+                android:textSize="@dimen/description_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.90"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/xposText"
+                android:layout_width="130dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:text="X-Coord"
+                android:textColor="@color/White"
+                android:textSize="@dimen/description_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.90"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/yposText"
+                android:layout_width="130dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:text="Y-Coord"
+                android:textColor="@color/White"
+                android:textSize="@dimen/description_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.90"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/timeText"
+                android:layout_width="130dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:text="Orientation"
+                android:textColor="@color/White"
+                android:textSize="@dimen/description_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.90"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </TableRow>
+    </TableLayout>
+
+    <TextView
+        android:id="@+id/ipsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="{ ... }"
+        android:textSize="@dimen/description_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/image_table"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ipshTextView"
+        app:layout_constraintVertical_bias="0.19999999" />
+
+    <TextView
+        android:id="@+id/ipshTextView"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:background="#009688"
+        android:gravity="center"
+        android:text="IMAGE PROCESSING STRING"
+        android:textColor="@color/White"
+        android:textSize="@dimen/description_text_size"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

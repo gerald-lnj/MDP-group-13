@@ -2,7 +2,6 @@ package com.example.mdp_android.bluetooth;
 
 public class DeviceDetails
 {
-
     private String deviceName;
     private String address;
     private boolean connected = false;

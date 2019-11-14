@@ -313,7 +313,8 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 
                     int count = 0;
 
-                    for(int i = 0; i < MDF2.length(); i++) {
+                    for(int i = 0; i < MDF2.length(); i++)
+                    {
                         if(MDF2.charAt(i) != ' ')
                             count++;
                     }
@@ -430,7 +431,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                                 }
                                 maze.handleImageBlock(imgCoordStr.toString(), Integer.parseInt(imgStr[0]));
                             }
-
                             j += 4;
                         }
                     }
@@ -463,7 +463,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                 }
 
                 int accelDir = Integer.parseInt(msg);
-
                 if(accelDir == Constants.up)
                 {
                     maze.attemptMoveBot(Constants.NORTH, true);

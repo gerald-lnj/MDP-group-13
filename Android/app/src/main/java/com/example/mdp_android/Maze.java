@@ -1,7 +1,6 @@
 package com.example.mdp_android;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -10,14 +9,9 @@ import android.view.ViewGroup;
 import com.example.mdp_android.bluetooth.BluetoothManager;
 import com.example.mdp_android.tabs.ImageCheckFragment;
 import com.example.mdp_android.tabs.MapFragment;
-import com.example.mdp_android.MainActivity;
 
-import org.json.JSONObject;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 
 public class Maze extends ViewGroup
 {
@@ -150,6 +144,7 @@ public class Maze extends ViewGroup
         Integer totaldelay = 0;
         Integer currentdir = Constants.NORTH;
         String fastestarr[] = fasteststr.split("\\|");
+
         Log.d("Slot 1", fastestarr[0]);
 
         for (int i=0; i < fastestarr.length; i++)
@@ -523,7 +518,6 @@ public class Maze extends ViewGroup
         }
     }
 
-    // doMove is true only for manual mode. for updates from algo, doMove = false
     public void attemptMoveBot(int dir, boolean doMove)
     {
         attemptMoveBot(dir, null, doMove);
@@ -672,10 +666,6 @@ public class Maze extends ViewGroup
         return true;
     }
 
-    /**
-     * Only for manual mode
-     * Always check whether the bot can move in the specified direction using canMove() first
-     */
     private void moveBot(int dir)
     {
         if (dir == Constants.WEST)
@@ -721,7 +711,7 @@ public class Maze extends ViewGroup
         }
     }
 
-    // CALLED AFTER EVERY UPDATE TO MAZE DATA
+    // Needed to update maze
     public void renderMaze()
     {
         //UNEXPLORED TILES
@@ -741,21 +731,21 @@ public class Maze extends ViewGroup
             }
         }
 
-        //SET START TILES
+        // Start Tiles
         if (_coordCount >= 0)
         {
             ArrayList<MazeTile> targetTiles = getTargetTiles(_startCoord[0], _startCoord[1], 0);
             setTile(targetTiles, Constants.START);
         }
 
-        //SET END TILES
+        // End Tiles
         if (_coordCount == 1)
         {
             ArrayList<MazeTile> targetTiles = getTargetTiles(_endCoord[0], _endCoord[1], 0);
             setTile(targetTiles, Constants.GOAL);
         }
 
-        //SET WAYPOINT TILE
+        // Waypoint Tile
         if (_wpSet)
         {
             ArrayList<MazeTile> targetTiles = getTargetTiles(_wpCoord[0], _wpCoord[1], 3);
@@ -787,7 +777,7 @@ public class Maze extends ViewGroup
             }
         }
 
-        //OBSTACLES
+        // Obstacles
         for (int i = 0; i < _obstacleData.length; i++)
         {
             if (_obstacleData[i] == 1 && _obstacleData[i] != _imageData[i])
@@ -796,7 +786,7 @@ public class Maze extends ViewGroup
             }
         }
 
-        // set new robot tiles & head
+        // New robot tiles & head
         if (_coordCount >= 0)
         {
             Log.d("hello", "HELLO I AM NEW ROBOT TILES");
@@ -809,7 +799,7 @@ public class Maze extends ViewGroup
     }
 
     /* ====== helper functions ========= */
-    // updates tile state(s)
+    // Updates tile state(s)
     private void setTile(ArrayList<MazeTile> targetTiles, int newState)
     {
         if (targetTiles.size() == 0) return;
@@ -823,7 +813,7 @@ public class Maze extends ViewGroup
 
     /**
      * from a selected tile, get the tiles surrounding it, depending on the mode specified
-     * mode: 0 -> Block of 9 tiles
+     * mode: 0 -> Block of 9 tile
      * mode: 1 -> 3 horizontal tiles
      * mode: 2 -> 3 vertical tiles
      * mode: 3 -> single block
@@ -890,7 +880,6 @@ public class Maze extends ViewGroup
             if (centerY == MAZE_HEIGHT - 1) centerY -= 1;
         }
 
-
         int[] result = {centerX, centerY};
         return result;
     }
@@ -898,36 +887,6 @@ public class Maze extends ViewGroup
     private Boolean isObstacle(MazeTile mazeTile)
     {
         return mazeTile != null && mazeTile.getState() >= Constants.OBSTACLE && mazeTile.getState() <= Constants.WEST;
-    }
-
-    // just for converting directions from algo, "N/S/E/W" to our constants
-    private int convertDirStrToNum(String dir)
-    {
-        int dirNum = 0;
-        switch (dir)
-        {
-            case "S":
-                dirNum = Constants.SOUTH;
-                break;
-
-            case "E":
-                dirNum = Constants.EAST;
-                break;
-
-            case "W":
-                dirNum = Constants.WEST;
-                break;
-
-            case "N":
-                dirNum = Constants.NORTH;
-                break;
-
-            default:
-                dirNum = Constants.NORTH;
-                Log.e("robotDir", "Unknown direction: " + dir);
-                break;
-        }
-        return dirNum;
     }
 
     /**
@@ -954,38 +913,8 @@ public class Maze extends ViewGroup
         }
     }
 
-    // move = 'l'/'r'
-    private int calcNewDir(int _direction, char move)
+    public String[] convertImgCoord(String[] recImgStr)
     {
-        switch (_direction)
-        {
-            case Constants.SOUTH:
-                if (move == 'l') return Constants.EAST;
-                else if (move == 'r') return Constants.WEST;
-                break;
-
-            case Constants.EAST:
-                if (move == 'l') return Constants.NORTH;
-                else if (move == 'r') return Constants.SOUTH;
-                break;
-
-            case Constants.WEST:
-                if (move == 'l') return Constants.SOUTH;
-                else if (move == 'r') return Constants.NORTH;
-                break;
-
-            case Constants.NORTH:
-                if (move == 'l') return Constants.WEST;
-                else if (move == 'r') return Constants.EAST;
-                break;
-
-            default:
-                return Constants.NORTH;
-        }
-        return Constants.NORTH;
-    }
-
-    public String[] convertImgCoord(String[] recImgStr){
         int robot_x_coord = Integer.parseInt(recImgStr[2]);
         int robot_y_coord = 19-Integer.parseInt(recImgStr[1]);
 

@@ -3,7 +3,7 @@ package com.example.mdp_android;
 import com.example.mdp_android.bluetooth.BluetoothChatService;
 
 /**
- * CONSTANTS USED BETWEEN {@link BluetoothChatService} AND THE UI
+ * Constants between {@link BluetoothChatService} and interface
  */
 public interface Constants
 {

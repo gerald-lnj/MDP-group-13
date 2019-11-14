@@ -25,7 +25,7 @@ public class MazeTile extends View
     private static final int red = Color.RED;
     private static HashMap<Integer, Integer> colorMap = null;
 
-    private int _state = Constants.UNEXPLORED; //CONTROL TILE'S APPEARANCE
+    private int _state = Constants.UNEXPLORED;
     private int _xPos = -1;
     private int _yPos = -1;
 

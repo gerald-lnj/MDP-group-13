@@ -66,4 +66,5 @@
             android:layout_height="wrap_content"
             android:text='@string/comm'/>
     </android.support.design.widget.TabLayout>
+
 </android.support.constraint.ConstraintLayout>

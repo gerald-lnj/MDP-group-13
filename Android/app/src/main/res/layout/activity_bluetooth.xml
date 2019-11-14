@@ -38,7 +38,6 @@
             android:textColor="@color/White"
             android:textSize="@dimen/btn_text_size" />
 
-        <!-- Line for aesthetic purposes -->
         <View
             android:id="@+id/linebreak"
             android:layout_width="fill_parent"

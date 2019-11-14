@@ -105,7 +105,7 @@ public class BluetoothManager
         }
         else
         {
-            Toast.makeText(mActivity, "Bluetooth unavailable! Unable to send message.", Toast.LENGTH_SHORT);
+            Toast.makeText(mActivity, "Bluetooth is unavailable! Unable to send message.", Toast.LENGTH_SHORT);
         }
     }
 
@@ -126,7 +126,7 @@ public class BluetoothManager
 
     public void notConnectedMsg()
     {
-        Toast.makeText(mActivity, "Bluetooth not connected to any device!", Toast.LENGTH_SHORT);
+        Toast.makeText(mActivity, "Bluetooth is not connected to any device!", Toast.LENGTH_SHORT);
     }
 
     private final Handler nHandler = new Handler(new Handler.Callback()

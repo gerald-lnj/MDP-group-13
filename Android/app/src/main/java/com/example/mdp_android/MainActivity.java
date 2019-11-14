@@ -13,7 +13,6 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
@@ -25,19 +24,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
 import com.example.mdp_android.bluetooth.BluetoothChatService;
 import com.example.mdp_android.bluetooth.BluetoothManager;
-import com.example.mdp_android.tabs.BluetoothFragment;
-import com.example.mdp_android.tabs.CommFragment;
 import com.example.mdp_android.tabs.MapFragment;
 import com.example.mdp_android.tabs.SectionPageAdapter;
 
@@ -52,10 +45,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     final Handler handler = new Handler();
     private Maze maze; //added on
 
-    //Create new arraylist for fragments
+    //New arraylist for fragments
     private static ArrayList<CallbackFragment> callbackFragList = new ArrayList<CallbackFragment>();
 
-    //RPI sends complete buffers of strings, so split by ";", and store any leftover message
+    //RPI sends complete buffers of strings
     private String _storedMessage = "";
 
     private static final String TAG = "MainActivity";
@@ -69,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float zAccel = 0.0f;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -484,7 +478,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     /**
-     * For passing messages/events from bluetoothmanager
+     * For passing messages/events from bluetooth manager
      * */
     public void notifyFragments(int type, String key, String msg)
     {
@@ -494,7 +488,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    //Leaderboard requirement
+    //Leader board requirement
     private static ArrayList<String> msgHistory = new ArrayList<String>();
 
     public static void updateMsgHistory(String text)

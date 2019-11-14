@@ -1,9 +1,5 @@
 package com.example.mdp_android.bluetooth;
 
-/**
- * Created by ongji on 3 Feb 2018.
- */
-
 public class DeviceDetails
 {
 

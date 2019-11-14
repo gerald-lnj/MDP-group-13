@@ -1,13 +1,9 @@
 package com.example.mdp_android.tabs;
 
-import android.graphics.Color;
-import android.hardware.SensorEvent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,11 +19,8 @@ import android.widget.Toast;
 import com.example.mdp_android.Constants;
 import com.example.mdp_android.MainActivity;
 import com.example.mdp_android.Maze;
-import com.example.mdp_android.MazeTile;
 import com.example.mdp_android.R;
 import com.example.mdp_android.bluetooth.BluetoothManager;
-
-import java.util.ArrayList;
 
 public class MapFragment extends Fragment implements MainActivity.CallbackFragment
 {
@@ -43,15 +36,11 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
     Button updatebutton;
     Boolean firstImage = false;
 
-    //Added for AMD Tool Only
     private static String _storekey = "";
     private String _testmsg;
 
     private static int img_pos;
 
-    /**
-     * Display Map Activity
-     * */
     public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         return inflater.inflate(R.layout.activity_map, container, false);
@@ -62,28 +51,18 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
     {
         super.onViewCreated(view, savedInstanceState);
 
-        //Set up the Maze
         setupMaze();
-
-        //Set up the buttons
         initializeButtons();
         setupButtonListeners();
     }
 
-    /**
-     * Create "Maze" container viewgroup and initializes it
-     * */
     private void setupMaze()
     {
-        //Ger maze view via ID
         RelativeLayout mazeLayout = getView().findViewById(R.id.mazeLayout);
         maze = new Maze(getActivity());
         mazeLayout.addView(maze);
     }
 
-    /**
-     * Resets button states and bot status text
-     * */
     private void initializeButtons()
     {
         getView().findViewById(R.id.coordBtn).setEnabled(true);
@@ -91,7 +70,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
         getView().findViewById(R.id.exploreBtn).setEnabled(true);
         getView().findViewById(R.id.fastestBtn).setEnabled(true);
         getView().findViewById(R.id.resetBtn).setEnabled(true);
-        //getView().findViewById(R.id.manualBtn).setEnabled(true);
 
         updateswitch = getView().findViewById(R.id.updateSwitch);
         updateswitch.setEnabled(true);
@@ -119,7 +97,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 
     private void setupButtonListeners()
     {
-        //Set start and end coordinates
         getView().findViewById(R.id.coordBtn).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -134,13 +111,12 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
             }
         });
 
-        //Exploration of the Map (Only can run when coordinates are set)
         getView().findViewById(R.id.exploreBtn).setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                if (maze.getState() == Constants.idleMode /*&& maze.coordinatesSet()*/)
+                if (maze.getState() == Constants.idleMode)
                 {
                     Toast.makeText(getActivity(), "Starting Exploration Now!", Toast.LENGTH_SHORT).show();
                     BluetoothManager.getInstance().sendMessage("al", "EXPLORE");
@@ -151,13 +127,10 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                     sv.setText("Exploration");
 
                     exploreTime = System.nanoTime();
-
-                    //BluetoothManager.getInstance().sendMessage("SET_STATUS", "Exploring the Maze");
                 }
             }
         });
 
-        //Set waypoint for the maze (Need to set waypoint first)
         getView().findViewById(R.id.waypoint_button).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -177,7 +150,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
             }
         });
 
-        //Fastest Path
         getView().findViewById(R.id.fastestBtn).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -192,12 +164,9 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                 sv.setText("Fastest Path");
 
                 fastestTime = System.nanoTime();
-
-                //BluetoothManager.getInstance().sendMessage("SET_STATUS", "Travelling Fastest Path");
             }
         });
 
-        //Reset the Maze
         getView().findViewById(R.id.resetBtn).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -210,7 +179,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
             }
         });
 
-        //Up/North Button - Directional
         getView().findViewById(R.id.upBtn).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -221,7 +189,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
             }
         });
 
-        //Down Button - Directional
         getView().findViewById(R.id.downBtn).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -231,7 +198,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
             }
         });
 
-        //Right/East Button - Directional
         getView().findViewById(R.id.rightBtn).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -241,27 +207,15 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
             }
         });
 
-        //Left/West Button - Directional
         getView().findViewById(R.id.leftBtn).setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                        maze.attemptMoveBot(Constants.WEST, true);
+                maze.attemptMoveBot(Constants.WEST, true);
             }
         });
 
-        //Get robot status (Acutally not needed for this button cause status will change automatically)
-//        getView().findViewById(R.id.statusBtn).setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v)
-//            {
-//                BluetoothManager.getInstance().sendMessage("GET_STATUS", "statusss");
-//            }
-//        });
-
-        //Manual Update Button
         getView().findViewById(R.id.updateBtn).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -269,21 +223,15 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
             {
                 Toast.makeText(getActivity(), "Updating the Map!", Toast.LENGTH_SHORT).show();
 
-                //Added for AMD Tool
                 if(_storekey.equals("GRID"))
                 {
                     maze.handleGridObstacle(_testmsg);
                 }
 
                 maze.renderMaze();
-
-//                //Below will only work with algo
-//                BluetoothManager.getInstance().sendMessage("GET_DATA", "");
-//                BluetoothManager.getInstance().sendMessage("GET_STATUS", "");
             }
         });
 
-        //Auto Update switch - turned on as default
         updateswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
             @Override
@@ -295,9 +243,8 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                     updatebutton.setVisibility(View.INVISIBLE);
                     updatebutton.setEnabled(false);
 
-                    Maze.setAuto(); //Added for auto mode
+                    Maze.setAuto();
 
-                    // On/off thread to auto call for maze updates
                     _autoRefresh = !_autoRefresh;
                     if (_autoRefresh)
                     {
@@ -305,8 +252,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                         {
                             public void run()
                             {
-                                //BluetoothManager.getInstance().sendMessage("GET_DATA", "");
-
                                 if (_autoRefresh)
                                 {
                                     refreshHandler.postDelayed(this, 1000);
@@ -328,23 +273,9 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
         });
     }
 
-//        //CALIBRATE BUTTON - Not needed for Android
-//        getView().findViewById(R.id.calibrateBtn).setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v) {
-//                if(maze.getState() == Constants.idleMode){
-//                    Toast.makeText(getActivity(), "Auto Calibrating", Toast.LENGTH_SHORT).show();
-//                    BluetoothManager.getInstance().sendMessage("MOVE", "rrcrcr");
-//                }
-//            }
-//        });
+    private String MDF1 = "";
+    private String MDF2 = "";
 
-    //Algorithm - Display MDF Strings (Hex Strings)
-    private String MDF1 = ""; //need to change to _mdfExplore
-    private String MDF2 = ""; //need to change to _mdfObstacles
-
-    //Handle Bluetooth messages received
     public void update(int type, String key, String msg)
     {
         if(key != null)
@@ -360,14 +291,11 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
         switch (type)
         {
             case Constants.MESSAGE_STATE_CHANGE:
-                //BLUETOOTH STATE CHANGE (NOT REQUIRED)
-                // Log.d("MESSAGE_STATE_CHANGE", msg);
                 break;
 
             case Constants.MESSAGE_READ:
 
-                //Received Messages
-                if(key.equals("MDF1")) //Explored Data
+                if(key.equals("MDF1"))
                 {
                     MDF1 = msg;
                     Log.d("MDF1", MDF1);
@@ -378,9 +306,8 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                     maze.handleExplore(msg);
                 }
 
-                else if(key.equals("MDF2")) //Obstacle Data
+                else if(key.equals("MDF2"))
                 {
-                    //For AMD Tool only
                     _storekey = key;
                     MDF2 = msg;
 
@@ -395,13 +322,7 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 
                     if (count%2 != 0)
                     {
-//                        int pad = count % 8;
-//                        int padnums = 8 - pad;
-
-//                        for(int j=0; j<padnums; j++)
-//                        {
-                            MDF2 = MDF2 + "0";
-//                        }
+                        MDF2 = MDF2 + "0";
                     }
 
                     Log.d("MDF2", MDF2);
@@ -417,26 +338,18 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                     Log.d("data",msg);
                 }
 
-//                else if(key.equals("MDF2")) //Obstacle Data //testing only
-//                {
-//                    MDF2 = msg;
-//                    maze.handleObstacle(msg);
-//                }
-
                 else if(key.equals("STOP"))
                 {
-                    if (maze.getState() == Constants.exploreMode) //Exploration Done
+                    if (maze.getState() == Constants.exploreMode)
                     {
                         maze.setExploreCompleted(true);
 
-                        //Display Most Recent MDP Strings
                         MainActivity.updateMsgHistory("MDF1: "+ MDF1);
                         Log.d("MDF1: ", MDF1);
 
                         MainActivity.updateMsgHistory("MDF2: "+ MDF2);
                         Log.d("MDF2: ", MDF2);
 
-                        //Update Time
                         exploredTime = System.nanoTime() - exploreTime;
                         int seconds = Math.round(exploredTime/1000000000);
                         int minutes = seconds/60;
@@ -445,11 +358,9 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                         TextView expltime = getView().findViewById(R.id.explTime);
                         expltime.setText(minutes+ " mins "+ seconds + " s");
 
-                        //Update Grid Mode
                         getView().findViewById(R.id.exploreBtn).setEnabled(false);
                         maze.setState(Constants.idleMode);
 
-                        //Update Text and Status
                         Toast.makeText(getActivity(), "Exploration completed!", Toast.LENGTH_SHORT).show();
                         TextView sv = getView().findViewById(R.id.statusText);
                         sv.setText("EXP Completed");
@@ -457,11 +368,9 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 
                     else if (maze.getState() == Constants.fastestPathMode)
                     {
-                        //Update Grid Mode
                         getView().findViewById(R.id.fastestBtn).setEnabled(false);
                         maze.setState(Constants.idleMode);
 
-                        //Update Time
                         fastestpathtime = System.nanoTime() - fastestTime;
                         int fseconds = Math.round(fastestpathtime/1000000000);
                         int fminutes = fseconds/60;
@@ -470,69 +379,16 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                         TextView fsptime = getView().findViewById(R.id.fastestTime);
                         fsptime.setText(fminutes + " mins " + fseconds + " s");
 
-                        //Update Text and Status
                         Toast.makeText(getActivity(), "Fastest Path completed!", Toast.LENGTH_SHORT).show();
                         TextView sv = getView().findViewById(R.id.statusText);
                         sv.setText("FSP Completed");
                     }
                 }
 
-//                else if(key.equals("EX_DONE"))
-//                {
-//                    maze.setExploreCompleted(true);
-//
-//                    //DISPLAY MOST RECENT MDP STRINGS
-//                    MainActivity.updateMsgHistory("MDF_Explore: "+ MDF1);
-//                    Log.d("MDF_Explore: ", MDF1);
-//
-//                    MainActivity.updateMsgHistory("MDF_Obstacle: "+ MDF2);
-//                    Log.d("MDF_Obstacle: ", MDF2);
-//
-//                    maze.displayArrowBlockString();
-//
-//                    //UPDATE TIME
-//                    /*
-//                    _exploreTime = System.nanoTime() - _exploreTime;
-//                    int seconds = Math.round(_exploreTime/1000000000);
-//                    int minutes = seconds/60;
-//                    seconds = seconds - minutes*60;
-//                    TextView tv = getView().findViewById(R.id.explTime);
-//                    tv.setText(minutes+"min "+ seconds +"s");
-//                    */
-//
-//                    //UPDATE TEXT
-//                    getView().findViewById(R.id.exploreBtn).setEnabled(false);
-//                    maze.setState(Constants.idleMode);
-//                    //BluetoothManager.getInstance().sendMessage("SET_STATUS", "Exploration Completed!");
-//                    Toast.makeText(getActivity(), "Exploration completed!", Toast.LENGTH_SHORT).show();
-//                }
-
-//                else if(key.equals("FP_DONE"))
-//                {
-//                    BluetoothManager.getInstance().sendMessage("SET_STATUS", "Fastest Path Completed!");
-//                    maze.setState(Constants.idleMode);
-//                    getView().findViewById(R.id.fastestBtn).setEnabled(false);
-//                    Toast.makeText(getActivity(), "Fastest Path completed!", Toast.LENGTH_SHORT).show();
-//
-//                    //UPDATE TIME DISPLAY
-//                    /*
-//                    _fastestTime = System.nanoTime() - _fastestTime;
-//                    int seconds = Math.round(_fastestTime/1000000000);
-//                    int minutes = seconds/60;
-//                    seconds = seconds - minutes*60;
-//                    TextView tv = getView().findViewById(R.id.fastestTime);
-//                    tv.setText(minutes+"min "+ seconds +"s");
-//                    */
-//                }
-
                 else if(key.equals("IMAGE"))
                 {
                     String[] tmp = msg.split("-");
                     String[] imgStr = maze.convertImgCoord(tmp).clone();
-//                    Log.d("Image ID", imgStr[0]);
-//                    Log.d("X-Coord", imgStr[2]);
-//                    Log.d("Y-Coord", imgStr[1]);
-//                    Log.d("Orientation", imgStr[3]);
 
                     int img_xcoord = Integer.parseInt(imgStr[2]);
                     int img_ycoord = Integer.parseInt(imgStr[1]); //added 19- just to changed
@@ -545,7 +401,6 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                         for (int i = 0; i < imgCoordArr.length; i++) {imgCoordStr.append(imgCoordArr[i]);}
 
                         maze.handleImageBlock(imgCoordStr.toString(), Integer.parseInt(imgStr[0]));
-//                    Log.d("data", msg);
                     }
                 }
 
@@ -581,22 +436,18 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
                     }
                 }
 
-                else if (key.equals("COORD")) ///robot position
+                else if (key.equals("COORD"))
                 {
                     Log.d("Robot Position", msg);
                     maze.updateBotPosDir(msg);
                 }
 
-                else if (key.equals("FASTEST")) //fastest path
+                else if (key.equals("FASTEST"))
                 {
                     Log.d("Fastest Path Route", msg);
                     maze.handleFastestPath(msg);
                 }
 
-//                else if(key.equals("MOVE"))
-//                {
-//                    maze.handleBotData(msg);
-//                }
                 else if (key.equals("STATUS"))
                 {
                     TextView tv = getView().findViewById(R.id.statusText);
@@ -606,30 +457,29 @@ public class MapFragment extends Fragment implements MainActivity.CallbackFragme
 
             case Constants.ACCELERATE:
 
-            //Received Messages
-            if(maze.getState() != Constants.manualMode)
-            {
-                return;
-            }
+                if(maze.getState() != Constants.manualMode)
+                {
+                    return;
+                }
 
-            int accelDir = Integer.parseInt(msg);
+                int accelDir = Integer.parseInt(msg);
 
-            if(accelDir == Constants.up)
-            {
-                maze.attemptMoveBot(Constants.NORTH, true);
-            }
-            else if(accelDir == Constants.down)
-            {
-                maze.attemptMoveBot(Constants.SOUTH, true);
-            }
-            else if(accelDir == Constants.right)
-            {
-                maze.attemptMoveBot(Constants.EAST, true);
-            }
-            else if(accelDir == Constants.left)
-            {
-                maze.attemptMoveBot(Constants.WEST, true);
-            }
+                if(accelDir == Constants.up)
+                {
+                    maze.attemptMoveBot(Constants.NORTH, true);
+                }
+                else if(accelDir == Constants.down)
+                {
+                    maze.attemptMoveBot(Constants.SOUTH, true);
+                }
+                else if(accelDir == Constants.right)
+                {
+                    maze.attemptMoveBot(Constants.EAST, true);
+                }
+                else if(accelDir == Constants.left)
+                {
+                    maze.attemptMoveBot(Constants.WEST, true);
+                }
         }
     }
 

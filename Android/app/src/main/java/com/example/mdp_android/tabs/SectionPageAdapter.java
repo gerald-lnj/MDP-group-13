@@ -1,13 +1,11 @@
 package com.example.mdp_android.tabs;
 
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 public class SectionPageAdapter extends FragmentPagerAdapter
 {
-
     private int numOfTabs;
 
     public SectionPageAdapter(FragmentManager fn, int numOfTabs)

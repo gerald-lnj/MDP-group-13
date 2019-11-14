@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.example.mdp_android.Constants;
 import com.example.mdp_android.MainActivity;
-import com.example.mdp_android.Maze;
 import com.example.mdp_android.R;
 
 import java.lang.reflect.Array;
@@ -161,7 +160,6 @@ public class ImageCheckFragment extends Fragment implements MainActivity.Callbac
             length += array.length;
         }
 
-        //T[] result = new T[length];
         final T[] result = (T[]) Array.newInstance(arrays[0].getClass().getComponentType(), length);
 
         int offset = 0;

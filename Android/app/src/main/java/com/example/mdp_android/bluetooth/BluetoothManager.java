@@ -11,9 +11,6 @@ import android.widget.Toast;
 
 import com.example.mdp_android.Constants;
 
-/**
- * High-level class that abstracts BluetoothChatService
- */
 public class BluetoothManager
 {
     private BluetoothAdapter mBluetoothAdapter;
@@ -21,7 +18,7 @@ public class BluetoothManager
     private static BluetoothManager _instance;
     private static Handler _mHandler;
     private Activity mActivity;
-    public static final int BT_REQUEST_CODE = 0; //Code for detecting whether bluetooth is switched on
+    public static final int BT_REQUEST_CODE = 0;
 
     private final String LAST_DEVICE = "storedRecord";
     private final String LAST_DEVICE_NAME = "storedName";
@@ -41,10 +38,6 @@ public class BluetoothManager
         return _instance;
     }
 
-    /**
-     * Detects if bluetooth is on, else prompt user to switch on (return false)
-     * @return true if bluetooth is on
-     */
     public Boolean bluetoothAvailable()
     {
         return mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
@@ -55,7 +48,6 @@ public class BluetoothManager
         Toast.makeText(mActivity, "Please turn on Bluetooth!", Toast.LENGTH_SHORT).show();
     }
 
-    // discover nearby bluetooth devices
     public void listBluetoothDevices()
     {
         if(bluetoothAvailable())
@@ -91,7 +83,6 @@ public class BluetoothManager
         mChatService.stop();
     }
 
-    // Overload for int
     public void sendMessage(String type, int num)
     {
         sendMessage(type, String.valueOf(num));
@@ -101,7 +92,6 @@ public class BluetoothManager
     {
         if(mChatService != null && mChatService.getState() == BluetoothChatService.STATE_CONNECTED)
         {
-            //String toSend = msg+';';
             String toSend = msg;
 
             if (type != null)
@@ -139,9 +129,6 @@ public class BluetoothManager
         Toast.makeText(mActivity, "Bluetooth not connected to any device!", Toast.LENGTH_SHORT);
     }
 
-    /**
-     * Handler handling events from BluetoothChatService and passing it to MainActivity's handler
-     */
     private final Handler nHandler = new Handler(new Handler.Callback()
     {
         @Override
@@ -150,7 +137,7 @@ public class BluetoothManager
             if(msg.what == Constants.MESSAGE_STATE_CHANGE && msg.arg1 == BluetoothChatService.STATE_CONNECTED)
             {
                 if(mChatService.getDeviceName() != null && mChatService.getDeviceAddress() != null)
-                storeDeviceRecord(mChatService.getDeviceName(), mChatService.getDeviceAddress());
+                    storeDeviceRecord(mChatService.getDeviceName(), mChatService.getDeviceAddress());
             }
 
             Message newMsg = _mHandler.obtainMessage(msg.what);
@@ -160,10 +147,8 @@ public class BluetoothManager
         }
     });
 
-    // store last connected device
     private void storeDeviceRecord(String deviceName, String deviceAddress)
     {
-        // store in SharedPreferences
         SharedPreferences settings = mActivity.getSharedPreferences(LAST_DEVICE, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(LAST_DEVICE_NAME, deviceName);
@@ -173,16 +158,10 @@ public class BluetoothManager
 
     public String[] retrieveDeviceRecord()
     {
-        // Get from the SharedPreferences
         SharedPreferences settings = mActivity.getSharedPreferences(LAST_DEVICE, 0);
         String deviceName = settings.getString(LAST_DEVICE_NAME, null);
         String deviceAddress = settings.getString(LAST_DEVICE_ADDRESS, null);
         String[] returnVal = {deviceName, deviceAddress};
         return returnVal;
-    }
-
-    public static Handler getHandler()
-    {
-        return _mHandler;
     }
 }

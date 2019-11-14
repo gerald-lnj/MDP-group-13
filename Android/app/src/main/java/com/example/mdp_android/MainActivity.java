@@ -84,6 +84,44 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
         }
 
+        //Tab layout tab items
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        TabItem tabMap = findViewById(R.id.map);
+        TabItem tabComm = findViewById(R.id.comm);
+        TabItem tabBluetooth = findViewById(R.id.bluetooth);
+        TabItem tabImage = findViewById(R.id.imagecheck);
+
+        final ViewPager mViewPager = findViewById(R.id.container);
+        SectionPageAdapter pageAdapter = new SectionPageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        mViewPager.setAdapter(pageAdapter);
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+        {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab)
+            {
+                final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mViewPager.getWindowToken(), 0);
+                mViewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab)
+            {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab)
+            {
+
+            }
+        });
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        mViewPager.setCurrentItem(1);
+
         //Bluetooth
         mBluetoothMgr = new BluetoothManager(this, mHandler);
         IntentFilter filter = new IntentFilter();
